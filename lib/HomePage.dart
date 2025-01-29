@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 '\$10,000.00',
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.green),
+                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               SizedBox(height: 30),
               // Action Buttons
