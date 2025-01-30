@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:online_banking_system/LoginPage.dart';
-import 'package:online_banking_system/RegistrationPage.dart';
-import 'package:online_banking_system/WelcomePage.dart';
-import 'HomePage.dart';
-import 'AccountPage.dart';
-import 'CardPage.dart';
-import 'StockPage.dart';
+import 'package:online_banking_system/Pages/LoginPage.dart';
+import 'package:online_banking_system/Pages/RegistrationPage.dart';
+import 'package:online_banking_system/Pages/WelcomePage.dart';
+import 'Pages/HomePage.dart';
+import 'Pages/AccountPage.dart';
+import 'Pages/CardPage.dart';
+import 'Pages/StockPage.dart';
 
 void main() {
   runApp(MyApp());

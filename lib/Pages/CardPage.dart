@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/carddesign.dart'; // Ensure this import is correct
+import '../../widgets/carddesign.dart'; // Ensure this import is correct
 
 class CardPage extends StatefulWidget {
   @override

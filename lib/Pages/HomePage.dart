@@ -3,7 +3,7 @@ import 'package:online_banking_system/NotificationPage.dart';
 import 'LogoutPage.dart';
 import 'ProfilePage.dart';
 import 'SettingPage.dart';
-import 'widgets/CardDesign.dart';
+import '../widgets/CardDesign.dart';
 
 class HomePage extends StatelessWidget {
   final List<Map<String, String>> cards = [

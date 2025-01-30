@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:online_banking_system/LoginPage.dart';
+import 'package:online_banking_system/Pages/LoginPage.dart';
 
 import 'RegistrationPage.dart';
 
