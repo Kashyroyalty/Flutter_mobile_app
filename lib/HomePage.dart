@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/NotificationPage.dart';
 
 class HomePage extends StatelessWidget {
   final List<Map<String, String>> cards = [
@@ -38,7 +39,11 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.notifications),
             onPressed: () {
-              // Notification functionality
+              // Navigate to NotificationPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()),
+              );
             },
           ),
         ],
