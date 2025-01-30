@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/carddesign.dart'; // Ensure this import is correct
 
 class CardPage extends StatefulWidget {
   @override
@@ -33,15 +34,14 @@ class _CardPageState extends State<CardPage> {
       ],
     },
     {
-      'bank': 'New Bank',
-      'number': '**** **** **** 8765',
-      'holder': 'Alice Smith',
-      'expiry': '09/30',
-      'balance': '\$5,000.00',
+      'bank': 'Your Bank',
+      'number': '**** **** **** 3456',
+      'holder': 'Jane Doe',
+      'expiry': '05/28',
+      'balance': '\$8,500.00',
       'transactions': [
-        {'date': '2025-01-19', 'description': 'Restaurant', 'amount': '-\$70.00'},
-        {'date': '2025-01-15', 'description': 'Book Purchase', 'amount': '-\$15.00'},
-        {'date': '2025-01-10', 'description': 'Refund', 'amount': '+\$30.00'},
+        {'date': '2025-01-20', 'description': 'Online Purchase', 'amount': '-\$30.00'},
+        {'date': '2025-01-18', 'description': 'Gym Membership', 'amount': '-\$40.00'},
       ],
     },
   ];
@@ -63,21 +63,29 @@ class _CardPageState extends State<CardPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(_cards.length, (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCardIndex = index;
-                      });
-                    },
-                    child: buildCard(_cards[index]),
-                  );
-                }),
+            if (_cards.isNotEmpty) // Ensure _cards is not empty before building UI
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(_cards.length, (index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedCardIndex = index;
+                        });
+                      },
+                      child: CardDesign(card: _cards[index]), // Call CardDesign widget
+                    );
+                  }),
+                ),
+              )
+            else
+              Center(
+                child: Text(
+                  "No cards available",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
             SizedBox(height: 30),
             Text(
               'Recent Transactions',
@@ -85,7 +93,8 @@ class _CardPageState extends State<CardPage> {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
+              child: _cards.isNotEmpty
+                  ? ListView.builder(
                 itemCount: _cards[_selectedCardIndex]['transactions'].length,
                 itemBuilder: (context, index) {
                   final transaction = _cards[_selectedCardIndex]['transactions'][index];
@@ -105,72 +114,16 @@ class _CardPageState extends State<CardPage> {
                     ),
                   );
                 },
+              )
+                  : Center(
+                child: Text(
+                  "No transactions available",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget buildCard(Map<String, dynamic> card) {
-    return Container(
-      margin: EdgeInsets.only(right: 16),
-      width: 300,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.lightBlueAccent],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      padding: EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            card['bank'],
-            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 20),
-          Text(
-            card['number'],
-            style: TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 4),
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Card Holder',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                  Text(
-                    card['holder'],
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Expires',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                  Text(
-                    card['expiry'],
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }

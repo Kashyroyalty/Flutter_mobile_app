@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'LogoutPage.dart';
+import 'ProfilePage.dart';
+import 'SettingPage.dart';
+import 'widgets/CardDesign.dart';
 
 class HomePage extends StatelessWidget {
   final List<Map<String, String>> cards = [
@@ -43,7 +47,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      drawer: NavigationDrawer(children: [],),
+      drawer: NavigationDrawer(),
       body: Padding(
         padding: EdgeInsets.all(20.0),
         child: SingleChildScrollView(
@@ -54,7 +58,7 @@ class HomePage extends StatelessWidget {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: cards.map((card) => buildCard(card)).toList(),
+                  children: cards.map((card) => CardDesign(card: card)).toList(),
                 ),
               ),
               SizedBox(height: 20),
@@ -132,68 +136,6 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
-  Widget buildCard(Map<String, String> card) {
-    return Container(
-      margin: EdgeInsets.only(right: 16),
-      width: 300,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.lightBlueAccent],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      padding: EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            card['bank']!,
-            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 20),
-          Text(
-            card['number']!,
-            style: TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 4),
-          ),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Card Holder',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                  Text(
-                    card['holder']!,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Expires',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                  Text(
-                    card['expiry']!,
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class ActionButton extends StatelessWidget {
@@ -213,6 +155,55 @@ class ActionButton extends StatelessWidget {
         ),
         Text(label),
       ],
+    );
+  }
+}
+
+class NavigationDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          UserAccountsDrawerHeader(
+            accountName: Text('John Doe'),
+            accountEmail: Text('johndoe@example.com'),
+            currentAccountPicture: CircleAvatar(
+              backgroundColor: Colors.white,
+              child: Icon(Icons.person, color: Colors.blue),
+            ),
+          ),
+          ListTile(
+            title: Text('Profile'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Settings'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          ),
+          ListTile(
+            title: Text('Logout'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LogoutPage()),
+              );
+              // Handle logout functionality
+            },
+          ),
+        ],
+      ),
     );
   }
 }
