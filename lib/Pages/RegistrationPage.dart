@@ -26,10 +26,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Register"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Color (0xFF752727),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -43,7 +43,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color (0xFF752727),
                 ),
               ),
               SizedBox(height: 10),
@@ -51,18 +51,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 "Sign up to get started with mobile banking.",
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white70,
+                  color: Color (0xFF752727),
                 ),
               ),
               SizedBox(height: 20),
               // Name Field
               TextFormField(
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color (0xFF752727)),
                 decoration: InputDecoration(
                   labelText: "Full Name",
-                  labelStyle: TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Color(0xFF752727)),
                   filled: true,
-                  fillColor: Colors.grey[850],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -77,12 +77,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
               SizedBox(height: 15),
               // Email Field
               TextFormField(
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color (0xFF752727)),
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Color (0xFF752727)),
                   filled: true,
-                  fillColor: Colors.grey[850],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -101,12 +101,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
               // Password Field
               TextFormField(
                 obscureText: true,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color (0xFF752727)),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Color (0xFF752727)),
                   filled: true,
-                  fillColor: Colors.grey[850],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -122,12 +122,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
               // Confirm Password Field
               TextFormField(
                 obscureText: true,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color (0xFF752727)),
                 decoration: InputDecoration(
                   labelText: "Confirm Password",
-                  labelStyle: TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Color (0xFF752727)),
                   filled: true,
-                  fillColor: Colors.grey[850],
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -145,7 +145,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: _onRegisterPressed,
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.tealAccent[700],
+                  backgroundColor: Color (0xFF752727),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -171,7 +171,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   child: Text(
                     "Already have an account? Login",
                     style: TextStyle(
-                      color: Colors.tealAccent,
+                      color: Color(0xFF752727),
                       fontSize: 16,
                     ),
                   ),

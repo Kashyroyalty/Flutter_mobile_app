@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'RegistrationPage.dart';
+import 'ForgotPassword.dart'; // Import ForgotPassword
 import '../main.dart'; // Import MainScreen
 
 class LoginPage extends StatefulWidget {
@@ -16,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _checkBiometrics(); // Check for fingerprint availability on page load
+    _checkBiometrics();
   }
 
   Future<void> _checkBiometrics() async {
@@ -41,9 +42,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       bool isAuthenticated = await auth.authenticate(
         localizedReason: 'Authenticate using your fingerprint',
-        options: AuthenticationOptions(
-          biometricOnly: true,
-        ),
+        options: AuthenticationOptions(biometricOnly: true),
       );
 
       if (isAuthenticated) {
@@ -52,7 +51,6 @@ class _LoginPageState extends State<LoginPage> {
           duration: Duration(seconds: 2),
         ));
 
-        // Navigate to MainScreen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MainScreen()),
@@ -68,13 +66,11 @@ class _LoginPageState extends State<LoginPage> {
 
   void _onLoginPressed() {
     if (_formKey.currentState!.validate()) {
-      // Handle manual login logic
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Login successful!"),
         duration: Duration(seconds: 2),
       ));
 
-      // Navigate to MainScreen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MainScreen()),
@@ -85,10 +81,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Login"),
-        backgroundColor: Colors.teal,
+        backgroundColor: Color(0xFF752727),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -100,28 +96,27 @@ class _LoginPageState extends State<LoginPage> {
               Text(
                 "Welcome Back",
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF752727),
                 ),
               ),
               SizedBox(height: 10),
               Text(
                 "Log in to continue to your account.",
                 style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white70,
+                  fontSize: 20,
+                  color: Color(0xFF752727),
                 ),
               ),
               SizedBox(height: 20),
-              // Email Field
               TextFormField(
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color(0xFF752727)),
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Color(0xFF752727)),
                   filled: true,
-                  fillColor: Colors.grey[850],
+                  fillColor: Colors.white70,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -137,15 +132,14 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               SizedBox(height: 15),
-              // Password Field
               TextFormField(
                 obscureText: true,
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(color: Color(0xFF752727)),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: Color(0xFF752727)),
                   filled: true,
-                  fillColor: Colors.grey[850],
+                  fillColor: Colors.white70,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -158,12 +152,11 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               SizedBox(height: 20),
-              // Login Button
               ElevatedButton(
                 onPressed: _onLoginPressed,
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Colors.tealAccent[700],
+                  backgroundColor: Color(0xFF752727),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -174,6 +167,23 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              Center( // Center the "Forgot Password" button
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ForgotPassword()), // Navigate to ForgotPassword
+                    );
+                  },
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(
+                      color: Color(0xFF752727), // Keep the color consistent
+                      fontSize: 16,
                     ),
                   ),
                 ),
@@ -189,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                         label: Text("Use Fingerprint"),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: Colors.teal,
+                          backgroundColor: Color(0xFF752727),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -200,7 +210,6 @@ class _LoginPageState extends State<LoginPage> {
                     Center(
                       child: TextButton(
                         onPressed: () {
-                          // Navigate to Registration Page
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -211,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(
                           "Don't have an account? Register here",
                           style: TextStyle(
-                            color: Colors.tealAccent,
+                            color: Color (0xFF752727),
                             fontSize: 16,
                           ),
                         ),

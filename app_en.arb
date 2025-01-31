@@ -1,0 +1,8 @@
+{
+  "@@locale": "en",
+  "welcome": "Welcome to Equity Mobile",
+  "signIn": "Sign In",
+  "register": "Register",
+  "selectLanguage": "Select a Language",
+  "enterCredentials": "Enter your credentials"
+}

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/RegistrationPage.dart';
-import 'package:online_banking_system/Pages/WelcomePage.dart';
+import 'package:online_banking_system/Screens/WelcomePage.dart';
 import 'Pages/HomePage.dart';
 import 'Pages/AccountPage.dart';
 import 'Pages/CardPage.dart';
 import 'Pages/StockPage.dart';
+import 'Screens/language_screen.dart';
+import 'Screens/privacy_screen.dart';
+import 'Screens/account_summary_screen.dart';
+import 'Screens/create_profile_screen1.dart';
+import 'Screens/verification_screen.dart';
+import 'Screens/password_creation_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,10 +24,24 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Simple Flutter App',
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        primaryColor: Colors.red,
+        scaffoldBackgroundColor: Colors.white,
       ),
-      // Routes setup
-      initialRoute: '/', // Set the initial route
+      locale: Locale('en'),
+      supportedLocales: [
+        Locale('en'),
+        Locale('fr'),
+        Locale('sw'),
+        Locale('zh'),
+        Locale('rw'),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      initialRoute: '/',
       routes: {
         '/': (context) => WelcomePage(),
         '/login': (context) => LoginPage(),
@@ -29,10 +50,57 @@ class MyApp extends StatelessWidget {
         '/account': (context) => AccountPage(),
         '/card': (context) => CardPage(),
         '/stock': (context) => StockPage(),
+        '/language': (context) => LanguageScreen(),
+        '/privacy': (context) => PrivacyScreen(),
+        '/accounts': (context) => AccountSummaryScreen(),
+        '/createProfile1': (context) => CreateProfileScreen1(),
+        '/verification': (context) => VerificationScreen(),
+        '/passwordCreation': (context) => PasswordCreationScreen(),
       },
-      debugShowCheckedModeBanner: false, // This removes the debug banner
+      debugShowCheckedModeBanner: false,
     );
   }
+}
+
+class AppLocalizations {
+  final Locale locale;
+
+  AppLocalizations(this.locale);
+
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+
+  // Example localized strings
+  Map<String, String> _localizedStrings = {
+    'hello': 'Hello',
+    'welcome': 'Welcome to our app',
+  };
+
+
+
+  String translate(String key) {
+    return _localizedStrings[key] ?? key;
+  }
+}
+
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) {
+    return ['en', 'fr', 'sw', 'zh', 'rw'].contains(locale.languageCode);
+  }
+
+  @override
+  Future<AppLocalizations> load(Locale locale) async {
+    return AppLocalizations(locale);
+  }
+
+  @override
+  bool shouldReload(LocalizationsDelegate<AppLocalizations> old) => false;
 }
 
 class MainScreen extends StatefulWidget {
@@ -59,9 +127,6 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Hello My fav Client'),
-      ),
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -83,7 +148,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.blue ,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.black,
         showUnselectedLabels: true,
         onTap: _onItemTapped,

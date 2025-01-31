@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:online_banking_system/NotificationPage.dart';
-import 'LogoutPage.dart';
-import 'ProfilePage.dart';
-import 'SettingPage.dart';
+import 'package:online_banking_system/Pages/NotificationPage.dart';
+import 'package:online_banking_system/Pages/LogoutPage.dart';
+import 'package:online_banking_system/Pages/ProfilePage.dart';
+import 'package:online_banking_system/Pages/SettingPage.dart';
 import '../widgets/CardDesign.dart';
+import '../widgets/AccountBalanceDisplay.dart'; // Import the new widget
 
 class HomePage extends StatelessWidget {
   final List<Map<String, String>> cards = [
@@ -26,6 +27,12 @@ class HomePage extends StatelessWidget {
       'expiry': '08/27'
     },
   ];
+
+  final Map<String, double> accounts = {
+    'Savings Account': 10000.00,
+    'Checking Account': 5000.50,
+    'Business Account': 25000.75,
+  };
 
   final List<Map<String, String>> transactions = [
     {'date': '2025-01-23', 'description': 'Grocery Store', 'amount': '-\$50.00'},
@@ -67,45 +74,11 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              // Balance Display
-              Text(
-                'Account Balance',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Text(
-                '\$10,000.00',
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.black),
-              ),
+
+              // Account Balance Display (Using AccountBalanceDisplay Widget)
+              AccountBalanceDisplay(accounts: accounts),
               SizedBox(height: 30),
-              // Action Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  ActionButton(
-                    icon: Icons.account_balance_wallet,
-                    label: 'Transfer',
-                    onPressed: () {
-                      // Navigate to transfer screen
-                    },
-                  ),
-                  ActionButton(
-                    icon: Icons.history,
-                    label: 'Transactions',
-                    onPressed: () {
-                      // Navigate to transaction history screen
-                    },
-                  ),
-                  ActionButton(
-                    icon: Icons.add,
-                    label: 'Deposit',
-                    onPressed: () {
-                      // Navigate to deposit screen
-                    },
-                  ),
-                ],
-              ),
-              SizedBox(height: 30),
+
               // Recent Transactions
               Text(
                 'Recent Transactions',
@@ -139,27 +112,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-
-  ActionButton({required this.icon, required this.label, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        IconButton(
-          icon: Icon(icon, size: 40),
-          onPressed: onPressed,
-        ),
-        Text(label),
-      ],
     );
   }
 }
