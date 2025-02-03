@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => HomePage(),
         '/account': (context) => AccountPage(),
         '/card': (context) => CardPage(),
-        '/stock': (context) => StockPage(),
+        '/stock': (context) => StatisticsPage(),
         '/language': (context) => LanguageScreen(),
         '/privacy': (context) => PrivacyScreen(),
         '/accounts': (context) => AccountSummaryScreen(),
@@ -115,7 +115,7 @@ class _MainScreenState extends State<MainScreen> {
     HomePage(),
     AccountPage(),
     CardPage(),
-    StockPage(),
+    StatisticsPage(),
   ];
 
   void _onItemTapped(int index) {
