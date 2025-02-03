@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Constants/sizes.dart';
+
+import '../Constants/Strings.dart';
 
 class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF752727),
+      backgroundColor:kBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -18,22 +22,22 @@ class WelcomePage extends StatelessWidget {
                 SizedBox(height: 60),
                 Center(
                   child: Text(
-                    'Secure your financial future with us.',
+                    OnBoardingTitle_1,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 36,
+                      fontSize:kTextSizeTitles,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: kTextColorLightTheme,
                     ),
                   ),
                 ),
                 SizedBox(height: 20),
                 Text(
-                  'Your financial future, our priority. Secure your finances with our trusted banking services.',
+                  OnBoardingSubtitle_1,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
+                    fontSize: kTextSize,
+                    color:kTextColorLightTheme,
                   ),
                 ),
                 SizedBox(height: 40),
@@ -51,8 +55,8 @@ class WelcomePage extends StatelessWidget {
                     Navigator.pushNamed(context, '/login');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.red,
+                    backgroundColor:kButtonColor,
+                    foregroundColor: kButtonText,
                     padding: EdgeInsets.symmetric(horizontal: 130, vertical: 16), // Added horizontal padding
                     textStyle: TextStyle(fontSize: 18),
                     shape: RoundedRectangleBorder(
@@ -67,8 +71,8 @@ class WelcomePage extends StatelessWidget {
                     Navigator.pushNamed(context, '/register');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: Colors.red,
+                    backgroundColor:kButtonColor,
+                    foregroundColor:kButtonText,
                     padding: EdgeInsets.symmetric(horizontal:130, vertical: 16), // Added horizontal padding
                     textStyle: TextStyle(fontSize: 18),
                     shape: RoundedRectangleBorder(

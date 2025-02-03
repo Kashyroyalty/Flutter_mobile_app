@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Constants/sizes.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -26,10 +28,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
         title: Text("Register"),
-        backgroundColor: Color (0xFF752727),
+        backgroundColor: kTopBar,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -41,26 +43,26 @@ class _RegistrationPageState extends State<RegistrationPage> {
               Text(
                 "Create Account",
                 style: TextStyle(
-                  fontSize: 28,
+                  fontSize: kTextSizeTitles,
                   fontWeight: FontWeight.bold,
-                  color: Color (0xFF752727),
+                  color: kTextColorLightTheme,
                 ),
               ),
               SizedBox(height: 10),
               Text(
                 "Sign up to get started with mobile banking.",
                 style: TextStyle(
-                  fontSize: 16,
-                  color: Color (0xFF752727),
+                  fontSize: kTextSize,
+                  color:kTextColorLightTheme,
                 ),
               ),
               SizedBox(height: 20),
               // Name Field
               TextFormField(
-                style: TextStyle(color: Color (0xFF752727)),
+                style: TextStyle(color:kTextColorLightTheme),
                 decoration: InputDecoration(
                   labelText: "Full Name",
-                  labelStyle: TextStyle(color: Color(0xFF752727)),
+                  labelStyle: TextStyle(color: kTextColorLightTheme),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -77,10 +79,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               SizedBox(height: 15),
               // Email Field
               TextFormField(
-                style: TextStyle(color: Color (0xFF752727)),
+                style: TextStyle(color:kTextColorLightTheme),
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: Color (0xFF752727)),
+                  labelStyle: TextStyle(color:kTextColorLightTheme),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -101,10 +103,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               // Password Field
               TextFormField(
                 obscureText: true,
-                style: TextStyle(color: Color (0xFF752727)),
+                style: TextStyle(color: kTextColorLightTheme),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: Color (0xFF752727)),
+                  labelStyle: TextStyle(color:kTextColorLightTheme),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -122,10 +124,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
               // Confirm Password Field
               TextFormField(
                 obscureText: true,
-                style: TextStyle(color: Color (0xFF752727)),
+                style: TextStyle(color:kTextColorLightTheme),
                 decoration: InputDecoration(
                   labelText: "Confirm Password",
-                  labelStyle: TextStyle(color: Color (0xFF752727)),
+                  labelStyle: TextStyle(color:kTextColorLightTheme),
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -145,7 +147,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 onPressed: _onRegisterPressed,
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Color (0xFF752727),
+                  backgroundColor:kButtonColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -155,7 +157,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     "Register",
                     style: TextStyle(
                       fontSize: 18,
-                      color: Colors.black,
+                      color:kButtonText,
                     ),
                   ),
                 ),
@@ -171,7 +173,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   child: Text(
                     "Already have an account? Login",
                     style: TextStyle(
-                      color: Color(0xFF752727),
+                      color:kTextColorLightTheme,
                       fontSize: 16,
                     ),
                   ),

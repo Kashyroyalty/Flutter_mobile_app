@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Constants/sizes.dart';
 import 'RegistrationPage.dart';
 import 'ForgotPassword.dart'; // Import ForgotPassword
 import '../main.dart'; // Import MainScreen
@@ -81,10 +83,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor:kBackgroundColor,
       appBar: AppBar(
         title: Text("Login"),
-        backgroundColor: Color(0xFF752727),
+        backgroundColor:kTopBar,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
@@ -98,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF752727),
+                  color: kTextColorLightTheme,
                 ),
               ),
               SizedBox(height: 10),
@@ -106,15 +108,15 @@ class _LoginPageState extends State<LoginPage> {
                 "Log in to continue to your account.",
                 style: TextStyle(
                   fontSize: 20,
-                  color: Color(0xFF752727),
+                  color: kTextColorLightTheme,
                 ),
               ),
               SizedBox(height: 20),
               TextFormField(
-                style: TextStyle(color: Color(0xFF752727)),
+                style: TextStyle(color:kTextColorLightTheme),
                 decoration: InputDecoration(
                   labelText: "Email",
-                  labelStyle: TextStyle(color: Color(0xFF752727)),
+                  labelStyle: TextStyle(color:kTextColorLightTheme),
                   filled: true,
                   fillColor: Colors.white70,
                   border: OutlineInputBorder(
@@ -134,10 +136,10 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 15),
               TextFormField(
                 obscureText: true,
-                style: TextStyle(color: Color(0xFF752727)),
+                style: TextStyle(color:kTextColorLightTheme),
                 decoration: InputDecoration(
                   labelText: "Password",
-                  labelStyle: TextStyle(color: Color(0xFF752727)),
+                  labelStyle: TextStyle(color:kTextColorLightTheme),
                   filled: true,
                   fillColor: Colors.white70,
                   border: OutlineInputBorder(
@@ -156,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: _onLoginPressed,
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor: Color(0xFF752727),
+                  backgroundColor:kButtonColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -165,8 +167,8 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     "Login",
                     style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
+                      fontSize: kTextSize,
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -182,8 +184,8 @@ class _LoginPageState extends State<LoginPage> {
                   child: Text(
                     "Forgot Password?",
                     style: TextStyle(
-                      color: Color(0xFF752727), // Keep the color consistent
-                      fontSize: 16,
+                      color: kTextColorLightTheme, // Keep the color consistent
+                      fontSize: kTextSize,
                     ),
                   ),
                 ),
@@ -199,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                         label: Text("Use Fingerprint"),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: Color(0xFF752727),
+                          backgroundColor: kButtonColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -220,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: Text(
                           "Don't have an account? Register here",
                           style: TextStyle(
-                            color: Color (0xFF752727),
+                            color: kTextColorLightTheme,
                             fontSize: 16,
                           ),
                         ),
