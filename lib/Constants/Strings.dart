@@ -53,3 +53,4 @@ const String kProfileEmail = "georgesteve561@gmail.com";
 const String kEditProfile = "Edit profile";
 const String kLogout = "Log out";
 const String kDeleteAccount = "Delete account";
+

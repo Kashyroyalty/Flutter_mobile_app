@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:online_banking_system/Constants/Colors.dart';
+
 class CardDesign extends StatefulWidget {
   final Map<String, dynamic> card;
 
@@ -64,11 +66,12 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
       width: 300,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [Colors.teal, Colors.tealAccent],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+          colors: [Colors.blue,kCardColor],
         ),
         borderRadius: BorderRadius.circular(16),
+
       ),
       padding: EdgeInsets.all(20),
       child: Column(
@@ -129,7 +132,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
         margin: EdgeInsets.only(right: 16),
         width: 300,
         decoration: BoxDecoration(
-          color: Colors.teal,
+          color: Colors.blue,
           borderRadius: BorderRadius.circular(16),
         ),
         padding: EdgeInsets.all(20),

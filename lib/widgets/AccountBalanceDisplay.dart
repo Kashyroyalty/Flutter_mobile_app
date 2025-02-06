@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AccountBalanceDisplay extends StatefulWidget {
   final Map<String, double> accounts; // Account names and balances
 
-  const AccountBalanceDisplay({Key? key, required this.accounts}) : super(key: key);
+  const AccountBalanceDisplay({Key? key, required this.accounts, required bool isBlurred}) : super(key: key);
 
   @override
   _AccountBalanceDisplayState createState() => _AccountBalanceDisplayState();

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/RegistrationPage.dart';
+import 'package:online_banking_system/Screens/SplashScreen.dart';
 import 'package:online_banking_system/Screens/WelcomePage.dart';
 import 'Pages/HomePage.dart';
 import 'Pages/AccountPage.dart';
 import 'Pages/CardPage.dart';
 import 'Pages/StockPage.dart';
-import 'Screens/language_screen.dart';
 import 'Screens/privacy_screen.dart';
 import 'Screens/account_summary_screen.dart';
 import 'Screens/create_profile_screen1.dart';
@@ -26,8 +27,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Simple Flutter App',
       theme: ThemeData(
-        primaryColor: Colors.red,
-        scaffoldBackgroundColor: Colors.white,
+        primaryColor: Colors.blue,
+        scaffoldBackgroundColor: kBackgroundColor,
       ),
       locale: Locale('en'),
       supportedLocales: [
@@ -45,14 +46,13 @@ class MyApp extends StatelessWidget {
       ],
       initialRoute: '/',
       routes: {
-        '/': (context) => WelcomePage(),
+        '/': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/register': (context) => RegistrationPage(),
         '/home': (context) => HomePage(),
         '/account': (context) => AccountPage(),
         '/card': (context) => CardPage(),
         '/stock': (context) => StatisticsPage(),
-        '/language': (context) => LanguageScreen(),
         '/privacy': (context) => PrivacyScreen(),
         '/accounts': (context) => AccountSummaryScreen(),
         '/createProfile1': (context) => CreateProfileScreen1(),
@@ -76,8 +76,7 @@ class AppLocalizations {
   static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   // Example localized strings
-  Map<String, String> _localizedStrings = {
-    'hello': 'Hello',
+  final Map<String, String> _localizedStrings = {
     'welcome': 'Welcome to our app',
   };
 
@@ -147,6 +146,8 @@ class _MainScreenState extends State<MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
             label: 'Statistics',
+            //icon: Icon(Icons.storage),
+            //label: 'Statistics',
           ),
         ],
         currentIndex: _selectedIndex,

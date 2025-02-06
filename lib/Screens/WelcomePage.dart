@@ -8,56 +8,53 @@ class WelcomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:kBackgroundColor,
+      backgroundColor: kBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween, // Key change: spaceBetween
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Top Content (Title, Slogan, Illustration)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 60),
-                Center(
-                  child: Text(
+            // Top Content (Illustration + Title & Subtitle)
+            // Middle Content (Title & Subtitle centered)
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Centers the text vertically
+                children: [
+                  Text(
                     OnBoardingTitle_1,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize:kTextSizeTitles,
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'CustomFont2',
+                      fontSize: kTextSizeTitles,
+                      fontStyle: FontStyle.italic,
+                      decoration: TextDecoration.underline,
                       color: kTextColorLightTheme,
                     ),
                   ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  OnBoardingSubtitle_1,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: kTextSize,
-                    color:kTextColorLightTheme,
+                  SizedBox(height: 20),
+                  Text(
+                    OnBoardingSubtitle_1,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: kTextSize,
+                      color: kTextColorLightTheme,
+                    ),
                   ),
-                ),
-                SizedBox(height: 40),
-
-                SizedBox(height: 80),
-              ],
+                ],
+              ),
             ),
 
             // Bottom Buttons
-            Column( // Use a Column for vertical arrangement
-              mainAxisAlignment: MainAxisAlignment.center, // Center buttons vertically
+            Column(
               children: [
-                ElevatedButton( // Removed Expanded
+                ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/login');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:kButtonColor,
+                    backgroundColor: kButtonColor,
                     foregroundColor: kButtonText,
-                    padding: EdgeInsets.symmetric(horizontal: 130, vertical: 16), // Added horizontal padding
+                    padding: EdgeInsets.symmetric(horizontal: 130, vertical: 16),
                     textStyle: TextStyle(fontSize: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
@@ -65,15 +62,15 @@ class WelcomePage extends StatelessWidget {
                   ),
                   child: Text('Log In'),
                 ),
-                SizedBox(height: 20), // Space between buttons
-                ElevatedButton( // Removed Expanded
+                SizedBox(height: 20),
+                ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/register');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:kButtonColor,
-                    foregroundColor:kButtonText,
-                    padding: EdgeInsets.symmetric(horizontal:130, vertical: 16), // Added horizontal padding
+                    backgroundColor: kButtonColor,
+                    foregroundColor: kButtonText,
+                    padding: EdgeInsets.symmetric(horizontal: 130, vertical: 16),
                     textStyle: TextStyle(fontSize: 18),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),

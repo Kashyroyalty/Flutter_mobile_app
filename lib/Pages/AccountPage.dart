@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
 
 import 'NotificationPage.dart';
 
@@ -7,11 +8,12 @@ class AccountPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: kBackgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar.large(
             title: Text('My Accounts'),
+            backgroundColor: kBackgroundColor,
             actions: [
               IconButton(
                 icon: Icon(Icons.notifications_outlined),

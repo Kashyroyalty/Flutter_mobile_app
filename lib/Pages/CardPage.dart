@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
 import '../../widgets/carddesign.dart'; // Ensure this import is correct
 
 class CardPage extends StatefulWidget {
@@ -55,9 +56,9 @@ class _CardPageState extends State<CardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: kBackgroundColor,
         elevation: 0,
         title: Text(
           "My Cards",

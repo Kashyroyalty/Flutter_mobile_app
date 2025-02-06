@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
 
 class StatisticsPage extends StatelessWidget {
   final dateRange = DateTimeRange(
@@ -10,7 +11,7 @@ class StatisticsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: kBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -39,7 +40,7 @@ class StatisticsPage extends StatelessWidget {
     return Row(
       children: [
         IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.blue),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {},
         ),
         const Text(
@@ -63,11 +64,11 @@ class StatisticsPage extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.calendar_today, size: 16, color: Colors.blue),
+          const Icon(Icons.calendar_today, size: 16, color: Colors.black),
           const SizedBox(width: 8),
           Text(
             '${DateFormat('dd MMM').format(dateRange.start)} - ${DateFormat('dd MMM yyyy').format(dateRange.end)}',
-            style: const TextStyle(color: Colors.blue),
+            style: const TextStyle(color: Colors.black),
           ),
         ],
       ),
