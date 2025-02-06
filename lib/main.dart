@@ -13,6 +13,8 @@ import 'Screens/account_summary_screen.dart';
 import 'Screens/create_profile_screen1.dart';
 import 'Screens/verification_screen.dart';
 import 'Screens/password_creation_screen.dart';
+import 'package:flutter/material.dart';
+import 'Constants/Colors.dart';
 
 void main() {
   runApp(MyApp());
@@ -135,16 +137,16 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
+            icon: Icon(Icons.person), // Alternative: Icons.account_box, Icons.supervised_user_circle,
             label: 'Account',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.credit_card),
+            icon: Icon(Icons.credit_card), // Represents a card
             label: 'Card',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.storage),
-            label: 'Stock',
+            icon: Icon(Icons.bar_chart),
+            label: 'Statistics',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -157,3 +159,112 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+
+class AppTheme {
+  static ThemeData lightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      primaryColor: kTopBar,
+      scaffoldBackgroundColor: kBackgroundColor,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: kTopBar,
+        iconTheme: IconThemeData(color: kButtonText),
+        titleTextStyle: TextStyle(
+          color: kButtonText,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(
+          color: kTextColorLightTheme,
+          fontSize: 16,
+        ),
+        bodyMedium: TextStyle(
+          color: kTextColorLightTheme,
+          fontSize: 14,
+        ),
+        titleLarge: TextStyle(
+          color: kHeadingColor,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      buttonTheme: const ButtonThemeData(
+        buttonColor: kButtonColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: kButtonColor,
+          foregroundColor: kButtonText,
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+      ),
+      colorScheme: ColorScheme.light(
+        primary: kButtonColor,
+        error: kErrorColor,
+        onError: kWarningColor,
+        background: kBackgroundColor,
+        onBackground: kTextColorLightTheme,
+      ),
+    );
+  }
+
+  static ThemeData darkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: kBarColor,
+      scaffoldBackgroundColor: kOnBoardingColor_2,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: kBarColor,
+        iconTheme: IconThemeData(color: kButtonText),
+        titleTextStyle: TextStyle(
+          color: kButtonText,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(
+          color: kTextColorDarkTheme,
+          fontSize: 16,
+        ),
+        bodyMedium: TextStyle(
+          color: kTextColorDarkTheme,
+          fontSize: 14,
+        ),
+        titleLarge: TextStyle(
+          color: kTextColorDarkTheme,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      buttonTheme: const ButtonThemeData(
+        buttonColor: kButtonColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: kButtonColor,
+          foregroundColor: kButtonText,
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+      ),
+      colorScheme: ColorScheme.dark(
+        primary: kButtonColor,
+        error: kErrorColor,
+        onError: kWarningColor,
+        background: kOnBoardingColor_2,
+        onBackground: kTextColorDarkTheme,
+      ),
+    );
+  }
+
+  // Helper method to get current theme mode
+  static bool isDarkMode(BuildContext context) {
+    return MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+  }
+}
+
+

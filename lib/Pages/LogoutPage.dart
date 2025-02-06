@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Pages/LoginPage.dart';
 
 import 'SettingPage.dart';
 import 'ProfilePage.dart';
@@ -14,10 +15,10 @@ class LogoutPage extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            // Implement logout functionality (e.g., clear session or token)
-            Navigator.pushReplacement(
+            // Navigate to LoginPage
+            Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ProfilePage()),
+              MaterialPageRoute(builder: (context) => LoginPage()),
             );
           },
           child: Text('Logout'),

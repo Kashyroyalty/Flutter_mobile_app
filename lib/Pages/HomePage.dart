@@ -149,6 +149,7 @@ class NavigationDrawer extends StatelessWidget {
               );
             },
           ),
+
           ListTile(
             title: Text('Logout'),
             onTap: () {

@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Constants/Strings.dart';
+import 'package:online_banking_system/Pages/EditProfilePage.dart';
+import 'package:online_banking_system/Pages/LoginPage.dart';
+import 'package:online_banking_system/Pages/NotificationPage.dart';
+import 'package:online_banking_system/pages/SettingPage.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
@@ -11,7 +16,10 @@ class ProfilePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.settings),
             onPressed: () {
-              Navigator.pushNamed(context, '/settings');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
             },
           ),
         ],
@@ -68,14 +76,22 @@ class ProfilePage extends StatelessWidget {
             // Buttons
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/editProfile');
+                // Navigate to LoginPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EditProfilePage()),
+                );
               },
               child: Text('Edit Profile'),
             ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/logout');
+                // Navigate to LoginPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
               },
               child: Text('Logout'),
             ),

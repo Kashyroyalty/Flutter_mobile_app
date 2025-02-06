@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Pages/LoginPage.dart';
+import 'package:online_banking_system/Pages/NotificationPage.dart';
+import 'package:online_banking_system/Pages/PasswardChangePage.dart';
+import 'package:online_banking_system/Pages/ProfilePage.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -11,24 +15,24 @@ class SettingsPage extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            leading: Icon(Icons.person),
-            title: Text("Profile Settings"),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileSettings()));
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.lock),
             title: Text("Security"),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SecuritySettings()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PasswordResetPage()),
+              );
             },
           ),
           ListTile(
             leading: Icon(Icons.notifications),
             title: Text("Notifications"),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationSettings()));
+              // Navigate to NotificationPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()),
+              );
             },
           ),
           ListTile(
@@ -50,7 +54,11 @@ class SettingsPage extends StatelessWidget {
             leading: Icon(Icons.logout, color: Colors.red),
             title: Text("Logout", style: TextStyle(color: Colors.red)),
             onTap: () {
-              // Implement logout logic here
+              // Navigate to LoginPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
             },
           ),
         ],

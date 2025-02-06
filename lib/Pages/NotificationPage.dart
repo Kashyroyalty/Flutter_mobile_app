@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Pages/SettingPage.dart';
 
 // Notification Item Model
 class NotificationItem {
@@ -78,7 +79,10 @@ class _NotificationsPageState extends State<NotificationsPage> with SingleTicker
             icon: Icon(Icons.settings),
             color: Colors.red,
             onPressed: () {
-              // Handle settings tap
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );// Handle settings tap
             },
           ),
         ],

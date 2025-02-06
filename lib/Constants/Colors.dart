@@ -15,3 +15,164 @@ const kButtonColor = Colors.blue;
 const kOnBoardingColor_1 = Color(0xff333846);
 const kOnBoardingColor_2 = Color(0xff2E3850);
 const kOnBoardingColor_3 = Color(0xff333846);
+
+
+
+
+class AppTheme {
+  static ThemeData lightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      primaryColor: kTopBar,
+      scaffoldBackgroundColor: kBackgroundColor,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: kTopBar,
+        iconTheme: IconThemeData(color: kButtonText),
+        titleTextStyle: TextStyle(
+          color: kButtonText,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(
+          color: kTextColorLightTheme,
+          fontSize: 16,
+        ),
+        bodyMedium: TextStyle(
+          color: kTextColorLightTheme,
+          fontSize: 14,
+        ),
+        titleLarge: TextStyle(
+          color: kHeadingColor,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      buttonTheme: const ButtonThemeData(
+        buttonColor: kButtonColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: kButtonColor,
+          foregroundColor: kButtonText,
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+      ),
+      colorScheme: ColorScheme.light(
+        primary: kButtonColor,
+        error: kErrorColor,
+        onError: kWarningColor,
+        background: kBackgroundColor,
+        onBackground: kTextColorLightTheme,
+      ),
+    );
+  }
+
+  static ThemeData darkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: kBarColor,
+      scaffoldBackgroundColor: kOnBoardingColor_2,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: kBarColor,
+        iconTheme: IconThemeData(color: kButtonText),
+        titleTextStyle: TextStyle(
+          color: kButtonText,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textTheme: const TextTheme(
+        bodyLarge: TextStyle(
+          color: kTextColorDarkTheme,
+          fontSize: 16,
+        ),
+        bodyMedium: TextStyle(
+          color: kTextColorDarkTheme,
+          fontSize: 14,
+        ),
+        titleLarge: TextStyle(
+          color: kTextColorDarkTheme,
+          fontSize: 22,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      buttonTheme: const ButtonThemeData(
+        buttonColor: kButtonColor,
+        textTheme: ButtonTextTheme.primary,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: kButtonColor,
+          foregroundColor: kButtonText,
+          textStyle: const TextStyle(fontSize: 16),
+        ),
+      ),
+      colorScheme: ColorScheme.dark(
+        primary: kButtonColor,
+        error: kErrorColor,
+        onError: kWarningColor,
+        background: kOnBoardingColor_2,
+        onBackground: kTextColorDarkTheme,
+      ),
+    );
+  }
+
+  // Helper method to get current theme mode
+  static bool isDarkMode(BuildContext context) {
+    return MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+  }
+}
+
+// Main app widget
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Your App Name',
+      theme: AppTheme.lightTheme(),
+      darkTheme: AppTheme.darkTheme(),
+      themeMode: ThemeMode.system, // This makes the app follow system theme
+      home: const MyHomePage(),
+    );
+  }
+}
+
+// Example page showing how to use the theme
+class MyHomePage extends StatelessWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // You can check the current theme mode like this
+    final isDark = AppTheme.isDarkMode(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My App'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Current Theme: ${isDark ? "Dark" : "Light"}',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Your button action
+              },
+              child: const Text('Test Button'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
