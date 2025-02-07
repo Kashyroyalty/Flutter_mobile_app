@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+
 import 'package:image_picker/image_picker.dart';
 
 class MyApp extends StatelessWidget {
@@ -40,7 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final _nationController = TextEditingController(text: 'Colombia');
 
   Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
+    ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
