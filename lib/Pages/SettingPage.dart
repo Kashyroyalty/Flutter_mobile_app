@@ -49,18 +49,6 @@ class SettingsPage extends StatelessWidget {
               Navigator.push(context, MaterialPageRoute(builder: (context) => LanguageSettings()));
             },
           ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.logout, color: Colors.red),
-            title: Text("Logout", style: TextStyle(color: Colors.red)),
-            onTap: () {
-              // Navigate to LoginPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-          ),
         ],
       ),
     );

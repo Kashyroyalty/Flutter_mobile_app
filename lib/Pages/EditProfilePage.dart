@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Constants/Colors.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({Key? key}) : super(key: key);
@@ -78,7 +79,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Profile'),
-        elevation: 0,
+        backgroundColor: kButtonColor,
+        elevation: 4,
       ),
       body: SingleChildScrollView(
         child: Padding(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
+import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'dart:ui';
 import '../Models/CardContract.dart';
 import '../widgets/CardDesign.dart';
-import 'LogoutPage.dart';
 import 'ProfilePage.dart';
 import 'SettingPage.dart';
 
@@ -91,13 +91,14 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+
             ListTile(
-              leading: Icon(Icons.logout),
+              leading: Icon(Icons.logout, color: Colors.red),
               title: Text("Logout"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LogoutPage()),
+                  MaterialPageRoute(builder: (context) => LoginPage()),
                 );
               },
             ),
@@ -293,16 +294,7 @@ class NavigationDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            title: Text('Logout'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LogoutPage()),
-              );
-              // Handle logout functionality
-            },
-          ),
+
         ],
       ),
     );

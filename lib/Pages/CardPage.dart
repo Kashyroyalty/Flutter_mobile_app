@@ -98,11 +98,6 @@ class _CardPageState extends State<CardPage> {
             SizedBox(height: 10),
             _buildCardDetails(_cards[_selectedCardIndex]),
             SizedBox(height: 30),
-            Text(
-              'Recent Transactions',
-              style:
-              TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
             SizedBox(height: 10),
           ],
         ),
@@ -119,7 +114,7 @@ class _CardPageState extends State<CardPage> {
           style: TextStyle(fontSize: 18),
         ),
         Text(
-          'Available Balance: \${_isHidden ? "••••" : card.availableBalance}',
+          'Available Balance : ${_isHidden ? "••••••••" : card.availableBalance}',
           style: TextStyle(fontSize: 18),
         ),
         Text(
