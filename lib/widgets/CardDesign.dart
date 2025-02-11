@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Models/CardContract.dart';
 
 class CardDesign extends StatefulWidget {
-  final Map<String, dynamic> card;
+  final CardContract card;
 
   const CardDesign({Key? key, required this.card}) : super(key: key);
 
@@ -63,7 +64,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
     return Container(
       key: ValueKey('front'),
       margin: EdgeInsets.only(right: 16),
-      width: 300,
+      width: 330,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -78,12 +79,12 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.card['bank'] ?? 'Unknown Bank',
+            widget.card.cardContractName ?? 'Unknown Bank',
             style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 20),
           Text(
-            widget.card['number'] ?? '**** **** **** ****',
+            widget.card.cardContractNumber ?? '**** **** **** ****',
             style: TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 4),
           ),
           SizedBox(height: 10),
@@ -98,7 +99,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
                     style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                   Text(
-                    widget.card['holder'] ?? 'Unknown',
+                    widget.card.embossedData.firstName ?? 'Unknown',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ],
@@ -111,7 +112,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
                     style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                   Text(
-                    widget.card['expiry'] ?? 'MM/YY',
+                    widget.card.cardExpiryDate ?? 'MM/YY',
                     style: TextStyle(color: Colors.white, fontSize: 16),
                   ),
                 ],
@@ -146,7 +147,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
             ),
             SizedBox(height: 10),
             Text(
-              'CVV: ${widget.card['cvv'] ?? '***'}',
+              'CVV: ${widget.card.amendmentOfficerName ?? '***'}',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             SizedBox(height: 10),
@@ -156,13 +157,13 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
               padding: EdgeInsets.symmetric(horizontal: 10),
               alignment: Alignment.centerRight,
               child: Text(
-                widget.card['signature'] ?? 'Signature',
+                widget.card.cbsNumber ?? 'Signature',
                 style: TextStyle(color: Colors.black, fontSize: 16, fontStyle: FontStyle.italic),
               ),
             ),
             SizedBox(height: 10),
             Text(
-              widget.card['instructions'] ?? 'Authorized use only',
+              widget.card.amendmentDate ?? 'Authorized use only',
               style: TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ],

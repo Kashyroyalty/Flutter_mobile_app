@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Models/ApiService.dart';
 import 'dart:ui';
+import '../Models/CardContract.dart';
 import '../widgets/CardDesign.dart';
 import 'LogoutPage.dart';
 import 'ProfilePage.dart';
@@ -13,27 +15,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool _obscureBalance = false;
   String? _selectedAccount;
+  List<dynamic> _cards = [];
+  late ApiService apiService;
 
-  final List<Map<String, String>> cards = [
-    {
-      'bank': 'Your Bank',
-      'number': '**** **** **** 1234',
-      'holder': 'John Doe',
-      'expiry': '12/26'
-    },
-    {
-      'bank': 'Your Bank',
-      'number': '**** **** **** 5678',
-      'holder': 'Jane Doe',
-      'expiry': '05/28'
-    },
-    {
-      'bank': 'Your Bank',
-      'number': '**** **** **** 9101',
-      'holder': 'Alice Smith',
-      'expiry': '08/27'
-    },
-  ];
+
+  Future<void> fetchCards() async {
+    try {
+      CardContract contract = await apiService.fetchCardContract("2507355660");
+      print(contract.cardContractNumber);
+
+      setState(() {
+        _cards.add(contract);
+      });
+
+      print(_cards.length);
+    } catch (e) {
+      print("Error fetching card contract: $e");
+    }
+  }
 
   final List<Map<String, dynamic>> accounts = [
     {'name': 'Savings Account', 'balance': 10000.00},
@@ -47,6 +46,13 @@ class _HomePageState extends State<HomePage> {
     {'date': '2025-01-21', 'description': 'Salary Credit', 'amount': '+\$2,000.00'},
     {'date': '2025-01-20', 'description': 'Online Purchase', 'amount': '-\$30.00'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    apiService = ApiService();
+    fetchCards();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +113,7 @@ class _HomePageState extends State<HomePage> {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: cards.map((card) => CardDesign(card: card)).toList(),
+                  children: _cards.map((card) => CardDesign(card: card)).toList(),
                 ),
               ),
               SizedBox(height: 20),
