@@ -136,7 +136,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person), // Alternative: Icons.account_box, Icons.supervised_user_circle,
+            icon: Icon(Icons.account_balance), // Alternative: Icons.account_box, Icons.supervised_user_circle,
             label: 'Account',
           ),
           BottomNavigationBarItem(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Pages/ProfilePage.dart';
 
 import 'NotificationPage.dart';
 
@@ -30,7 +31,13 @@ class AccountPage extends StatelessWidget {
                   radius: 14,
                   child: Icon(Icons.person, size: 18), // Replacing image with a person icon
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  // Navigate to ProfilePage
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
               ),
               SizedBox(width: 16),
             ],
