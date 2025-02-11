@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
-import '../../widgets/carddesign.dart'; // Ensure this import is correct
+import 'package:online_banking_system/Models/ApiService.dart';
+import 'package:online_banking_system/Models/CardContract.dart';
+import '../../widgets/carddesign.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CardPage extends StatefulWidget {
   @override
@@ -9,49 +12,30 @@ class CardPage extends StatefulWidget {
 
 class _CardPageState extends State<CardPage> {
   int _selectedCardIndex = 0;
+  List<dynamic> _cards = [];
+  bool _isLoading = true;
+  bool _hasError = false;
+  bool _isHidden = true;
+  late ApiService apiService;
 
-  final List<Map<String, dynamic>> _cards = [
-    {
-  'bank': 'Flutter Bank',
-  'number': '1234 **** **** 3456',
-  'holder': 'John Doe',
-  'expiry': '12/26',
-  'cvv': '123',
-  'signature': 'John Doe',
-  'instructions': 'Authorized use only',
-      'transactions': [
-        {'date': '2025-01-23', 'description': 'Grocery Store', 'amount': '-\$50.00'},
-        {'date': '2025-01-22', 'description': 'Electricity Bill', 'amount': '-\$120.00'},
-        {'date': '2025-01-21', 'description': 'Salary Credit', 'amount': '+\$2,000.00'},
-      ],
-    },
-    {
-    'bank': 'Flutter Bank',
-    'number': '1234 **** **** 3456',
-    'holder': 'John Doe',
-    'expiry': '12/26',
-    'cvv': '123',
-    'signature': 'John Doe',
-    'instructions': 'Authorized use only',
-      'transactions': [
-        {'date': '2025-01-20', 'description': 'Online Purchase', 'amount': '-\$30.00'},
-        {'date': '2025-01-18', 'description': 'Gym Membership', 'amount': '-\$40.00'},
-      ],
-    },
-    {
-    'bank': 'Flutter Bank',
-    'number': '1234 **** **** 3456',
-    'holder': 'John Doe',
-    'expiry': '12/26',
-    'cvv': '123',
-    'signature': 'John Doe',
-    'instructions': 'Authorized use only',
-      'transactions': [
-        {'date': '2025-01-20', 'description': 'Online Purchase', 'amount': '-\$30.00'},
-        {'date': '2025-01-18', 'description': 'Gym Membership', 'amount': '-\$40.00'},
-      ],
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    apiService = ApiService();
+    fetchCards();
+  }
+
+  Future<void> fetchCards() async {
+    try {
+      CardContract contract = await apiService.fetchCardContract("2507355660");
+      setState(() {
+        _cards.add(contract);
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching card contract: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,71 +51,90 @@ class _CardPageState extends State<CardPage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(20.0),
-        child: Column(
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : _hasError
+            ? Center(child: Text("Failed to load data. Try again."))
+            : _cards.isEmpty
+            ? Center(child: Text("No cards available"))
+            : Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            if (_cards.isNotEmpty) // Ensure _cards is not empty before building UI
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: List.generate(_cards.length, (index) {
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedCardIndex = index;
-                        });
-                      },
-                      child: CardDesign(card: _cards[index]), // Call CardDesign widget
-                    );
-                  }),
-                ),
-              )
-            else
-              Center(
-                child: Text(
-                  "No cards available",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: List.generate(_cards.length, (index) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedCardIndex = index;
+                      });
+                    },
+                    child: CardDesign(card: _cards[index]),
+                  );
+                }),
               ),
+            ),
+            SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Card Details',
+                  style: TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: Icon(
+                      _isHidden ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () {
+                    setState(() {
+                      _isHidden = !_isHidden;
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(height: 10),
+            _buildCardDetails(_cards[_selectedCardIndex]),
             SizedBox(height: 30),
             Text(
               'Recent Transactions',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style:
+              TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10),
-            Expanded(
-              child: _cards.isNotEmpty
-                  ? ListView.builder(
-                itemCount: _cards[_selectedCardIndex]['transactions'].length,
-                itemBuilder: (context, index) {
-                  final transaction = _cards[_selectedCardIndex]['transactions'][index];
-                  return ListTile(
-                    leading: Icon(
-                      transaction['amount'].startsWith('-') ? Icons.arrow_downward : Icons.arrow_upward,
-                      color: transaction['amount'].startsWith('-') ? Colors.red : Colors.green,
-                    ),
-                    title: Text(transaction['description']),
-                    subtitle: Text(transaction['date']),
-                    trailing: Text(
-                      transaction['amount'],
-                      style: TextStyle(
-                        color: transaction['amount'].startsWith('-') ? Colors.red : Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  );
-                },
-              )
-                  : Center(
-                child: Text(
-                  "No transactions available",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildCardDetails(CardContract card) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Account Number: ${_isHidden ? "••••••••" : card.cbsNumber}',
+          style: TextStyle(fontSize: 18),
+        ),
+        Text(
+          'Available Balance: \${_isHidden ? "••••" : card.availableBalance}',
+          style: TextStyle(fontSize: 18),
+        ),
+        Text(
+          'Card Status: ${_isHidden ? "••••" : card.cardContractStatusData.externalStatusName}',
+          style: TextStyle(fontSize: 18),
+        ),
+        Text(
+          'Card Expiry Date: ${_isHidden ? "••/••" : card.cardExpiryDate}',
+          style: TextStyle(fontSize: 18),
+        ),
+        Text(
+          'Product Name: ${_isHidden ? "••••" : card.productName}',
+          style: TextStyle(fontSize: 18),
+        ),
+      ],
     );
   }
 }
