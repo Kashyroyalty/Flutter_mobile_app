@@ -3,7 +3,6 @@ import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
 import '../../widgets/carddesign.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CardPage extends StatefulWidget {
   @override
