@@ -3,7 +3,6 @@ import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
 import '../../widgets/carddesign.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class CardPage extends StatefulWidget {
   @override
@@ -98,11 +97,6 @@ class _CardPageState extends State<CardPage> {
             SizedBox(height: 10),
             _buildCardDetails(_cards[_selectedCardIndex]),
             SizedBox(height: 30),
-            Text(
-              'Recent Transactions',
-              style:
-              TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
             SizedBox(height: 10),
           ],
         ),
@@ -119,7 +113,7 @@ class _CardPageState extends State<CardPage> {
           style: TextStyle(fontSize: 18),
         ),
         Text(
-          'Available Balance: \${_isHidden ? "••••" : card.availableBalance}',
+          'Available Balance : ${_isHidden ? "••••••••" : card.availableBalance}',
           style: TextStyle(fontSize: 18),
         ),
         Text(

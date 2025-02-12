@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart';
 
 
 class MyApp extends StatelessWidget {
@@ -128,13 +127,32 @@ class _ProfilePageState extends State<ProfilePage> {
       body: SingleChildScrollView(
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'My profile › Edit Profile',
-                  style: TextStyle(color: Colors.grey),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  color: Colors.blueAccent,
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.black),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'My Profile',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 20),
                 if (_showSuccess)
@@ -155,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Stack(
                     children: [
                       CircleAvatar(
-                        radius: 75,
+                        radius: 60,
                         backgroundColor: Colors.white,
                         backgroundImage: _image != null
                             ? FileImage(_image!)
@@ -233,9 +251,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: ElevatedButton(
                           onPressed: _toggleEdit,
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            padding: const EdgeInsets.symmetric(vertical: 25),
+
                           ),
                           child: const Text('Edit Profile'),
+
                         ),
                       ),
                     if (_isEditing) ...[

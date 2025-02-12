@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../pages/HomePage.dart';
 import '../pages/ProfilePage.dart';
 import '../pages/SettingPage.dart';
-import '../pages/LogoutPage.dart';
+
 
 class AppDrawer extends StatelessWidget { // Renamed class
   @override
@@ -52,17 +52,7 @@ class AppDrawer extends StatelessWidget { // Renamed class
               );
             },
           ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.logout),
-            title: Text('Logout'),
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => LogoutPage()),
-              );
-            },
-          ),
+
         ],
       ),
     );

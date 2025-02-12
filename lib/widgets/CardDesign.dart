@@ -64,7 +64,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
     return Container(
       key: ValueKey('front'),
       margin: EdgeInsets.only(right: 16),
-      width: 330,
+      width: 350,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
