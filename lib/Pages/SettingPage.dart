@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
+import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
 import 'package:online_banking_system/Pages/PasswardChangePage.dart';
 import 'package:online_banking_system/Pages/LanguagePage.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
@@ -36,10 +38,28 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
+
+          ListTile(
+            leading: Icon(Icons.credit_card),
+            title: Text(" change card contract status"),
+            onTap: () {
+              // Navigate to CardContractStatusPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CardContractStatusPage()),
+              );
+            },
+          ),
           ListTile(
             leading: Icon(Icons.lock_clock),
             title: Text(" Online Pin Attempts Counter"),
-
+            onTap: () {
+              // Navigate to PINAttemptsCounterPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Pinattemptscounter()),
+              );
+            },
           ),
           ListTile(
             leading: Icon(Icons.person),
@@ -58,7 +78,7 @@ class SettingsPage extends StatelessWidget {
               // Navigate to LanguagePage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LanguageSelectorScreen()),
+                MaterialPageRoute(builder: (context) => LanguagePage()),
               );
             },
           ),

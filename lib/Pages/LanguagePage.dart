@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class LanguageSelectorScreen extends StatefulWidget {
-  const LanguageSelectorScreen({Key? key}) : super(key: key);
+class LanguagePage extends StatefulWidget {
+  const LanguagePage({Key? key}) : super(key: key);
 
   @override
-  State<LanguageSelectorScreen> createState() => _LanguageSelectorScreenState();
+  State<LanguagePage> createState() => _LanguageSelectorScreenState();
 }
 
-class _LanguageSelectorScreenState extends State<LanguageSelectorScreen> {
+class _LanguageSelectorScreenState extends State<LanguagePage> {
   String selectedLanguage = 'en';
 
   // Language data structure
