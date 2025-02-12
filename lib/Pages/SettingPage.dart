@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 import 'package:online_banking_system/Pages/PasswardChangePage.dart';
+import 'package:online_banking_system/Pages/LanguagePage.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -36,17 +37,29 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.account_balance),
-            title: Text("Linked Accounts"),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LinkedAccounts()));
-            },
+            leading: Icon(Icons.lock_clock),
+            title: Text(" Online Pin Attempts Counter"),
+
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text(" Client Identifier"),
+
+          ),
+          ListTile(
+            leading: Icon(Icons.edit),
+            title: Text(" Change Client Identifier "),
+
           ),
           ListTile(
             leading: Icon(Icons.language),
             title: Text("Language"),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LanguageSettings()));
+              // Navigate to LanguagePage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LanguageSelectorScreen()),
+              );
             },
           ),
         ],
@@ -77,10 +90,24 @@ class NotificationSettings extends StatelessWidget {
   }
 }
 
-class LinkedAccounts extends StatelessWidget {
+class OnlinePinAttemptsCounter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("Linked Accounts")), body: Center(child: Text("Linked Accounts Page")));
+    return Scaffold(appBar: AppBar(title: Text("Online Pin Attempts Counter")), body: Center(child: Text("Online Pin Attempts Counter Page")));
+  }
+}
+
+class ClientIdentifier extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(title: Text("Client Identifier")), body: Center(child: Text("Client Identifier Page")));
+  }
+}
+
+class ChangeclientIdentifier extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(title: Text("Change Client Identifier")), body: Center(child: Text("Change Client Identifier Page")));
   }
 }
 

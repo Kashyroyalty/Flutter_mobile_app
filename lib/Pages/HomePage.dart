@@ -18,7 +18,6 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> _cards = [];
   late ApiService apiService;
 
-
   Future<void> fetchCards() async {
     try {
       CardContract contract = await apiService.fetchCardContract("2507355660");
@@ -46,6 +45,19 @@ class _HomePageState extends State<HomePage> {
     {'date': '2025-01-21', 'description': 'Salary Credit', 'amount': '+\$2,000.00'},
     {'date': '2025-01-20', 'description': 'Online Purchase', 'amount': '-\$30.00'},
   ];
+
+  // Helper method to display obscured amount
+  Widget _buildObscuredAmount(String amount, {TextStyle? style}) {
+    return _obscureBalance
+        ? Text(
+      '•' * amount.length,
+      style: style ?? TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    )
+        : Text(
+      amount,
+      style: style ?? TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    );
+  }
 
   @override
   void initState() {
@@ -91,7 +103,6 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-
             ListTile(
               leading: Icon(Icons.logout, color: Colors.red),
               title: Text("Logout"),
@@ -148,17 +159,9 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Available on card'), _obscureBalance
-                        ? BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                      child: Text(
-                        '\$${accounts.firstWhere((account) => account['name'] == _selectedAccount)['balance']}',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    )
-                        : Text(
-                      '\$${accounts.firstWhere((account) => account['name'] == _selectedAccount)['balance']}',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    Text('Available on card'),
+                    _buildObscuredAmount(
+                        '\$${accounts.firstWhere((account) => account['name'] == _selectedAccount)['balance']}'
                     ),
                     IconButton(
                       icon: Icon(_obscureBalance ? Icons.visibility : Icons.visibility_off),
@@ -175,12 +178,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Transfer Limit'),
-                    _obscureBalance
-                        ? BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                      child: Text('\$12,000'),
-                    )
-                        : Text('\$12,000'),
+                    _buildObscuredAmount('\$12,000'),
                   ],
                 ),
               ],
@@ -190,8 +188,7 @@ class _HomePageState extends State<HomePage> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
-              _obscureBalance
-                  ? ListView.builder(
+              ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: transactions.length,
@@ -208,39 +205,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     title: Text(transaction['description']!),
                     subtitle: Text(transaction['date']!),
-                    trailing: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                      child: Text(
-                        transaction['amount']!,
-                        style: TextStyle(
-                          color: transaction['amount']!.startsWith('-')
-                              ? Colors.red
-                              : Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              )
-                  : ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: transactions.length,
-                itemBuilder: (context, index) {
-                  final transaction = transactions[index];
-                  return ListTile(
-                    leading: Icon(
-                      transaction['amount']!.startsWith('-')
-                          ? Icons.arrow_downward
-                          : Icons.arrow_upward,
-                      color: transaction['amount']!.startsWith('-')
-                          ? Colors.red
-                          : Colors.green,
-                    ),
-                    title: Text(transaction['description']!),
-                    subtitle: Text(transaction['date']!),
-                    trailing: Text(
+                    trailing: _buildObscuredAmount(
                       transaction['amount']!,
                       style: TextStyle(
                         color: transaction['amount']!.startsWith('-')
@@ -293,8 +258,6 @@ class NavigationDrawer extends StatelessWidget {
               );
             },
           ),
-
-
         ],
       ),
     );
