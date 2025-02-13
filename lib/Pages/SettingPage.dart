@@ -39,41 +39,6 @@ class SettingsPage extends StatelessWidget {
               );
             },
           ),
-
-          ListTile(
-            leading: Icon(Icons.credit_card),
-            title: Text(" change card contract status"),
-            onTap: () {
-              // Navigate to CardContractStatusPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CardContractStatusPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.lock_clock),
-            title: Text(" Online Pin Attempts Counter"),
-            onTap: () {
-              // Navigate to PINAttemptsCounterPage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PinVerificationPage()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text(" Client Identifier"),
-            onTap: () {
-              // Navigate to clientidentifierpage
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => clientidentifierpage()),
-              );
-            },
-
-          ),
           ListTile(
             leading: Icon(Icons.language),
             title: Text("Language"),
