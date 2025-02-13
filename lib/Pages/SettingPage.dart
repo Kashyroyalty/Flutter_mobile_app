@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
+import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
@@ -57,18 +58,20 @@ class SettingsPage extends StatelessWidget {
               // Navigate to PINAttemptsCounterPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => Pinattemptscounter()),
+                MaterialPageRoute(builder: (context) => PinVerificationPage()),
               );
             },
           ),
           ListTile(
             leading: Icon(Icons.person),
             title: Text(" Client Identifier"),
-
-          ),
-          ListTile(
-            leading: Icon(Icons.edit),
-            title: Text(" Change Client Identifier "),
+            onTap: () {
+              // Navigate to clientidentifierpage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => clientidentifierpage()),
+              );
+            },
 
           ),
           ListTile(

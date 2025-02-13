@@ -63,7 +63,7 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Update Contract Status'),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.grey[100],
         elevation: 0,
       ),
       body: SingleChildScrollView(
