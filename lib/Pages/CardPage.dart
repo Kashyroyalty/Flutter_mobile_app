@@ -2,7 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
+import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
+import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
+import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
+import 'package:online_banking_system/pages/SettingPage.dart';
 import '../../widgets/carddesign.dart';
+
+// Enum for menu items
+enum CardMenuOptions {
+  changeStatus,
+  pinAttempts,
+  clientIdentifier
+}
 
 class CardPage extends StatefulWidget {
   @override
@@ -36,6 +47,89 @@ class _CardPageState extends State<CardPage> {
     }
   }
 
+  void _handleMenuOption(CardMenuOptions option, CardContract card) {
+    switch (option) {
+      case CardMenuOptions.changeStatus:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CardContractStatusPage()
+          ),
+        );
+        break;
+      case CardMenuOptions.pinAttempts:
+
+        break;
+      case CardMenuOptions.clientIdentifier:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => clientidentifierpage()
+          ),
+        );
+        break;
+    }
+  }
+
+  Widget _buildCardWithMenu(CardContract card, int index) {
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _selectedCardIndex = index;
+            });
+          },
+          child: CardDesign(card: card),
+        ),
+        Positioned(
+          top: 10,
+          right: 10,
+          child: PopupMenuButton<CardMenuOptions>(
+            icon: Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (CardMenuOptions option) => _handleMenuOption(option, card),
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem(
+                value: CardMenuOptions.changeStatus,
+                child: Row(
+                  children: [
+                    Icon(Icons.swap_horiz, color: Colors.black),
+                    SizedBox(width: 8),
+                    Text('Change Card Contract Status'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: CardMenuOptions.pinAttempts,
+                child: Row(
+                  children: [
+                    Icon(Icons.pin, color: Colors.black),
+                    SizedBox(width: 8),
+                    Text('Reset PIN Attempts'),
+
+                  ],
+                ),
+                onTap: (){
+                  apiService.updateCardPinAttempts("2507355660");
+                },
+              ),
+              PopupMenuItem(
+                value: CardMenuOptions.clientIdentifier,
+                child: Row(
+                  children: [
+                    Icon(Icons.person, color: Colors.black),
+                    SizedBox(width: 8),
+                    Text('Client Identifier'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,14 +157,7 @@ class _CardPageState extends State<CardPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: List.generate(_cards.length, (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedCardIndex = index;
-                      });
-                    },
-                    child: CardDesign(card: _cards[index]),
-                  );
+                  return _buildCardWithMenu(_cards[index], index);
                 }),
               ),
             ),

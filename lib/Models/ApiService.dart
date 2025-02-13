@@ -16,4 +16,15 @@ class ApiService {
       throw Exception('Failed to load card contract');
     }
   }
+
+  Future<http.Response> updateCardPinAttempts(String contractId) async{
+    Map<String,String> requestData = {
+      "cleared": "true"
+    };
+    final response = await http.put(Uri.parse("$kBaseUrl/cards/$contractId/online-pin-attempts-counter"),
+    headers: {"content-type": "application/json"},
+      body: jsonEncode(requestData));
+    print(response.body);
+    return response;
+  }
 }
