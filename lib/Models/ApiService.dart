@@ -16,4 +16,16 @@ class ApiService {
       throw Exception('Failed to load card contract');
     }
   }
+  Future<http.Response> updateCardStatus(String contractId,String statusCode, String reason) async{
+    Map<String,String> requestData ={
+      "reason": reason,
+      "statusCode":statusCode
+    };
+    print(requestData);
+    final response = await http.put(Uri.parse("$kBaseUrl/cards/$contractId/status"),
+        headers: {"Content-Type" : "application/json"},
+        body: jsonEncode(requestData));
+    print(response.body);
+    return response;
+  }
 }

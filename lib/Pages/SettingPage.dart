@@ -81,7 +81,7 @@ class SettingsPage extends StatelessWidget {
               // Navigate to LanguagePage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LanguagePage()),
+                MaterialPageRoute(builder: (context) => LanguagePage(onLanguageChange: (Locale locale) {  },)),
               );
             },
           ),

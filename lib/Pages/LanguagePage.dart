@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../Localization/AppLocalizations.dart';
+import '../Screens/WelcomePage.dart';
+
 
 class LanguagePage extends StatefulWidget {
-  const LanguagePage({Key? key}) : super(key: key);
+  final Function(Locale) onLanguageChange;
+
+  const LanguagePage({Key? key, required this.onLanguageChange}) : super(key: key);
 
   @override
   State<LanguagePage> createState() => _LanguageSelectorScreenState();
@@ -10,32 +15,22 @@ class LanguagePage extends StatefulWidget {
 class _LanguageSelectorScreenState extends State<LanguagePage> {
   String selectedLanguage = 'en';
 
-  // Language data structure
   final List<Map<String, String>> languages = [
-    {
-      'code': 'en',
-      'name': 'English',
-      'nativeName': 'English',
-    },
-    {
-      'code': 'sw',
-      'name': 'Kiswahili',
-      'nativeName': 'Kiswahili',
-    },
-    {
-      'code': 'fr',
-      'name': 'French',
-      'nativeName': 'Français',
-    },
+    {'code': 'en', 'name': 'English', 'nativeName': 'English'},
+    {'code': 'sw', 'name': 'Kiswahili', 'nativeName': 'Kiswahili'},
+    {'code': 'fr', 'name': 'French', 'nativeName': 'Français'},
+    {'code': 'es', 'name': 'Spanish', 'nativeName': 'Español'},
   ];
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
-    appBar: AppBar(
-    title: Text("Choose your Language"),
-    backgroundColor: Colors.blueAccent,
-    ),
+      appBar: AppBar(
+        title: Text(localizations?.translate("Choose your language") ?? "Choose your language"),
+        backgroundColor: Colors.blueAccent,
+      ),
       backgroundColor: Colors.grey[100],
       body: SafeArea(
         child: Padding(
@@ -43,6 +38,7 @@ class _LanguageSelectorScreenState extends State<LanguagePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Language Selection Card
               Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -63,18 +59,11 @@ class _LanguageSelectorScreenState extends State<LanguagePage> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.language,
-                            color: Colors.blue[500],
-                            size: 24,
-                          ),
+                          Icon(Icons.language, color: Colors.blue[500], size: 24),
                           const SizedBox(width: 8),
-                          const Text(
-                            'Select Language',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          Text(
+                            localizations?.translate("Select Language") ?? "Select Language",
+                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -90,6 +79,7 @@ class _LanguageSelectorScreenState extends State<LanguagePage> {
                               setState(() {
                                 selectedLanguage = language['code']!;
                               });
+                              widget.onLanguageChange(Locale(language['code']!));
                             },
                             child: Container(
                               padding: const EdgeInsets.all(16),
@@ -104,7 +94,7 @@ class _LanguageSelectorScreenState extends State<LanguagePage> {
                                   Row(
                                     children: [
                                       Text(
-                                        language['name']!,
+                                        language['name'] ?? 'Unknown',
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
@@ -115,11 +105,8 @@ class _LanguageSelectorScreenState extends State<LanguagePage> {
                                         Padding(
                                           padding: const EdgeInsets.only(left: 8),
                                           child: Text(
-                                            '(${language['nativeName']})',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey[600],
-                                            ),
+                                            '(${language['nativeName'] ?? 'Unknown'})',
+                                            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                                           ),
                                         ),
                                     ],
@@ -141,6 +128,33 @@ class _LanguageSelectorScreenState extends State<LanguagePage> {
                       ),
                     ),
                   ],
+                ),
+              ),
+              const Spacer(), // Push the button to the bottom
+
+              // Proceed Button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WelcomePage(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: Colors.blueAccent,
+                  ),
+                  child: Text(
+                    localizations?.translate("Proceed") ?? "Proceed",
+                    style: const TextStyle(fontSize: 18, color: Colors.white),
+                  ),
                 ),
               ),
             ],

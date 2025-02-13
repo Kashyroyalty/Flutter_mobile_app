@@ -3,6 +3,7 @@ import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
 import '../../widgets/carddesign.dart';
+import 'dart:ui';
 
 class CardPage extends StatefulWidget {
   @override
@@ -108,26 +109,34 @@ class _CardPageState extends State<CardPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        _buildBlurContainer('Account Number: ${card.cbsNumber}', _isHidden),
+        _buildBlurContainer('Available Balance : ${card.availableBalance}', _isHidden),
+        _buildBlurContainer('Card Status: ${card.cardContractStatusData.externalStatusName}', _isHidden),
+        _buildBlurContainer('Card Expiry Date: ${card.cardExpiryDate}', _isHidden),
+        _buildBlurContainer('Product Name: ${card.productName}', _isHidden),
+      ],
+    );
+  }
+
+  Widget _buildBlurContainer(String text, bool isHidden) {
+    return Stack(
+      children: [
         Text(
-          'Account Number: ${_isHidden ? "••••••••" : card.cbsNumber}',
-          style: TextStyle(fontSize: 18),
+          text,
+          style: TextStyle(fontSize: 18, color: Colors.black),
         ),
-        Text(
-          'Available Balance : ${_isHidden ? "••••••••" : card.availableBalance}',
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          'Card Status: ${_isHidden ? "••••" : card.cardContractStatusData.externalStatusName}',
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          'Card Expiry Date: ${_isHidden ? "••/••" : card.cardExpiryDate}',
-          style: TextStyle(fontSize: 18),
-        ),
-        Text(
-          'Product Name: ${_isHidden ? "••••" : card.productName}',
-          style: TextStyle(fontSize: 18),
-        ),
+        if (isHidden)
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                child: Container(
+                  color: Colors.black.withOpacity(0.1),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

@@ -13,10 +13,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _obscureBalance = false;
+  bool _obscureBalance = true;
   String? _selectedAccount;
   List<dynamic> _cards = [];
   late ApiService apiService;
+
 
   Future<void> fetchCards() async {
     try {

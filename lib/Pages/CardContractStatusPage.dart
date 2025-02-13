@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:online_banking_system/Models/ApiService.dart';
+
+import '../Models/CardContract.dart';
 
 class CardContractStatusPage extends StatefulWidget {
   const CardContractStatusPage({Key? key}) : super(key: key);
@@ -8,45 +11,64 @@ class CardContractStatusPage extends StatefulWidget {
 }
 
 class _CardContractStatusPageState extends State<CardContractStatusPage> {
-  String _selectedStatus = 'Pending';
+  late ApiService apiService;
+  String _selectedStatusCode = '00';
   final _formKey = GlobalKey<FormState>();
-  final _contractNumberController = TextEditingController();
   final _noteController = TextEditingController();
+  List<dynamic> _cards = [];
   bool _isLoading = false;
+  bool _isFetching = true;
+  String? _errorMessage;
+  late CardContract _contractData;
 
-  final List<String> _statusOptions = [
-    'Pending',
-    'Active',
-    'Suspended',
-    'Cancelled',
-    'Expired'
+  final List<Map<String, String>> _statusOptions = [
+    {'code': '00', 'description': 'Card is ready'},
+    {'code': '04', 'description': 'Blocked by bank'},
+    {'code': '05', 'description': 'Temporarily blocked by user'},
+    {'code': '14', 'description': 'Card permanently closed'},
+    {'code': '41', 'description': 'Card reported lost'},
+    {'code': '43', 'description': 'Card reported stolen'},
   ];
 
-  // Simulated contract data
-  final Map<String, dynamic> _contractData = {
-    'contractNumber': 'CNT-2025-001',
-    'customerName': 'John Doe',
-    'currentStatus': 'Pending',
-    'lastUpdated': '2025-02-12',
-  };
+  @override
+  void initState() {
+    super.initState();
+    apiService = ApiService();
+    _fetchContractData();
+  }
+
+  Future<void> _fetchContractData() async {
+    try {
+      CardContract contract = await apiService.fetchCardContract("2507355660");
+      setState(() {
+        _contractData = contract;
+        _isLoading = false;
+        _isFetching =false;
+      });
+    } catch (e) {
+      print("Error fetching card contract: $e");
+    }
+  }
 
   void _updateStatus() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
 
-      // Simulate API call
       await Future.delayed(const Duration(seconds: 2));
 
-      // Update the contract data
+      String newStatus = _statusOptions
+          .firstWhere((status) => status['code'] == _selectedStatusCode)['description']!;
+      String statusCode = _selectedStatusCode;
+      String reason = _noteController.text;
+
       setState(() {
-        _contractData['currentStatus'] = _selectedStatus;
-        _contractData['lastUpdated'] = DateTime.now().toString().split(' ')[0];
+        // if (_contractData != null) {
+        //   _contractData!['currentStatus'] = newStatus;
+        //   _contractData!['lastUpdated'] = DateTime.now().toString().split(' ')[0];
+        // }
         _isLoading = false;
       });
 
-      // Show success message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -66,110 +88,101 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
         backgroundColor: Colors.grey[100],
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Contract Information Card
-                Card(
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Contract Details',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        _buildInfoRow('Contract Number:', _contractData['contractNumber']),
-                        _buildInfoRow('Customer Name:', _contractData['customerName']),
-                        _buildInfoRow('Current Status:', _contractData['currentStatus']),
-                        _buildInfoRow('Last Updated:', _contractData['lastUpdated']),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Status Update Form
-                Card(
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Update Status',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 16),
-                        DropdownButtonFormField<String>(
-                          value: _selectedStatus,
-                          decoration: const InputDecoration(
-                            labelText: 'New Status',
-                            border: OutlineInputBorder(),
-                          ),
-                          items: _statusOptions.map((String status) {
-                            return DropdownMenuItem<String>(
-                              value: status,
-                              child: Text(status),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              _selectedStatus = newValue!;
-                            });
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _noteController,
-                          decoration: const InputDecoration(
-                            labelText: 'Note',
-                            border: OutlineInputBorder(),
-                          ),
-                          maxLines: 3,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter a note';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _updateStatus,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: _isLoading
-                                ? const CircularProgressIndicator(color: Colors.white)
-                                : const Text(
-                              'Update Status',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      body: _isFetching
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+          ? Center(child: Text(_errorMessage!, style: TextStyle(color: Colors.red)))
+          : _contractData == null
+          ? const Center(child: Text("No contract data available"))
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildContractInfoCard(),
+              const SizedBox(height: 24),
+              _buildStatusUpdateForm(),
+            ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContractInfoCard() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Contract Details', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 16),
+            _buildInfoRow('Contract Number:', _contractData?.cardContractNumber ?? 'N/A'),
+            _buildInfoRow('Customer Name:', _contractData?.cardContractName ?? 'N/A'),
+            _buildInfoRow('Current Status:', _contractData.cardContractStatusData.statusName ?? 'N/A'),
+            _buildInfoRow('Last Updated:', _contractData.cardContractStatusData.statusCode ?? 'N/A'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusUpdateForm() {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Update Status', style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: _selectedStatusCode,
+              decoration: const InputDecoration(
+                labelText: 'New Status',
+                border: OutlineInputBorder(),
+              ),
+              items: _statusOptions.map((status) {
+                return DropdownMenuItem<String>(
+                  value: status['code'],
+                  child: Text(status['description']!),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                setState(() => _selectedStatusCode = newValue!);
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _noteController,
+              decoration: const InputDecoration(
+                labelText: 'Note',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+              validator: (value) => value == null || value.isEmpty ? 'Please enter a note' : null,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _updateStatus,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                ),
+                child: _isLoading
+                    ? const CircularProgressIndicator(color: Colors.white)
+                    : const Text('Update Status', style: TextStyle(fontSize: 16)),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -181,19 +194,8 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -201,7 +203,6 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
 
   @override
   void dispose() {
-    _contractNumberController.dispose();
     _noteController.dispose();
     super.dispose();
   }

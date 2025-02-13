@@ -4,39 +4,51 @@ import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/RegistrationPage.dart';
 import 'package:online_banking_system/Screens/SplashScreen.dart';
-import 'package:online_banking_system/Screens/WelcomePage.dart';
 import 'Pages/HomePage.dart';
 import 'Pages/AccountPage.dart';
 import 'Pages/CardPage.dart';
+import 'Pages/LanguagePage.dart';
 import 'Pages/StockPage.dart';
 import 'Screens/privacy_screen.dart';
 import 'Screens/account_summary_screen.dart';
 import 'Screens/create_profile_screen1.dart';
 import 'Screens/verification_screen.dart';
 import 'Screens/password_creation_screen.dart';
-import 'package:flutter/material.dart';
-import 'Constants/Colors.dart';
+
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('en');
+
+  void _changeLanguage(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Simple Flutter App',
+      title: 'Card Management Mobile  App',
       theme: ThemeData(
         primaryColor: Colors.blue,
         scaffoldBackgroundColor: kBackgroundColor,
       ),
-      locale: Locale('en'),
-      supportedLocales: [
-        Locale('en'),
-        Locale('fr'),
-        Locale('sw'),
-        Locale('zh'),
-        Locale('rw'),
+      locale: _locale,
+      supportedLocales: const [
+        Locale('en', ''),
+        Locale('sw', ''),
+        Locale('fr', ''),
+        Locale('es', ''),
       ],
       localizationsDelegates: [
         AppLocalizations.delegate,
@@ -44,9 +56,12 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+
+      home: LanguagePage(onLanguageChange: _changeLanguage),
+
       initialRoute: '/',
       routes: {
-        '/': (context) => SplashScreen(),
+        '/splashscreen': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/register': (context) => RegistrationPage(),
         '/home': (context) => HomePage(),

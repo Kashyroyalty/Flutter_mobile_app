@@ -3,10 +3,15 @@ import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Constants/sizes.dart';
 
 import '../Constants/Strings.dart';
+import '../Localization/AppLocalizations.dart';
 
 class WelcomePage extends StatelessWidget {
+  const WelcomePage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: Padding(
@@ -14,14 +19,13 @@ class WelcomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Top Content (Illustration + Title & Subtitle)
             // Middle Content (Title & Subtitle centered)
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center, // Centers the text vertically
                 children: [
                   Text(
-                    OnBoardingTitle_1,
+                    localizations?.translate("welcome_title") ?? OnBoardingTitle_1,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'CustomFont2',
@@ -33,7 +37,7 @@ class WelcomePage extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Text(
-                    OnBoardingSubtitle_1,
+                    localizations?.translate("welcome_subtitle") ?? OnBoardingSubtitle_1,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: kTextSize,
@@ -60,7 +64,7 @@ class WelcomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  child: Text('Log In'),
+                  child: Text(localizations?.translate("login") ?? "Log In"),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -76,7 +80,7 @@ class WelcomePage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                   ),
-                  child: Text('Register'),
+                  child: Text(localizations?.translate("register") ?? "Register"),
                 ),
               ],
             ),
