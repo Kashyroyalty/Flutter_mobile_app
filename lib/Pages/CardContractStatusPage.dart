@@ -121,8 +121,8 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
           children: [
             Text('Contract Details', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
-            _buildInfoRow('Contract Number:', _contractData?.cardContractNumber ?? 'N/A'),
-            _buildInfoRow('Customer Name:', _contractData?.cardContractName ?? 'N/A'),
+            _buildInfoRow('Contract Number:', _contractData.cardContractNumber ?? 'N/A'),
+            _buildInfoRow('Customer Name:', _contractData.cardContractName ?? 'N/A'),
             _buildInfoRow('Current Status:', _contractData.cardContractStatusData.statusName ?? 'N/A'),
             _buildInfoRow('Last Updated:', _contractData.cardContractStatusData.statusCode ?? 'N/A'),
           ],
