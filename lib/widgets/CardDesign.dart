@@ -6,7 +6,6 @@ import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 
-// Enum for menu items
 enum CardMenuOptions {
   changeStatus,
   pinAttempts,
@@ -27,6 +26,10 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
   late AnimationController _controller;
   late Animation<double> _animation;
   late ApiService apiService;
+
+  // Define constant card dimensions
+  static const double cardWidth = 350.0;
+  static const double cardMargin = 16.0;
 
   @override
   void initState() {
@@ -139,12 +142,12 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
     );
   }
 
-  // Rest of the existing code remains the same
   Widget _buildFrontView() {
     return Container(
       key: ValueKey('front'),
-      margin: EdgeInsets.only(right: 16),
-      width: 350,
+      margin: EdgeInsets.only(right: cardMargin),
+      width: cardWidth,
+      height: cardWidth * 0.63, // Standard card aspect ratio
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -152,6 +155,14 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
           colors: [Colors.blue, kCardColor],
         ),
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            spreadRadius: 2,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       padding: EdgeInsets.all(20),
       child: Column(
@@ -166,7 +177,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
             widget.card.cardContractNumber ?? '**** **** **** ****',
             style: TextStyle(color: Colors.white, fontSize: 24, letterSpacing: 4),
           ),
-          SizedBox(height: 10),
+          Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -209,27 +220,41 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
       transform: Matrix4.rotationY(pi),
       child: Container(
         key: ValueKey('back'),
-        margin: EdgeInsets.only(right: 16),
-        width: 300,
+        margin: EdgeInsets.only(right: cardMargin),
+        width: cardWidth,
+        height: cardWidth * 0.63, // Same aspect ratio as front
         decoration: BoxDecoration(
-          color: Colors.blue,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.blue, kCardColor],
+          ),
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              spreadRadius: 2,
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
         ),
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 20),
             Container(
               height: 40,
-              color: Colors.grey[800],
+              color: Colors.black87,
               width: double.infinity,
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Text(
               'CVV: ${widget.card.amendmentOfficerName ?? '***'}',
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Container(
               height: 40,
               color: Colors.white,
@@ -240,7 +265,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
                 style: TextStyle(color: Colors.black, fontSize: 16, fontStyle: FontStyle.italic),
               ),
             ),
-            SizedBox(height: 10),
+            Spacer(),
             Text(
               widget.card.amendmentDate ?? 'Authorized use only',
               style: TextStyle(color: Colors.white70, fontSize: 12),

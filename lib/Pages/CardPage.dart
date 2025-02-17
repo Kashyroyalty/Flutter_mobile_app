@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
+import 'package:online_banking_system/Pages/Card%20contruct%20form%20page.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
 import 'package:online_banking_system/pages/SettingPage.dart';
 import '../../widgets/carddesign.dart';
-
 import 'dart:ui';
 
 // Enum for menu items
@@ -55,12 +55,11 @@ class _CardPageState extends State<CardPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => CardContractStatusPage()
+              builder: (context) => CardContractStatusPage()
           ),
         );
         break;
       case CardMenuOptions.pinAttempts:
-
         break;
       case CardMenuOptions.clientIdentifier:
         Navigator.push(
@@ -108,7 +107,6 @@ class _CardPageState extends State<CardPage> {
                     Icon(Icons.pin, color: Colors.black),
                     SizedBox(width: 8),
                     Text('Reset PIN Attempts'),
-
                   ],
                 ),
                 onTap: (){
@@ -144,50 +142,77 @@ class _CardPageState extends State<CardPage> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : _hasError
-            ? Center(child: Text("Failed to load data. Try again."))
-            : _cards.isEmpty
-            ? Center(child: Text("No cards available"))
-            : Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(_cards.length, (index) {
-                  return _buildCardWithMenu(_cards[index], index);
-                }),
+      body: SingleChildScrollView( // Added SingleChildScrollView here
+        child: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : _hasError
+              ? Center(child: Text("Failed to load data. Try again."))
+              : _cards.isEmpty
+              ? Center(child: Text("No cards available"))
+              : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: List.generate(_cards.length, (index) {
+                    return _buildCardWithMenu(_cards[index], index);
+                  }),
+                ),
               ),
-            ),
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Card Details',
-                  style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: Icon(
-                      _isHidden ? Icons.visibility_off : Icons.visibility),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Card Details',
+                    style: TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                        _isHidden ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _isHidden = !_isHidden;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              _buildCardDetails(_cards[_selectedCardIndex]),
+              SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
                   onPressed: () {
-                    setState(() {
-                      _isHidden = !_isHidden;
-                    });
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CardContractformPage()),
+                    );
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    "Add new card",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            SizedBox(height: 10),
-            _buildCardDetails(_cards[_selectedCardIndex]),
-            SizedBox(height: 30),
-            SizedBox(height: 10),
-          ],
+              ),
+              SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );
