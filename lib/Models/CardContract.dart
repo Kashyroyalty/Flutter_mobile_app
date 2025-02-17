@@ -55,35 +55,36 @@ class CardContract{
     required this.encryptedCardContractNumber,
   });
 
-  factory CardContract.fromJson(Map<String,dynamic> json){
+  factory CardContract.fromJson(Map<String, dynamic> json) {
     return CardContract(
-      accountContractId: json['accountContractId'],
+      accountContractId: (json['accountContractId'] as num).toInt(),
       accountContractNumber: json['accountContractNumber'],
       amendmentDate: json['amendmentDate'],
-      amendmentOfficerId: json['amendmentOfficerId'],
+      amendmentOfficerId: (json['amendmentOfficerId'] as num).toInt(),
       amendmentOfficerName: json['amendmentOfficerName'],
-      availableBalance: json['availableBalance'].toDouble(),
-      blockedAmount: json['blockedAmount'].toDouble(),
+      availableBalance: (json['availableBalance'] as num).toDouble(),
+      blockedAmount: (json['blockedAmount'] as num).toDouble(),
       cardExpiryDate: json['cardExpiryDate'],
-      cardContractId: json['cardContractId'],
+      cardContractId: (json['cardContractId'] as num).toInt(),
       cardContractName: json['cardContractName'],
       cardContractNumber: json['cardContractNumber'],
       cardContractStatusData: CardContractStatusData.fromJson(json['cardContractStatusData']),
-      cardholderId: json['cardholderId'],
+      cardholderId: (json['cardholderId'] as num).toInt(),
       cbsNumber: json['cbsNumber'],
-      creditLimit: json['creditLimit'],
+      creditLimit: (json['creditLimit'] as num).toInt(),
       currency: json['currency'],
       dateOpen: json['dateOpen'],
       embossedData: EmbossedData.fromJson(json['embossedData']),
-      maxPinAttempts: json['maxPinAttempts'],
+      maxPinAttempts: (json['maxPinAttempts'] as num).toInt(),
       parentProductCode: json['parentProductCode'],
-      pinAttemptsCounter: json['pinAttemptsCounter'],
+      pinAttemptsCounter: (json['pinAttemptsCounter'] as num).toInt(),
       productCode: json['productCode'],
       productName: json['productName'],
       sequenceNumber: json['sequenceNumber'],
       encryptedCardContractNumber: json['encryptedCardContractNumber'],
     );
   }
+
 
 
 

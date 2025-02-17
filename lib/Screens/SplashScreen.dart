@@ -2,24 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
-import 'package:online_banking_system/Screens/WelcomePage.dart';
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Velobank',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        fontFamily: GoogleFonts.poppins().fontFamily,
-      ),
-      home: const SplashScreen(),
-    );
-  }
-}
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,8 +10,7 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<double> _slideAnimation;
@@ -38,6 +19,11 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+
+    // Navigate to LanguagePage after 3 seconds
+    Future.delayed(Duration(seconds: 3), () {
+      Navigator.pushReplacementNamed(context, '/language');
+    });
 
     _controller = AnimationController(
       vsync: this,
@@ -57,12 +43,6 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward();
-
-    Timer(const Duration(seconds: 60), () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => WelcomePage()),
-      );
-    });
   }
 
   @override
@@ -143,9 +123,8 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => WelcomePage()),
-                );
+                // Ensure it navigates to LanguagePage manually if user presses the button early
+                Navigator.pushReplacementNamed(context, '/language');
               },
               child: Text(
                 "Get Started",

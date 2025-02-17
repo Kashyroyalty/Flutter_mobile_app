@@ -15,13 +15,11 @@ import 'Screens/create_profile_screen1.dart';
 import 'Screens/verification_screen.dart';
 import 'Screens/password_creation_screen.dart';
 
-
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
@@ -38,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Card Management Mobile  App',
+      title: 'Card Management Mobile App',
       theme: ThemeData(
         primaryColor: Colors.blue,
         scaffoldBackgroundColor: kBackgroundColor,
@@ -57,10 +55,12 @@ class _MyAppState extends State<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
 
-      home: LanguagePage(onLanguageChange: _changeLanguage),
+      // Start with SplashScreen, then navigate to LanguagePage
+      home: SplashScreen(),
 
       initialRoute: '/',
       routes: {
+        '/language': (context) => LanguagePage(onLanguageChange: _changeLanguage),
         '/splashscreen': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/register': (context) => RegistrationPage(),
@@ -78,6 +78,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
 
 class AppLocalizations {
   final Locale locale;
