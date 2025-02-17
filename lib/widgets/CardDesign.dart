@@ -42,7 +42,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
     _animation = Tween<double>(begin: 0, end: pi).animate(_controller);
   }
 
-  void _handleMenuOption(CardMenuOptions option) {
+  Future<void> _handleMenuOption(CardMenuOptions option) async {
     switch (option) {
       case CardMenuOptions.changeStatus:
         Navigator.push(
@@ -53,7 +53,76 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
         );
         break;
       case CardMenuOptions.pinAttempts:
-        apiService.updateCardPinAttempts(widget.card.cbsNumber ?? "");
+        try {
+          final response = await apiService.updateCardPinAttempts(widget.card.cbsNumber ?? "");
+          print(response.body);
+          if (response.body == "OK" || response.body.toLowerCase() == "ok") {
+            // Show success notification
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.white),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'PIN Attempts Reset',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'You now have 3 PIN attempts available',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 4),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              );
+            }
+          } else {
+            // Show error notification
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to reset PIN attempts. Please try again.'),
+                  backgroundColor: Colors.red,
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            }
+          }
+        } catch (e) {
+          // Show error notification
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('An error occurred while resetting PIN attempts.'),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
         break;
       case CardMenuOptions.clientIdentifier:
         Navigator.push(
