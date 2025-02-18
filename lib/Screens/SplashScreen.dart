@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Pages/LanguagePage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,9 +21,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   void initState() {
     super.initState();
 
-    // Navigate to LanguagePage after 3 seconds
     Future.delayed(Duration(seconds: 3), () {
-      Navigator.pushReplacementNamed(context, '/language');
+      if (mounted) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LanguagePage(onLanguageChange: (Locale ) {  },)));
+      }
     });
 
     _controller = AnimationController(

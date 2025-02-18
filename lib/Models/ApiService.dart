@@ -1,115 +1,89 @@
-/*import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:online_banking_system/Models/CardContract.dart';
-import '../Constants/Strings.dart';
-
-
-class ApiService {
-
-  Future<CardContract> fetchCardContract(String contractId) async{
-    final response = await http.get(Uri.parse("$kBaseUrl/cards/$contractId"));
-
-    if(response.statusCode == 200){
-      // print(response.body);
-      return CardContract.fromJson(jsonDecode(response.body));
-    }else{
-      throw Exception('Failed to load card contract');
-    }
-  }
-  Future<http.Response> updateCardStatus(String contractId,String statusCode, String reason) async{
-    Map<String,String> requestData ={
-      "reason": reason,
-      "statusCode":statusCode
-    };
-    print(requestData);
-    final response = await http.put(Uri.parse("$kBaseUrl/cards/$contractId/status"),
-        headers: {"Content-Type" : "application/json"},
-        body: jsonEncode(requestData));
-    print(response.body);
-    return http.post(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{'title': title}),
-    );
-  }
-
-  Future<http.Response> updateCardPinAttempts(String contractId) async{
-    Map<String,String> requestData = {
-      "cleared": "true"
-    };
-    final response = await http.put(Uri.parse("$kBaseUrl/cards/$contractId/online-pin-attempts-counter"),
-    headers: {"content-type": "application/json"},
-      body: jsonEncode(requestData));
-    print(response.body);
-    return http.post(
-      Uri.parse('https://jsonplaceholder.typicode.com/albums'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{'title': title}),
-    );
-  }
-}*/
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
 import '../Constants/Strings.dart';
 
 class ApiService {
+  // Fetch Card Contract (GET) - Fetches data, only logs errors
   Future<CardContract> fetchCardContract(String contractId) async {
+    final url = Uri.parse("$kBaseUrl/cards/$contractId");
 
-    final response = await http.get(Uri.parse("$kBaseUrl/cards/$contractId"));
+    print("Fetching data: GET $url");
+
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
-     // print(response.body);
       return CardContract.fromJson(jsonDecode(response.body));
     } else {
+      print("\n--- ERROR (GET) ---");
+      print("Status Code: ${response.statusCode}");
+      print("Error Response: ${response.body}");
+      print("---------------------\n");
       throw Exception('Failed to load card contract');
     }
   }
 
+  // Update Card Status (PUT) - Logs request & response clearly
   Future<http.Response> updateCardStatus(String contractId, String statusCode, String reason) async {
-    Map<String, String> requestData = {
-      "reason": reason,
-      "statusCode": statusCode
-    };
+    final url = Uri.parse("$kBaseUrl/cards/$contractId/status");
+    final requestData = {"reason": reason, "statusCode": statusCode};
+
+    print("\n--- Updating Card Status ---");
+    print("Request: PUT $url");
+    print("Request Body: ${jsonEncode(requestData)}");
 
     final response = await http.put(
-      Uri.parse("$kBaseUrl/cards/$contractId/status"),
+      url,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(requestData),
     );
 
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      print("Card status updated successfully: ${response.body}");
-    } else {
-      print("Failed to update card status: ${response.statusCode} - ${response.body}");
-    }
+    print("Response: ${response.statusCode} - ${response.body}");
+    print("-----------------------------\n");
 
-    return response; // Returning the actual response
+    return response;
   }
 
+  // Clear Card PIN Attempts (PUT) - Logs request & response clearly
   Future<http.Response> updateCardPinAttempts(String contractId) async {
-    Map<String, String> requestData = {
-      "cleared": "true"
-    };
+    final url = Uri.parse("$kBaseUrl/cards/$contractId/online-pin-attempts-counter");
+    final requestData = {"cleared": "true"};
+
+    print("\n--- Clearing PIN Attempts ---");
+    print("Request: PUT $url");
+    print("Request Body: ${jsonEncode(requestData)}");
 
     final response = await http.put(
-      Uri.parse("$kBaseUrl/cards/$contractId/online-pin-attempts-counter"),
+      url,
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(requestData),
     );
 
-    if (response.statusCode == 200 || response.statusCode == 204) {
-      print("PIN attempts cleared successfully: ${response.body}");
-    } else {
-      print("Failed to clear PIN attempts: ${response.statusCode} - ${response.body}");
-    }
+    print("Response: ${response.statusCode} - ${response.body}");
+    print("------------------------------\n");
 
-    return response; // Returning the actual response
+    return response;
+  }
+
+  // Create a new Card Contract (POST) - Logs response in structured format
+  Future<http.Response> createCardContract(Map<String, String> contractData) async {
+    final url = Uri.parse("$kBaseUrl/cards/createCardContract");
+
+    print("\n--- Creating Card Contract ---");
+    print("Request: POST $url");
+    print("Request Body: ${jsonEncode(contractData)}");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(contractData),
+    );
+
+    print("\n--- POST Response ---");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    print("----------------------\n");
+
+    return response;
   }
 }
-
