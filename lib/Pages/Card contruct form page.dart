@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
+import 'package:online_banking_system/Models/ApiService.dart';
+import 'package:online_banking_system/Models/CardContract.dart';
+import 'CardPage.dart';  // Import the CardPage to navigate
 
 class CardContractformPage extends StatefulWidget {
   @override
@@ -8,20 +10,58 @@ class CardContractformPage extends StatefulWidget {
 }
 
 class _CardContractFormPageState extends State<CardContractformPage> {
+  late ApiService apiService;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _accountNumberController = TextEditingController();
   final TextEditingController _bankBranchController = TextEditingController();
   final TextEditingController _cardNumberController = TextEditingController();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _titleController = TextEditingController();
 
   String _selectedCurrency = 'USD';
   String _selectedProduct = 'CREDIT';
+  String _selectedTitle = 'Mr.';
 
   final List<String> _products = ['CREDIT', 'DEBIT', 'PREPAID'];
   final List<String> _currencies = ['USD', 'EUR', 'GBP', 'KES', 'TZS', 'UGX'];
   final List<String> _titles = ['Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.'];
+
+  @override
+  void initState() {
+    super.initState();
+    apiService = ApiService();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      final cardData = {
+        'title': _selectedTitle,
+        'firstName': _firstNameController.text,
+        'lastName': _lastNameController.text,
+        'accountNumber': _accountNumberController.text,
+        'bankBranch': _bankBranchController.text,
+        'cardNumber': _cardNumberController.text,
+        'product': _selectedProduct,
+        'currency': _selectedCurrency,
+      };
+
+      // Print the card data to the terminal
+      print("Card Contract Data:");
+      cardData.forEach((key, value) {
+        print("$key: $value");
+      });
+
+      apiService.createCardContract(cardData);
+
+      // Pass the data to the CardPage
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CardPage(cardData: cardData),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +78,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Personal Information Card
+                // Personal Information
                 Card(
                   elevation: 4,
                   child: Padding(
@@ -48,14 +88,11 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                       children: [
                         Text(
                           'Personal Information',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 16),
                         DropdownButtonFormField<String>(
-                          value: _titles[0],
+                          value: _selectedTitle,
                           decoration: InputDecoration(
                             labelText: 'Title',
                             border: OutlineInputBorder(),
@@ -67,7 +104,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                           )).toList(),
                           onChanged: (value) {
                             setState(() {
-                              _titleController.text = value!;
+                              _selectedTitle = value!;
                             });
                           },
                         ),
@@ -79,12 +116,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.person),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter first name';
-                            }
-                            return null;
-                          },
+                          validator: (value) => value!.isEmpty ? 'Please enter first name' : null,
                         ),
                         SizedBox(height: 16),
                         TextFormField(
@@ -94,19 +126,14 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.person_outline),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter last name';
-                            }
-                            return null;
-                          },
+                          validator: (value) => value!.isEmpty ? 'Please enter last name' : null,
                         ),
                       ],
                     ),
                   ),
                 ),
                 SizedBox(height: 16),
-                // Account Information Card
+                // Account Information
                 Card(
                   elevation: 4,
                   child: Padding(
@@ -116,10 +143,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                       children: [
                         Text(
                           'Account Information',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 16),
                         TextFormField(
@@ -129,12 +153,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.account_balance),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter account number';
-                            }
-                            return null;
-                          },
+                          validator: (value) => value!.isEmpty ? 'Please enter account number' : null,
                         ),
                         SizedBox(height: 16),
                         TextFormField(
@@ -144,12 +163,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                             border: OutlineInputBorder(),
                             prefixIcon: Icon(Icons.account_balance_wallet),
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter bank branch';
-                            }
-                            return null;
-                          },
+                          validator: (value) => value!.isEmpty ? 'Please enter bank branch' : null,
                         ),
                       ],
                     ),
@@ -166,10 +180,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                       children: [
                         Text(
                           'Card Details',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 16),
                         TextFormField(
@@ -185,12 +196,8 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                             LengthLimitingTextInputFormatter(16),
                           ],
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter card number';
-                            }
-                            if (value.length != 16) {
-                              return 'Card number must be 16 digits';
-                            }
+                            if (value == null || value.isEmpty) return 'Please enter card number';
+                            if (value.length != 16) return 'Card number must be 16 digits';
                             return null;
                           },
                         ),
@@ -236,16 +243,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
                 ),
                 SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Processing Card Contract...'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  },
+                  onPressed: _submitForm,
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     backgroundColor: Colors.blue,
@@ -270,7 +268,6 @@ class _CardContractFormPageState extends State<CardContractformPage> {
     _cardNumberController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _titleController.dispose();
     super.dispose();
   }
 }

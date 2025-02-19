@@ -2,10 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
 
+import '../Models/AccountContract.dart';
+import '../Models/ApiService.dart';
 import 'NotificationPage.dart';
 
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
+
+  @override
+  _AccountPageState createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  final ApiService _apiService = ApiService();
+  AccountContract? accountData;
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAccountData();
+  }
+
+  Future<void>  fetchAccountData()  async {
+    try {
+      final account = await ApiService().fetchAccountContract("5176632120");
+      setState(() {
+        accountData = account;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +81,11 @@ class AccountPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _TotalBalanceCard(),
+                  _isLoading
+                      ? CircularProgressIndicator() // Show a loader while fetching
+                      : _TotalBalanceCard(
+                    balance: accountData?.balance ?? 0.0,
+                  ),
                   SizedBox(height: 24),
                   Text(
                     'My Cards',
@@ -101,6 +138,10 @@ class AccountPage extends StatelessWidget {
 }
 
 class _TotalBalanceCard extends StatelessWidget {
+
+  final double balance;
+  const _TotalBalanceCard({required this.balance});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -120,7 +161,7 @@ class _TotalBalanceCard extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            '\$36,790.00',
+            '\$${balance.toStringAsFixed(2)}',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,

@@ -1,5 +1,3 @@
-import 'package:http/http.dart' as http;
-
 class CardContract{
   final int accountContractId;
   final String accountContractNumber;
@@ -54,6 +52,7 @@ class CardContract{
     required this.sequenceNumber,
     required this.encryptedCardContractNumber,
   });
+
 
   factory CardContract.fromJson(Map<String, dynamic> json) {
     return switch (json) {
@@ -112,6 +111,10 @@ class CardContract{
       ),
       _ => throw const FormatException('Failed to load CardContract.'),
     };
+  }
+
+  static fromMap(Map<String, String> cardData) {
+
   }
 
 

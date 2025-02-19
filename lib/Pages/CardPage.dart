@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
-import 'package:online_banking_system/Pages/Card%20contruct%20form%20page.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
-import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
-import 'package:online_banking_system/pages/SettingPage.dart';
 import '../../widgets/carddesign.dart';
 import 'dart:ui';
+
+import 'Card contruct form page.dart';
 
 // Enum for menu items
 enum CardMenuOptions {
@@ -18,13 +17,18 @@ enum CardMenuOptions {
 }
 
 class CardPage extends StatefulWidget {
+  final Map<String, String> cardData; // Data passed from the form page
+
+  CardPage({required this.cardData});
+
   @override
   _CardPageState createState() => _CardPageState();
 }
 
 class _CardPageState extends State<CardPage> {
+  CardContract? cardData;
   int _selectedCardIndex = 0;
-  List<dynamic> _cards = [];
+  List<CardContract> _cards = [];  // Ensure List<CardContract> type for cards
   bool _isLoading = true;
   bool _hasError = false;
   bool _isHidden = true;
@@ -34,18 +38,22 @@ class _CardPageState extends State<CardPage> {
   void initState() {
     super.initState();
     apiService = ApiService();
-    fetchCards();
+    fetchCards();  // Call fetchCards on initialization
   }
 
   Future<void> fetchCards() async {
     try {
       CardContract contract = await apiService.fetchCardContract("2507355660");
       setState(() {
-        _cards.add(contract);
+        _cards.add(contract);  // Add fetched card contract to the list
         _isLoading = false;
       });
     } catch (e) {
       print("Error fetching card contract: $e");
+      setState(() {
+        _isLoading = false;
+        _hasError = true;  // Indicate error when fetch fails
+      });
     }
   }
 
@@ -142,7 +150,7 @@ class _CardPageState extends State<CardPage> {
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),
-      body: SingleChildScrollView( // Added SingleChildScrollView here
+      body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: _isLoading
