@@ -14,6 +14,8 @@ class StatisticsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // Removed the leading IconButton
+        automaticallyImplyLeading: false, // This ensures no back button appears
         title: Text('Statistics'),
         actions: [
           IconButton(

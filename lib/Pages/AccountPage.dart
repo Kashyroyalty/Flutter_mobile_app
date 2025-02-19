@@ -44,11 +44,9 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('My Accounts'),
+        // Removed the leading IconButton
+          automaticallyImplyLeading: false, // This ensures no back button appears
+          title: Text('My Accounts'),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_outlined),

@@ -145,11 +145,9 @@ class _CardPageState extends State<CardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
+    appBar: AppBar(
+    // Removed the leading IconButton
+    automaticallyImplyLeading: false, // This ensures no back button appears
         title: Text('My Cards'),
         actions: [
           IconButton(
