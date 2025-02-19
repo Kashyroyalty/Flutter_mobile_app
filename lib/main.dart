@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
         '/register': (context) => RegistrationPage(),
         '/home': (context) => HomePage(),
         '/account': (context) => AccountPage(),
-        '/card': (context) => CardPage(),
+        '/card': (context) => CardPage(cardData: {},),
         '/stock': (context) => StatisticsPage(),
         '/privacy': (context) => PrivacyScreen(),
         '/accounts': (context) => AccountSummaryScreen(),
@@ -131,7 +131,7 @@ class _MainScreenState extends State<MainScreen> {
   static final List<Widget> _pages = <Widget>[
     HomePage(),
     AccountPage(),
-    CardPage(),
+    CardPage(cardData: {},),
     StatisticsPage(),
   ];
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:http/http.dart' as http;
-
 import '../Models/CardContract.dart';
+import 'package:intl/intl.dart';
 
 class CardContractStatusPage extends StatefulWidget {
   const CardContractStatusPage({Key? key}) : super(key: key);
@@ -16,11 +16,12 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
   String _selectedStatusCode = '00';
   final _formKey = GlobalKey<FormState>();
   final _noteController = TextEditingController();
-  List<dynamic> _cards = [];
   bool _isLoading = false;
   bool _isFetching = true;
   String? _errorMessage;
   late CardContract _contractData;
+  String _currentStatus = 'N/A';
+  String _lastUpdated = 'N/A';
 
   final List<Map<String, String>> _statusOptions = [
     {'code': '00', 'description': 'Card is ready'},
@@ -43,32 +44,37 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
       CardContract contract = await apiService.fetchCardContract("2507355660");
       setState(() {
         _contractData = contract;
-        _isLoading = false;
-        _isFetching =false;
+        _currentStatus = contract.cardContractStatusData.statusName ?? 'N/A';
+        _lastUpdated = contract.cardContractStatusData.statusCode ?? 'N/A';
+        _isFetching = false;
       });
     } catch (e) {
-      print("Error fetching card contract: $e");
+      setState(() {
+        _errorMessage = "Error fetching card contract: $e";
+        _isFetching = false;
+      });
     }
   }
 
   void _updateStatus() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-
       await Future.delayed(const Duration(seconds: 2));
 
       String newStatus = _statusOptions
           .firstWhere((status) => status['code'] == _selectedStatusCode)['description']!;
       String statusCode = _selectedStatusCode;
       String reason = _noteController.text;
+      String updatedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
       setState(() {
-        // if (_contractData != null) {
-        //   _contractData!['currentStatus'] = newStatus;
-        //   _contractData!['lastUpdated'] = DateTime.now().toString().split(' ')[0];
-        // }
+        _currentStatus = newStatus;
+        _lastUpdated = updatedDate;
         _isLoading = false;
       });
+
+      print("Updated Status: $_currentStatus");
+      print("Note: $reason");
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -93,8 +99,6 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
           ? Center(child: Text(_errorMessage!, style: TextStyle(color: Colors.red)))
-          : _contractData == null
-          ? const Center(child: Text("No contract data available"))
           : SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -124,8 +128,8 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
             const SizedBox(height: 16),
             _buildInfoRow('Contract Number:', _contractData.cardContractNumber ?? 'N/A'),
             _buildInfoRow('Customer Name:', _contractData.cardContractName ?? 'N/A'),
-            _buildInfoRow('Current Status:', _contractData.cardContractStatusData.statusName ?? 'N/A'),
-            _buildInfoRow('Last Updated:', _contractData.cardContractStatusData.statusCode ?? 'N/A'),
+            _buildInfoRow('Current Status:', _currentStatus),
+            _buildInfoRow('Last Updated:', _lastUpdated),
           ],
         ),
       ),

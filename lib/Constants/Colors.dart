@@ -129,8 +129,8 @@ class AppTheme {
 }
 
 // Main app widget
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class ColorConstants extends StatelessWidget {
+  const ColorConstants({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

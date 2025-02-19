@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
 import '../Constants/Strings.dart';
+import 'AccountContract.dart';
 
 class ApiService {
-  // Fetch Card Contract (GET) - Fetches data, only logs errors
+
   Future<CardContract> fetchCardContract(String contractId) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId");
 
@@ -23,7 +24,28 @@ class ApiService {
     }
   }
 
-  // Update Card Status (PUT) - Logs request & response clearly
+
+
+  Future<AccountContract> fetchAccountContract(String contractId) async {
+    final url = Uri.parse("$kBaseUrl/api/account-contracts/$contractId");
+
+    print("Fetching data: GET $url");
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return AccountContract.fromJson(jsonDecode(response.body));
+    } else {
+      print("\n--- ERROR (GET) ---");
+      print("Status Code: ${response.statusCode}");
+      print("Error Response: ${response.body}");
+      print("---------------------\n");
+      throw Exception('Failed to load account contract');
+    }
+  }
+
+
+
   Future<http.Response> updateCardStatus(String contractId, String statusCode, String reason) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/status");
     final requestData = {"reason": reason, "statusCode": statusCode};
@@ -44,7 +66,9 @@ class ApiService {
     return response;
   }
 
-  // Clear Card PIN Attempts (PUT) - Logs request & response clearly
+
+
+
   Future<http.Response> updateCardPinAttempts(String contractId) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/online-pin-attempts-counter");
     final requestData = {"cleared": "true"};
@@ -65,7 +89,8 @@ class ApiService {
     return response;
   }
 
-  // Create a new Card Contract (POST) - Logs response in structured format
+
+
   Future<http.Response> createCardContract(Map<String, String> contractData) async {
     final url = Uri.parse("$kBaseUrl/cards/createCardContract");
 
