@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Pages/NotificationPage.dart';
+import 'package:online_banking_system/Pages/ProfilePage.dart';
 
 class StatisticsPage extends StatelessWidget {
   final dateRange = DateTimeRange(
@@ -11,7 +13,34 @@ class StatisticsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      appBar: AppBar(
+        title: Text('Statistics'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_outlined),
+            onPressed: () {
+              // Navigate to NotificationPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()),
+              );
+            },
+          ),
+          IconButton(
+            icon: CircleAvatar(
+              radius: 14,
+              child: Icon(Icons.person, size: 18), // Replacing image with a person icon
+            ),
+            onPressed: () {
+              // Navigate to ProfilePage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -39,17 +68,6 @@ class StatisticsPage extends StatelessWidget {
   Widget _buildHeader() {
     return Row(
       children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {},
-        ),
-        const Text(
-          'Statistics',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ],
     );
   }

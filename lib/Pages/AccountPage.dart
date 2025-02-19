@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
+import 'package:online_banking_system/Pages/SettingPage.dart';
 
 import '../Models/AccountContract.dart';
 import '../Models/ApiService.dart';
@@ -8,7 +9,6 @@ import 'NotificationPage.dart';
 
 
 class AccountPage extends StatefulWidget {
-
   @override
   _AccountPageState createState() => _AccountPageState();
 }
@@ -25,7 +25,7 @@ class _AccountPageState extends State<AccountPage> {
     fetchAccountData();
   }
 
-  Future<void>  fetchAccountData()  async {
+  Future<void> fetchAccountData() async {
     try {
       final account = await ApiService().fetchAccountContract("5176632120");
       setState(() {
@@ -39,42 +39,45 @@ class _AccountPageState extends State<AccountPage> {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar.large(
-            title: Text('My Accounts'),
-            backgroundColor: kBackgroundColor,
-            actions: [
-              IconButton(
-                icon: Icon(Icons.notifications_outlined),
-                onPressed: () {
-                  // Navigate to NotificationPage
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => NotificationsPage()),
-                  );
-                },
-              ),
-              IconButton(
-                icon: CircleAvatar(
-                  radius: 14,
-                  child: Icon(Icons.person, size: 18), // Replacing image with a person icon
-                ),
-                onPressed: () {
-                  // Navigate to ProfilePage
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()),
-                  );
-                },
-              ),
-              SizedBox(width: 16),
-            ],
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text('My Accounts'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_outlined),
+            onPressed: () {
+              // Navigate to NotificationPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()),
+              );
+            },
           ),
+          IconButton(
+            icon: CircleAvatar(
+              radius: 14,
+              child: Icon(Icons.person, size: 18), // Replacing image with a person icon
+            ),
+            onPressed: () {
+              // Navigate to ProfilePage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
+          ),
+
+        ],
+      ),
+      body: CustomScrollView(
+        slivers: [  // Added the missing slivers parameter
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -128,7 +131,6 @@ class _AccountPageState extends State<AccountPage> {
       bottomNavigationBar: _BottomActionBar(),
     );
   }
-
   void _navigateToAccountDetails(BuildContext context) {
     Navigator.push(
       context,

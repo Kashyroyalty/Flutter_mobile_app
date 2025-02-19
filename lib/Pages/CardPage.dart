@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
+import 'package:online_banking_system/Pages/Card%20contract%20form%20page.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
+import 'package:online_banking_system/Pages/NotificationPage.dart';
+import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
+import 'package:online_banking_system/Pages/ProfilePage.dart';
+import 'package:online_banking_system/pages/SettingPage.dart';
 import '../../widgets/carddesign.dart';
 import 'dart:ui';
-
-import 'Card contruct form page.dart';
 
 // Enum for menu items
 enum CardMenuOptions {
@@ -143,12 +146,36 @@ class _CardPageState extends State<CardPage> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        backgroundColor: kBackgroundColor,
-        elevation: 0,
-        title: Text(
-          "My Cards",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
         ),
+        title: Text('My Cards'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_outlined),
+            onPressed: () {
+              // Navigate to NotificationPage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsPage()),
+              );
+            },
+          ),
+          IconButton(
+            icon: CircleAvatar(
+              radius: 14,
+              child: Icon(Icons.person, size: 18), // Replacing image with a person icon
+            ),
+            onPressed: () {
+              // Navigate to ProfilePage
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
