@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
 import '../Constants/Strings.dart';
 import 'AccountContract.dart';
+import 'TransactionContract.dart';
 
 class ApiService {
 
@@ -35,6 +36,25 @@ class ApiService {
 
     if (response.statusCode == 200) {
       return AccountContract.fromJson(jsonDecode(response.body));
+    } else {
+      print("\n--- ERROR (GET) ---");
+      print("Status Code: ${response.statusCode}");
+      print("Error Response: ${response.body}");
+      print("---------------------\n");
+      throw Exception('Failed to load account contract');
+    }
+  }
+
+
+  Future<TransactionContract> fetchTransactionContract(String contractId) async {
+    final url = Uri.parse("$kBaseUrl/transaction/$contractId");
+
+    print("Fetching data: GET $url");
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return TransactionContract.fromJson(jsonDecode(response.body));
     } else {
       print("\n--- ERROR (GET) ---");
       print("Status Code: ${response.statusCode}");

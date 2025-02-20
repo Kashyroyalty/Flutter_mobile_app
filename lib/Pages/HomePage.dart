@@ -3,6 +3,8 @@ import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'dart:ui';
 import '../Models/CardContract.dart';
+import '../Models/AccountContract.dart'; // Assuming you have an AccountContract model
+import '../Models/TransactionContract.dart'; // Assuming you have a TransactionContract model
 import '../widgets/CardDesign.dart';
 import 'ProfilePage.dart';
 import 'SettingPage.dart';
@@ -14,217 +16,238 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool _obscureBalance = true;
-  String? _selectedAccount;
+  AccountContract? _selectedAccount;
   List<dynamic> _cards = [];
+  List<dynamic> _accounts = [];
+  List<dynamic> _transactions = [];
   late ApiService apiService;
-
 
   Future<void> fetchCards() async {
     try {
       CardContract contract = await apiService.fetchCardContract("2507355660");
-      print(contract.cardContractNumber);
-
       setState(() {
         _cards.add(contract);
       });
-
-      print(_cards.length);
     } catch (e) {
       print("Error fetching card contract: $e");
     }
   }
 
-  final List<Map<String, dynamic>> accounts = [
-    {'name': 'Savings Account', 'balance': 10000.00},
-    {'name': 'Checking Account', 'balance': 5000.50},
-    {'name': 'Business Account', 'balance': 25000.75},
-  ];
-
-  final List<Map<String, String>> transactions = [
-    {'date': '2025-01-23', 'description': 'Grocery Store', 'amount': '-\$50.00'},
-    {'date': '2025-01-22', 'description': 'Electricity Bill', 'amount': '-\$120.00'},
-    {'date': '2025-01-21', 'description': 'Salary Credit', 'amount': '+\$2,000.00'},
-    {'date': '2025-01-20', 'description': 'Online Purchase', 'amount': '-\$30.00'},
-  ];
-
-  // Helper method to display obscured amount
-  Widget _buildObscuredAmount(String amount, {TextStyle? style}) {
-    return _obscureBalance
-        ? Text(
-      '•' * amount.length,
-      style: style ?? TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    )
-        : Text(
-      amount,
-      style: style ?? TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-    );
+  Future<void> fetchAccounts() async {
+    try {
+      AccountContract contract = await apiService.fetchAccountContract("5176632120");
+      setState(() {
+        _accounts.add(contract);
+      });
+    } catch (e) {
+      print("Error fetching card contract: $e");
+    }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    apiService = ApiService();
-    fetchCards();
+  Future<void> fetchTransactions() async {
+    try {
+      TransactionContract contract = await apiService.fetchTransactionContract("5176632120");
+      setState(() {
+        _transactions.add(contract);
+      });
+    } catch (e) {
+      print("Error fetching card contract: $e");
+    }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Online Banking System'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text("John Doe"),
-              accountEmail: Text("johndoe@example.com"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage("assets/profile.jpg"),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text("Profile"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Settings"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout, color: Colors.red),
-              title: Text("Logout"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                );
-              },
-            ),
-          ],
+    List getFilteredTransactions() {
+
+      if (_selectedAccount == null) return [];
+      return _transactions.where((transaction) {
+        // Assuming transaction has an accountName or accountId property
+        return transaction.accountName == _selectedAccount; // Adjust this condition based on your model
+      }).toList();
+
+    }
+
+    // Helper method to display obscured amount
+    Widget _buildObscuredAmount(String amount, {TextStyle? style}) {
+      return _obscureBalance
+          ? Text(
+        '•' * amount.length,
+        style: style ?? TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      )
+          : Text(
+        amount,
+        style: style ?? TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      );
+    }
+
+    @override
+    void initState() {
+      super.initState();
+      apiService = ApiService();
+      fetchCards();
+      fetchAccounts();
+      fetchTransactions();
+    }
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Online Banking System'),
         ),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
             children: <Widget>[
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: _cards.map((card) => CardDesign(card: card)).toList(),
+              UserAccountsDrawerHeader(
+                accountName: Text("John Doe"),
+                accountEmail: Text("johndoe@example.com"),
+                currentAccountPicture: CircleAvatar(
+                  backgroundImage: AssetImage("assets/profile.jpg"),
                 ),
               ),
-              SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: 'Select Account',
-                    border: InputBorder.none,
-                  ),
-                  value: _selectedAccount,
-                  items: accounts.map((account) => DropdownMenuItem<String>(
-                    value: account['name'],
-                    child: Text(account['name']!),
-                  )).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedAccount = value;
-                    });
-                  },
-                  isExpanded: true,
-                ),
+              ListTile(
+                leading: Icon(Icons.person),
+                title: Text("Profile"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProfilePage()),
+                  );
+                },
               ),
-              SizedBox(height: 20),
-              if (_selectedAccount != null) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Available on card'),
-                    _buildObscuredAmount(
-                        '\$${accounts.firstWhere((account) => account['name'] == _selectedAccount)['balance']}'
-                    ),
-                    IconButton(
-                      icon: Icon(_obscureBalance ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _obscureBalance = !_obscureBalance;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Transfer Limit'),
-                    _buildObscuredAmount('\$12,000'),
-                  ],
-                ),
-              ],
-              SizedBox(height: 30),
-              Text(
-                'Recent Transactions',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ListTile(
+                leading: Icon(Icons.settings),
+                title: Text("Settings"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                },
               ),
-              SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: transactions.length,
-                itemBuilder: (context, index) {
-                  final transaction = transactions[index];
-                  return ListTile(
-                    leading: Icon(
-                      transaction['amount']!.startsWith('-')
-                          ? Icons.arrow_downward
-                          : Icons.arrow_upward,
-                      color: transaction['amount']!.startsWith('-')
-                          ? Colors.red
-                          : Colors.green,
-                    ),
-                    title: Text(transaction['description']!),
-                    subtitle: Text(transaction['date']!),
-                    trailing: _buildObscuredAmount(
-                      transaction['amount']!,
-                      style: TextStyle(
-                        color: transaction['amount']!.startsWith('-')
-                            ? Colors.red
-                            : Colors.green,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+              ListTile(
+                leading: Icon(Icons.logout, color: Colors.red),
+                title: Text("Logout"),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
                   );
                 },
               ),
             ],
           ),
         ),
-      ),
-    );
+        body: Padding(
+          padding: EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: _cards.map((card) => CardDesign(card: card)).toList(),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey[300]!),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: DropdownButtonFormField<AccountContract>(
+                    decoration: InputDecoration(
+                      labelText: 'Select Account',
+                      border: InputBorder.none,
+                    ),
+                    value: _selectedAccount,
+                    items: _accounts.map((account) {
+                      return DropdownMenuItem<AccountContract>(
+                        value: account, // Store entire account object
+                        child: Text(account.accountName!), // Assuming accountName exists
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedAccount = value;
+                      });
+                    },
+                    isExpanded: true,
+                  ),
+                ),
+                SizedBox(height: 20),
+                if (_selectedAccount != null) ...[
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Available Balance'),
+                      _buildObscuredAmount(
+                        '\$${_selectedAccount!.balance}', // Using selected account directly
+                      ),
+                      IconButton(
+                        icon: Icon(_obscureBalance ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            _obscureBalance = !_obscureBalance;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+
+                SizedBox(height: 30),
+                Text(
+                  'Recent Transactions',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: getFilteredTransactions().length,
+                  itemBuilder: (context, index) {
+                    final transaction = getFilteredTransactions()[index];
+                    return ListTile(
+                      leading: Icon(
+                        transaction.amount!.startsWith('-')
+                            ? Icons.arrow_downward
+                            : Icons.arrow_upward,
+                        color: transaction.amount!.startsWith('-')
+                            ? Colors.red
+                            : Colors.green,
+                      ),
+                      title: Text(transaction.description!),
+                      subtitle: Text(transaction.date!),
+                      trailing: _buildObscuredAmount(
+                        transaction.amount!,
+
+                        style: TextStyle(
+
+                          color: transaction.amount!.startsWith('-')
+
+                              ? Colors.red
+
+                              : Colors.green,
+
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
   }
-}
+
+
 
 class NavigationDrawer extends StatelessWidget {
   @override

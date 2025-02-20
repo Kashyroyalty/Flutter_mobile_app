@@ -67,7 +67,7 @@ class _MyAppState extends State<MyApp> {
         '/home': (context) => HomePage(),
         '/account': (context) => AccountPage(),
         '/card': (context) => CardPage(cardData: {},),
-        '/stock': (context) => StatisticsPage(),
+        //'/stock': (context) => StatisticsPage(),
         '/privacy': (context) => PrivacyScreen(),
         '/accounts': (context) => AccountSummaryScreen(),
         '/createProfile1': (context) => CreateProfileScreen1(),
@@ -132,7 +132,7 @@ class _MainScreenState extends State<MainScreen> {
     HomePage(),
     AccountPage(),
     CardPage(cardData: {},),
-    StatisticsPage(),
+    //StatisticsPage(),
   ];
 
   void _onItemTapped(int index) {

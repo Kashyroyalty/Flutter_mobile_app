@@ -175,7 +175,7 @@ class _CardPageState extends State<CardPage> {
   }
 
   Widget _buildCardDetails(CardContract card) {
-    final formatBalance = (double balance) => balance.toStringAsFixed(2);
+    final formatBalance = (num balance) => balance.toStringAsFixed(2);
 
     return Container(
       padding: EdgeInsets.all(16),
