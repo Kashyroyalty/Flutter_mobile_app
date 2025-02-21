@@ -95,7 +95,7 @@ class _CardPageState extends State<CardPage> {
         break;
       case CardMenuOptions.pinAttempts:
         try {
-          await apiService.updateCardPinAttempts(card.cardContractNumber);
+          await apiService.updateCardPinAttempts(card.cardContractNumber.toString());
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('PIN attempts reset successfully'))
           );
@@ -194,12 +194,12 @@ class _CardPageState extends State<CardPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildBlurContainer('Account Number: ${card.cbsNumber}', _isHidden),
-          _buildBlurContainer('Available Balance: ${formatBalance(card.availableBalance)} ${card.currency}', _isHidden),
-          _buildBlurContainer('Card Status: ${card.cardContractStatusData.externalStatusName}', _isHidden),
+          _buildBlurContainer('Available Balance: ${formatBalance(card.availableBalance as num)} ${card.currency}', _isHidden),
+          _buildBlurContainer('Card Status: ${card.cardContractStatusData?.externalStatusName}', _isHidden),
           _buildBlurContainer('Card Expiry Date: ${card.cardExpiryDate}', _isHidden),
           _buildBlurContainer('Product Name: ${card.productName}', _isHidden),
           _buildBlurContainer('Cardholder: ${card.embossedData.firstName} ${card.embossedData.lastName}', _isHidden),
-          _buildBlurContainer('Credit Limit: ${formatBalance(card.creditLimit.toDouble())} ${card.currency}', _isHidden),
+          _buildBlurContainer('Credit Limit: ${formatBalance(card.creditLimit?.toDouble() as num)} ${card.currency}', _isHidden),
         ],
       ),
     );

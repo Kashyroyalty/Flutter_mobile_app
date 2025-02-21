@@ -14,7 +14,6 @@ class AccountPage extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountPage> {
-  final ApiService _apiService = ApiService();
   AccountContract? accountData;
   bool _isLoading = true;
   bool _hasError = false;

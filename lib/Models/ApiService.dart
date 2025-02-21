@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
 import '../Constants/Strings.dart';
 import 'AccountContract.dart';
+import 'NotificationContract.dart';
 import 'TransactionContract.dart';
 
 class ApiService {
@@ -62,6 +63,44 @@ class ApiService {
       print("---------------------\n");
       throw Exception('Failed to load account contract');
     }
+  }
+
+
+  Future<List<NotificationContract>> fetchNotificationContracts(String clientId) async {
+    final endpoints = [
+      "status_notification",
+      "overlimit_notification",
+      "declined_notification",
+      "card_activation_notification",
+      "auth_notification"
+    ];
+
+    List<NotificationContract> notifications = [];
+
+    for (var endpoint in endpoints) {
+      final url = Uri.parse("$kBaseUrl/api/$clientId/$endpoint");
+      print("Fetching data: GET $url");
+
+      final response = await http.get(url),
+          headers; {
+    'Authorization'; 'Bearer YOUR_API_TOKEN'; // Replace with actual token
+    'Content-Type'; 'application/json';
+    };
+
+
+      if (response.statusCode == 200) {
+        notifications.add(NotificationContract.fromJson(jsonDecode(response.body)));
+      } else {
+        print("\n--- Response (GET) ---");
+        print("Status Code: \${response.statusCode}");
+        print('Response Headers: ${response.headers}');
+        print("Error Response: \${response.body}");
+        print("---------------------\n");
+        throw Exception('Failed to load notification contract for $endpoint');
+      }
+    }
+
+    return notifications;
   }
 
 
@@ -133,4 +172,6 @@ class ApiService {
   }
 
 }
+
+
 

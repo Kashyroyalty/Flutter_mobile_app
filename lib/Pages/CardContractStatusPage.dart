@@ -44,8 +44,8 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
       CardContract contract = await apiService.fetchCardContract("2507355660");
       setState(() {
         _contractData = contract;
-        _currentStatus = contract.cardContractStatusData.statusName ?? 'N/A';
-        _lastUpdated = contract.cardContractStatusData.statusCode ?? 'N/A';
+        _currentStatus = contract.cardContractStatusData?.statusName ?? 'N/A';
+        _lastUpdated = contract.cardContractStatusData?.statusCode ?? 'N/A';
         _isFetching = false;
       });
     } catch (e) {
