@@ -12,12 +12,6 @@ import 'package:online_banking_system/pages/SettingPage.dart';
 import '../../widgets/carddesign.dart';
 import 'dart:ui';
 
-enum CardMenuOptions {
-  changeStatus,
-  pinAttempts,
-  clientIdentifier
-}
-
 class CardPage extends StatefulWidget {
   final Map<String, String> cardData;
 
@@ -119,57 +113,13 @@ class _CardPageState extends State<CardPage> {
   Widget _buildCardWithMenu(CardContract card, int index) {
     return Container(
       margin: EdgeInsets.only(right: 16),
-      child: Stack(
-        children: [
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                _selectedCardIndex = index;
-              });
-            },
-            child: CardDesign(card: card),
-          ),
-          Positioned(
-            top: 10,
-            right: 10,
-            child: PopupMenuButton<CardMenuOptions>(
-              icon: Icon(Icons.more_vert, color: Colors.white),
-              onSelected: (CardMenuOptions option) => _handleMenuOption(option, card),
-              itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  value: CardMenuOptions.changeStatus,
-                  child: Row(
-                    children: [
-                      Icon(Icons.swap_horiz, color: Colors.black),
-                      SizedBox(width: 8),
-                      Text('Change Card Contract Status'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: CardMenuOptions.pinAttempts,
-                  child: Row(
-                    children: [
-                      Icon(Icons.pin, color: Colors.black),
-                      SizedBox(width: 8),
-                      Text('Reset PIN Attempts'),
-                    ],
-                  ),
-                ),
-                PopupMenuItem(
-                  value: CardMenuOptions.clientIdentifier,
-                  child: Row(
-                    children: [
-                      Icon(Icons.person, color: Colors.black),
-                      SizedBox(width: 8),
-                      Text('Client Identifier'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedCardIndex = index;
+          });
+        },
+        child: CardDesign(card: card),
       ),
     );
   }

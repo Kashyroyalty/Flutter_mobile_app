@@ -5,11 +5,13 @@ import 'package:online_banking_system/Models/CardContract.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
+import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
 
 enum CardMenuOptions {
   changeStatus,
   pinAttempts,
-  clientIdentifier
+  clientIdentifier,
+  resetPin  // Added new enum value
 }
 
 class CardDesign extends StatefulWidget {
@@ -132,6 +134,71 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
           ),
         );
         break;
+      case CardMenuOptions.resetPin:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PinResetPage(), // Replace with your actual page
+          ),
+        );// Added new case
+        try {
+          final response = await apiService.resetCardPin(widget.card.cbsNumber ?? "");
+          if (response.body == "OK" || response.body.toLowerCase() == "ok") {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Container(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(Icons.lock_reset, color: Colors.white),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'PIN Reset Successful',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Your PIN has been reset successfully',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  backgroundColor: Colors.green,
+                  duration: Duration(seconds: 4),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              );
+            }
+          } else {
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('An error occurred while resetting PIN.'),
+                backgroundColor: Colors.red,
+                duration: Duration(seconds: 3),
+              ),
+            );
+          }
+        }
+        break;
     }
   }
 
@@ -200,7 +267,17 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
                   children: [
                     Icon(Icons.person, color: Colors.black),
                     SizedBox(width: 8),
-                    Text('Client Identifier'),
+                    Text('Client identifier'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(  // Added new menu item
+                value: CardMenuOptions.resetPin,
+                child: Row(
+                  children: [
+                    Icon(Icons.lock_reset, color: Colors.black),
+                    SizedBox(width: 8),
+                    Text('Reset PIN'),
                   ],
                 ),
               ),
