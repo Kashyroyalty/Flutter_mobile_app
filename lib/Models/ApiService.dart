@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
+import 'package:online_banking_system/Models/CardPlastics.dart';
 import '../Constants/Strings.dart';
 import 'AccountContract.dart';
 import 'NotificationContract.dart';
@@ -81,12 +82,7 @@ class ApiService {
       final url = Uri.parse("$kBaseUrl/api/$clientId/$endpoint");
       print("Fetching data: GET $url");
 
-      final response = await http.get(url),
-          headers; {
-    'Authorization'; 'Bearer YOUR_API_TOKEN'; // Replace with actual token
-    'Content-Type'; 'application/json';
-    };
-
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
         notifications.add(NotificationContract.fromJson(jsonDecode(response.body)));
@@ -102,6 +98,40 @@ class ApiService {
 
     return notifications;
   }
+
+
+  Future<List<CardPlastics>> fetchCardPlastics(String cardContractId) async {
+    final endpoints = [
+      "get_card_plastics",
+      "reissue_card",
+      "get_pin",
+      "get_card_verification_code",
+      "decrypt_get_card_verification_code"
+    ];
+
+    List<CardPlastics> cardplastics = [];
+
+    for (var endpoint in endpoints) {
+      final url = Uri.parse("$kBaseUrl/api/cards/$cardContractId/$endpoint");
+      print("Fetching data: GET $url");
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        cardplastics.add(CardPlastics.fromJson(jsonDecode(response.body)));
+      } else {
+        print("\n--- Response (GET) ---");
+        print("Status Code: \${response.statusCode}");
+        print('Response Headers: ${response.headers}');
+        print("Error Response: \${response.body}");
+        print("---------------------\n");
+        throw Exception('Failed to load notification contract for $endpoint');
+      }
+    }
+
+    return cardplastics;
+  }
+
 
 
 
