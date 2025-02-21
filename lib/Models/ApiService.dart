@@ -24,8 +24,6 @@ class ApiService {
     }
   }
 
-
-
   Future<AccountContract> fetchAccountContract(String contractId) async {
     final url = Uri.parse("$kBaseUrl/api/account-contracts/$contractId");
 
@@ -43,8 +41,6 @@ class ApiService {
       throw Exception('Failed to load account contract');
     }
   }
-
-
 
   Future<http.Response> updateCardStatus(String contractId, String statusCode, String reason) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/status");
@@ -66,9 +62,6 @@ class ApiService {
     return response;
   }
 
-
-
-
   Future<http.Response> updateCardPinAttempts(String contractId) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/online-pin-attempts-counter");
     final requestData = {"cleared": "true"};
@@ -89,7 +82,25 @@ class ApiService {
     return response;
   }
 
+  Future<http.Response> resetCardPin(String contractId) async {
+    final url = Uri.parse("$kBaseUrl/cards/$contractId/reset-pin");
+    final requestData = {"reset": "true"};
 
+    print("\n--- Resetting Card PIN ---");
+    print("Request: PUT $url");
+    print("Request Body: ${jsonEncode(requestData)}");
+
+    final response = await http.put(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(requestData),
+    );
+
+    print("Response: ${response.statusCode} - ${response.body}");
+    print("------------------------------\n");
+
+    return response;
+  }
 
   Future<http.Response> createCardContract(Map<String, String> contractData) async {
     final url = Uri.parse("$kBaseUrl/cards/createCardContract");
@@ -111,6 +122,4 @@ class ApiService {
 
     return response;
   }
-
 }
-
