@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 
-// Add this import or create the class
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Profile')),
-      body: Center(child: Text('Profile Page')),
-    );
-  }
-}
+import '../Models/AccountContract.dart';
+import '../Models/ApiService.dart';
+import '../Models/TransactionContract.dart';
+import 'ProfilePage.dart';
 
 enum TransactionCategory {
   transfer(icon: Icons.swap_horiz),
@@ -26,6 +18,7 @@ enum TransactionCategory {
   const TransactionCategory({required this.icon});
 }
 
+
 class StatisticsPage extends StatefulWidget {
   @override
   _StatisticsPageState createState() => _StatisticsPageState();
@@ -33,36 +26,46 @@ class StatisticsPage extends StatefulWidget {
 
 class _StatisticsPageState extends State<StatisticsPage> {
   bool isExpensesTab = true;
-  double currentBalance = 2500.00;
+  double currentBalance = 0.0;
+  AccountContract? accountData;
+  bool _isLoading = true;
   List<Transaction> transactions = [];
+  bool isLoading = true;
+  String errorMessage = '';
 
   @override
   void initState() {
     super.initState();
-    // Initialize sample transactions
-    transactions = [
-      Transaction(
-        id: '1',
-        title: 'Bank Transfer',
-        amount: -2941.25,
-        date: DateTime(2021, 3, 15),
-        category: TransactionCategory.transfer,
-      ),
-      Transaction(
-        id: '2',
-        title: 'Shopping',
-        amount: -156.50,
-        date: DateTime(2021, 3, 14),
-        category: TransactionCategory.shopping,
-      ),
-      Transaction(
-        id: '3',
-        title: 'Food',
-        amount: -45.75,
-        date: DateTime(2021, 3, 13),
-        category: TransactionCategory.food,
-      ),
-    ];
+    fetchTransactions();
+  }
+
+  Future<void> fetchTransactions() async {
+    try {
+      TransactionContract contract = await ApiService().fetchTransactionContract("5176632120");
+      setState(() {
+        transactions.add(contract as Transaction);
+      });
+    } catch (e) {
+      print("Error fetching card contract: $e");
+    }
+  }
+
+  Future<void> fetchAccountData() async {
+    try {
+      print("Fetching account data...");
+      final account = await ApiService().fetchAccountContract("5176632120");
+      print("Account Data Fetched: ${account.accountContractName}");
+
+      setState(() {
+        accountData = account;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching account data: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _showTopUpDialog() {
@@ -291,6 +294,13 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   Widget _buildDateRange() {
+    DateTime now = DateTime.now();
+    DateTime firstDay = DateTime(now.year, now.month, 1);
+    DateTime lastDay = DateTime(now.year, now.month + 1, 0);
+
+    String formattedDateRange =
+        '${DateFormat('d MMM').format(firstDay)} - ${DateFormat('d MMM y').format(lastDay)}';
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -310,7 +320,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           Icon(Icons.calendar_today, size: 20, color: Colors.blue),
           SizedBox(width: 12),
           Text(
-            '1 Mar - 31 Mar 2021',
+            formattedDateRange,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
