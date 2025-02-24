@@ -214,6 +214,19 @@ class ApiService {
     return response;
   }
 
+  Future<http.Response> activateCard(String contractId) async {
+    final url = Uri.parse("$kBaseUrl/api/cards/$contractId/active");
+    final requestData = {"activated": "true"};
+
+    final response = await http.put(url,headers: {"Content-Type": "application/json"},
+      body: jsonEncode(requestData),);
+
+    print("Response: ${response.statusCode} - ${response.body}");
+    print("------------------------------\n");
+
+    return response;
+  }
+
 }
 
 

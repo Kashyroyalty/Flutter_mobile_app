@@ -11,6 +11,12 @@ import 'package:online_banking_system/Pages/ProfilePage.dart';
 import 'package:online_banking_system/pages/SettingPage.dart';
 import '../../widgets/carddesign.dart';
 import 'dart:ui';
+// Add this import at the top of your CardPage.dart file
+import 'package:online_banking_system/widgets/carddesign.dart';  // You already have this
+
+// Add this import at the top of your CardPage.dart file
+import 'package:online_banking_system/widgets/carddesign.dart';  // You already have this
+
 
 class CardPage extends StatefulWidget {
   final Map<String, String> cardData;
@@ -91,7 +97,7 @@ class _CardPageState extends State<CardPage> {
 
       case CardMenuOptions.pinAttempts:
         try {
-          await apiService.updateCardPinAttempts(card.cardContractNumber.toString());
+          await apiService.updateCardPinAttempts(card.cardContractId.toString());
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('PIN attempts reset successfully'))
           );
@@ -115,7 +121,7 @@ class _CardPageState extends State<CardPage> {
       case CardMenuOptions.resetPin:
         // TODO: Handle this case.
         throw UnimplementedError();
-      case CardMenuOptions.blockCard:
+      case CardMenuOptions.activateCard:
         // TODO: Handle this case.
         throw UnimplementedError();
     }

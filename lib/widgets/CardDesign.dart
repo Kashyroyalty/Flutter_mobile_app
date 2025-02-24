@@ -9,15 +9,15 @@ import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
 import 'package:online_banking_system/pages/SettingPage.dart';
 
+// lib/constants/enums.dart
 enum CardMenuOptions {
   changeStatus,
   pinAttempts,
   viewDetails,
   clientIdentifier,
   resetPin,
-  blockCard  // Added new enum value
+  activateCard,
 }
-
 class CardDesign extends StatefulWidget {
   final CardContract card;
 
@@ -68,7 +68,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
 
       case CardMenuOptions.pinAttempts:
         try {
-          final response = await apiService.updateCardPinAttempts(widget.card.cbsNumber ?? "");
+          final response = await apiService.updateCardPinAttempts(widget.card.cardContractId.toString() ?? "");
           if (response.body.toLowerCase() == "ok") {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -103,7 +103,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
       case CardMenuOptions.clientIdentifier:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => ClientIdentifier()),
+          MaterialPageRoute(builder: (context) => clientidentifierpage()),
         );
         break;
 
@@ -113,7 +113,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
           MaterialPageRoute(builder: (context) => PinResetPage()), // Ensure it's correctly imported
         );
         try {
-          final response = await apiService.resetCardPin(widget.card.cbsNumber ?? "");
+          final response = await apiService.resetCardPin(widget.card.cardContractId.toString() ?? "");
           if (response.body.toLowerCase() == "ok") {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -145,10 +145,46 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
         }
         break;
 
+      case CardMenuOptions.activateCard:
+        try {
+
+          final response = await apiService.activateCard(widget.card.cardContractId.toString() ?? "");
+          if (response.body.toLowerCase() == "ok") {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Card Activated Successfully'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+          } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to activate card.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Error activating card.'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        }
+        break;
+
       default:
         throw UnimplementedError("Unhandled case: $option");
     }
   }
+
 
 
   void _flipCard() {
@@ -227,6 +263,16 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
                     Icon(Icons.lock_reset, color: Colors.black),
                     SizedBox(width: 8),
                     Text('Reset PIN'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(  // Added new menu item
+                value: CardMenuOptions.activateCard,
+                child: Row(
+                  children: [
+                    Icon(Icons.lock_reset, color: Colors.black),
+                    SizedBox(width: 8),
+                    Text('Activate Card'),
                   ],
                 ),
               ),

@@ -17,16 +17,10 @@ class _PinResetPageState extends State<PinResetPage> {
       if (isEnteringNewPin) {
         if (newPin.length < 4) {
           newPin += digit;
-          if (newPin.length == 4) {
-            isEnteringNewPin = false; // Switch to confirm PIN when new PIN is complete
-          }
         }
       } else {
         if (confirmPin.length < 4) {
           confirmPin += digit;
-          if (confirmPin.length == 4) {
-            _verifyPins(); // Verify PINs when both are complete
-          }
         }
       }
     });
@@ -57,6 +51,26 @@ class _PinResetPageState extends State<PinResetPage> {
   }
 
   void _verifyPins() {
+    if (newPin.isEmpty || confirmPin.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter both PINs'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (newPin.length < 4 || confirmPin.length < 4) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Both PINs must be 4 digits'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     if (newPin == confirmPin) {
       _showSuccessDialog();
     } else {
@@ -145,6 +159,28 @@ class _PinResetPageState extends State<PinResetPage> {
                       _buildKeypadButton('0'),
                       _buildKeypadButton('↑', isSpecial: true, isSwitch: true),
                     ],
+                  ),
+                  const SizedBox(height: 24),
+                  // Verify Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _verifyPins,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Verify PIN',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
