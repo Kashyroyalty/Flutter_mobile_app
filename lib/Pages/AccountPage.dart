@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
-import 'package:online_banking_system/Pages/SettingPage.dart';
 
 import '../Models/AccountContract.dart';
 import '../Models/ApiService.dart';
@@ -16,7 +14,7 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   AccountContract? accountData;
   bool _isLoading = true;
-  bool _hasError = false;
+  bool _isBalanceHidden = true;
 
   @override
   void initState() {
@@ -26,14 +24,17 @@ class _AccountPageState extends State<AccountPage> {
 
   Future<void> fetchAccountData() async {
     try {
+      print("Fetching account data...");
       final account = await ApiService().fetchAccountContract("5176632120");
+      print("Account Data Fetched: ${account.accountContractName}");
+
       setState(() {
         accountData = account;
         _isLoading = false;
       });
     } catch (e) {
+      print("Error fetching account data: $e");
       setState(() {
-        _hasError = true;
         _isLoading = false;
       });
     }
@@ -84,8 +85,18 @@ class _AccountPageState extends State<AccountPage> {
                   _isLoading
                       ? CircularProgressIndicator() // Show a loader while fetching
                       : _TotalBalanceCard(
+                    accountName: (accountData?.accountContractName.isNotEmpty ?? false)
+                        ? accountData!.accountContractName
+                        : "No Account Name",
                     balance: accountData?.balance ?? 0.0,
-                  ),
+                    isBalanceHidden: _isBalanceHidden,
+                    onToggleBalance: () {
+                      setState(() {
+                        _isBalanceHidden = !_isBalanceHidden;
+                });
+              },
+            ),
+                  
                   SizedBox(height: 24),
                   Text(
                     'My Cards',
@@ -137,9 +148,17 @@ class _AccountPageState extends State<AccountPage> {
 }
 
 class _TotalBalanceCard extends StatelessWidget {
-
+  final String accountName;
   final double balance;
-  const _TotalBalanceCard({required this.balance});
+  final bool isBalanceHidden;
+  final VoidCallback onToggleBalance;
+
+  const _TotalBalanceCard({
+    required this.accountName,
+    required this.balance,
+    required this.isBalanceHidden,
+    required this.onToggleBalance,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -155,33 +174,37 @@ class _TotalBalanceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
+        accountName, // Display account name
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
+          ),
+          ),
+
+          SizedBox(height: 8),
+          Text(
             'Total Balance',
             style: TextStyle(color: Colors.white70),
           ),
           SizedBox(height: 8),
-          Text(
-            '\$${balance.toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _BalanceChangeIndicator(
-                label: 'Income',
-                amount: '+\$2,450.00',
-                icon: Icons.arrow_upward,
-                positive: true,
+              Text(
+                isBalanceHidden ? '••••••' : '\$${balance.toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-              _BalanceChangeIndicator(
-                label: 'Expenses',
-                amount: '-\$1,280.00',
-                icon: Icons.arrow_downward,
-                positive: false,
+              IconButton(
+                icon: Icon(
+                  isBalanceHidden ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.white70,
+                ),
+                onPressed: onToggleBalance,
               ),
             ],
           ),
