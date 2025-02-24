@@ -4,14 +4,18 @@ import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/CardContract.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
+import 'package:online_banking_system/Pages/CardPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
+import 'package:online_banking_system/pages/SettingPage.dart';
 
 enum CardMenuOptions {
   changeStatus,
   pinAttempts,
+  viewDetails,
   clientIdentifier,
-  resetPin  // Added new enum value
+  resetPin,
+  blockCard  // Added new enum value
 }
 
 class CardDesign extends StatefulWidget {
@@ -49,158 +53,103 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
       case CardMenuOptions.changeStatus:
         Navigator.push(
           context,
+          MaterialPageRoute(builder: (context) => CardContractStatusPage()),
+        );
+        break;
+
+      case CardMenuOptions.viewDetails:
+        Navigator.push(
+          context,
           MaterialPageRoute(
-              builder: (context) => CardContractStatusPage()
+            builder: (context) => CardPage(cardData: widget.card as Map<String,String>), // Replace with actual details page
           ),
         );
         break;
+
       case CardMenuOptions.pinAttempts:
         try {
           final response = await apiService.updateCardPinAttempts(widget.card.cbsNumber ?? "");
-          print(response.body);
-          if (response.body == "OK" || response.body.toLowerCase() == "ok") {
-            // Show success notification
+          if (response.body.toLowerCase() == "ok") {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.white),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'PIN Attempts Reset',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'You now have 3 PIN attempts available',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  content: Text('PIN Attempts Reset Successfully'),
                   backgroundColor: Colors.green,
-                  duration: Duration(seconds: 4),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
                 ),
               );
             }
           } else {
-            // Show error notification
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Failed to reset PIN attempts. Please try again.'),
+                  content: Text('Failed to reset PIN attempts.'),
                   backgroundColor: Colors.red,
-                  duration: Duration(seconds: 3),
                 ),
               );
             }
           }
         } catch (e) {
-          // Show error notification
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('An error occurred while resetting PIN attempts.'),
+                content: Text('Error resetting PIN attempts.'),
                 backgroundColor: Colors.red,
-                duration: Duration(seconds: 3),
               ),
             );
           }
         }
         break;
+
       case CardMenuOptions.clientIdentifier:
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => clientidentifierpage()
-          ),
+          MaterialPageRoute(builder: (context) => ClientIdentifier()),
         );
         break;
+
       case CardMenuOptions.resetPin:
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => PinResetPage(), // Replace with your actual page
-          ),
-        );// Added new case
+          MaterialPageRoute(builder: (context) => PinResetPage()), // Ensure it's correctly imported
+        );
         try {
           final response = await apiService.resetCardPin(widget.card.cbsNumber ?? "");
-          if (response.body == "OK" || response.body.toLowerCase() == "ok") {
+          if (response.body.toLowerCase() == "ok") {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Container(
-                    padding: EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        Icon(Icons.lock_reset, color: Colors.white),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                'PIN Reset Successful',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Your PIN has been reset successfully',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  content: Text('PIN Reset Successful'),
                   backgroundColor: Colors.green,
-                  duration: Duration(seconds: 4),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
                 ),
               );
             }
           } else {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Failed to reset PIN.'),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
           }
         } catch (e) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('An error occurred while resetting PIN.'),
+                content: Text('Error resetting PIN.'),
                 backgroundColor: Colors.red,
-                duration: Duration(seconds: 3),
               ),
             );
           }
         }
         break;
+
+      default:
+        throw UnimplementedError("Unhandled case: $option");
     }
   }
+
 
   void _flipCard() {
     setState(() {

@@ -87,6 +87,8 @@ class _CardPageState extends State<CardPage> {
         );
         fetchCards(); // Refresh cards after status change
         break;
+
+
       case CardMenuOptions.pinAttempts:
         try {
           await apiService.updateCardPinAttempts(card.cardContractNumber.toString());
@@ -107,6 +109,15 @@ class _CardPageState extends State<CardPage> {
           ),
         );
         break;
+      case CardMenuOptions.viewDetails:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case CardMenuOptions.resetPin:
+        // TODO: Handle this case.
+        throw UnimplementedError();
+      case CardMenuOptions.blockCard:
+        // TODO: Handle this case.
+        throw UnimplementedError();
     }
   }
 

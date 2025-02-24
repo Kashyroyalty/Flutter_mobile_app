@@ -57,7 +57,7 @@ class _CardContractFormPageState extends State<CardContractformPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => CardPage(cardData: cardData),
+          builder: (context) => CardPage(cardData: cardData,),
         ),
       );
     }
