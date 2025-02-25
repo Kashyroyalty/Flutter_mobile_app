@@ -7,7 +7,6 @@ import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/CardPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
-import 'package:online_banking_system/pages/SettingPage.dart';
 
 // lib/constants/enums.dart
 enum CardMenuOptions {

@@ -6,16 +6,11 @@ import 'package:online_banking_system/Pages/Card%20contract%20form%20page.dart';
 import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
-import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
-import 'package:online_banking_system/pages/SettingPage.dart';
-import '../../widgets/carddesign.dart';
 import 'dart:ui';
-// Add this import at the top of your CardPage.dart file
-import 'package:online_banking_system/widgets/carddesign.dart';  // You already have this
 
-// Add this import at the top of your CardPage.dart file
-import 'package:online_banking_system/widgets/carddesign.dart';  // You already have this
+import '../widgets/CardDesign.dart';
+
 
 
 class CardPage extends StatefulWidget {
