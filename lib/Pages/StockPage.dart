@@ -53,11 +53,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
   Future<void> fetchAccountData() async {
     try {
       print("Fetching account data...");
-      final account = await ApiService().fetchAccountContract("5176632120");
+      final account = await ApiService().fetchAccountContracts("5176632120");
       print("Account Data Fetched: ${account.accountContractName}");
 
       setState(() {
-        accountData = account;
+        accountData = account as AccountContract?;
         _isLoading = false;
       });
     } catch (e) {
@@ -530,6 +530,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
         .where((t) => t.amount < 0)
         .fold(0, (sum, transaction) => sum + transaction.amount.abs());
   }
+}
+
+extension on List<AccountContract> {
+  get accountContractName => accountContractName;
 }
 
 class Transaction {

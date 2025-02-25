@@ -27,23 +27,25 @@ class ApiService {
     }
   }
 
-  Future<AccountContract> fetchAccountContract(String contractId) async {
-    final url = Uri.parse("$kBaseUrl/api/account-contracts/$contractId");
+  Future<List<AccountContract>> fetchAccountContracts([String? s]) async {
+    final url = Uri.parse("$kBaseUrl/api/account-contracts");
 
-    print("Fetching data: GET $url");
+    print("API Response: ${url.toString()}");
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      return AccountContract.fromJson(jsonDecode(response.body));
+      List<dynamic> jsonData = jsonDecode(response.body);
+      return jsonData.map((item) => AccountContract.fromJson(item)).toList();
     } else {
       print("\n--- ERROR (GET) ---");
-      print("Status Code: ${response.statusCode}");
-      print("Error Response: ${response.body}");
+      print("Status Code: \${response.statusCode}");
+      print("Error Response: \${response.body}");
       print("---------------------\n");
-      throw Exception('Failed to load account contract');
+      throw Exception('Failed to load account contracts');
     }
   }
+
 
 
   Future<TransactionContract> fetchTransactionContract(String contractId) async {
@@ -193,17 +195,17 @@ class ApiService {
     return response;
   }
 
-  Future<http.Response> createCardContract(Map<String, String> contractData) async {
+  Future<http.Response> createCardContract(Map<String, String> cardData) async {
     final url = Uri.parse("$kBaseUrl/cards/createCardContract");
 
     print("\n--- Creating Card Contract ---");
     print("Request: POST $url");
-    print("Request Body: ${jsonEncode(contractData)}");
+    print("Request Body: ${jsonEncode(cardData)}");
 
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode(contractData),
+      body: jsonEncode(cardData),
     );
 
     print("\n--- POST Response ---");
@@ -213,6 +215,28 @@ class ApiService {
 
     return response;
   }
+
+  Future<http.Response> createAccountContract({required Map<String, dynamic> accountData}) async {
+    final url = Uri.parse("$kBaseUrl/account-contracts/createAccountContract");
+
+    print("\n--- Creating Account Contract ---");
+    print("Request: POST $url");
+    print("Request Body: ${jsonEncode(accountData)}");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(accountData),
+    );
+
+    print("\n--- POST Response ---");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    print("----------------------\n");
+
+    return response;
+  }
+
 
   Future<http.Response> activateCard(String contractId) async {
     final url = Uri.parse("$kBaseUrl/api/cards/$contractId/active");

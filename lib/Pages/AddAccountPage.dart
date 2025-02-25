@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Pages/Card%20contract%20form%20page.dart';
-import 'CardContractformPage.dart';  // Import the CardContractformPage to navigate
+
+import 'AccountPage.dart';
 
 class AddAccountPage extends StatefulWidget {
   @override
@@ -31,7 +32,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
-      final accountData = {
+      final Map<String, dynamic> accountData = {
         'title': _selectedTitle,
         'firstName': _firstNameController.text,
         'lastName': _lastNameController.text,
@@ -40,23 +41,24 @@ class _AddAccountPageState extends State<AddAccountPage> {
         'currency': _selectedCurrency,
       };
 
-      // Print the account data to the terminal
       print("Account Data:");
       accountData.forEach((key, value) {
         print("$key: $value");
       });
 
-      // Here you would call your API service to create the account
-      // apiService.createAccountContract(accountData);
+      apiService.createAccountContract(accountData: accountData);
 
-      // Return to previous screen
-      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AccountPage(accountData: accountData),
+        ),
+      );
     }
   }
 
   void _navigateToCardForm() {
     if (_formKey.currentState!.validate()) {
-      // Navigate to CardContractformPage
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -81,7 +83,6 @@ class _AddAccountPageState extends State<AddAccountPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Personal Information
                 Card(
                   elevation: 4,
                   child: Padding(
@@ -136,7 +137,6 @@ class _AddAccountPageState extends State<AddAccountPage> {
                   ),
                 ),
                 SizedBox(height: 16),
-                // Account Information
                 Card(
                   elevation: 4,
                   child: Padding(
@@ -194,12 +194,12 @@ class _AddAccountPageState extends State<AddAccountPage> {
                 Row(
                   children: [
                     Expanded(
-                      child:ElevatedButton(
+                      child: ElevatedButton(
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           backgroundColor: Colors.indigo,
-                          foregroundColor: Colors.white, // Add this line for bright white text
+                          foregroundColor: Colors.white,
                         ),
                         child: Text(
                           'Finish',
@@ -219,7 +219,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           backgroundColor: Colors.teal,
-                          foregroundColor: Colors.white, // Add this line for bright white text
+                          foregroundColor: Colors.white,
                         ),
                       ),
                     ),
@@ -231,14 +231,5 @@ class _AddAccountPageState extends State<AddAccountPage> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _accountNumberController.dispose();
-    _bankBranchController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    super.dispose();
   }
 }

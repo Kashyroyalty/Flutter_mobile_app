@@ -15,12 +15,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _obscureBalance = true;
-  AccountContract? _selectedAccount;
   List<dynamic> _cards = [];
-  List<dynamic> _accounts = [];
+  List<AccountContract> accountData = []; // Ensure this is initialized properly
+  AccountContract? _selectedAccount;
+  bool _obscureBalance = true;
   List<dynamic> _transactions = [];
   late ApiService apiService;
+
+  get account => account;
 
   Future<void> fetchCards() async {
     try {
@@ -33,16 +35,26 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> fetchAccounts() async {
+  void fetchAccounts() async {
     try {
-      AccountContract contract = await apiService.fetchAccountContract("5176632120");
+      AccountContract fetchedAccounts = (await apiService.fetchAccountContracts("5176632120")) as AccountContract;
+
+      print("Fetched accounts: $fetchedAccounts"); // Debugging statement
+
       setState(() {
-        _accounts.add(contract);
+        accountData = account as List<AccountContract>;
+        if (accountData.isNotEmpty) {
+          _selectedAccount = accountData.first; // Set a default account
+        }
       });
+
+      print("Selected Account: $_selectedAccount"); // Debugging statement
+
     } catch (e) {
-      print("Error fetching card contract: $e");
+      print("Error fetching accounts: $e");
     }
   }
+
 
   Future<void> fetchTransactions() async {
     try {
@@ -86,6 +98,8 @@ class _HomePageState extends State<HomePage> {
       fetchAccounts();
       fetchTransactions();
     }
+
+
 
     @override
     Widget build(BuildContext context) {
@@ -157,16 +171,19 @@ class _HomePageState extends State<HomePage> {
                     border: Border.all(color: Colors.grey[300]!),
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: DropdownButtonFormField<AccountContract>(
+                  child: accountData.isEmpty
+                      ? Center(child: CircularProgressIndicator()) // Show a loader if no data
+
+                      : DropdownButtonFormField<AccountContract>(
                     decoration: InputDecoration(
                       labelText: 'Select Account',
                       border: InputBorder.none,
                     ),
                     value: _selectedAccount,
-                    items: _accounts.map((account) {
+                    items: accountData.map((account) {
                       return DropdownMenuItem<AccountContract>(
                         value: account, // Store entire account object
-                        child: Text(account.accountName!), // Assuming accountName exists
+                        child: Text(account.accountContractName ?? 'Unnamed Account'),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -179,13 +196,12 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 20),
                 if (_selectedAccount != null) ...[
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('Available Balance'),
                       _buildObscuredAmount(
-                        '\$${_selectedAccount!.balance}', // Using selected account directly
+                        '\$${_selectedAccount!.balance}', // Ensure this property exists
                       ),
                       IconButton(
                         icon: Icon(_obscureBalance ? Icons.visibility : Icons.visibility_off),

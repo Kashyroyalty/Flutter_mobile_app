@@ -4,10 +4,13 @@ import 'package:online_banking_system/widgets/AccountDetails.dart';
 import '../Models/AccountContract.dart';
 import '../Models/ApiService.dart';
 import 'NotificationPage.dart';
-import 'AccountDetailsPage.dart';
 import 'AddAccountPage.dart'; // Import the new page
 
 class AccountPage extends StatefulWidget {
+  final Map<String, dynamic>? accountData;
+
+  AccountPage({this.accountData});
+
   @override
   _AccountPageState createState() => _AccountPageState();
 }
@@ -22,17 +25,20 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.accountData != null) {
+      print("Received Account Data: ${widget.accountData}");
+    }
     fetchAccountData();
   }
 
   Future<void> fetchAccountData() async {
     try {
       print("Fetching account data...");
-      final account = await ApiService().fetchAccountContract("5176632120");
+      final account = await ApiService().fetchAccountContracts("5176632120");
       print("Account Data Fetched: ${account.accountContractName}");
 
       setState(() {
-        accountData = account;
+        accountData = account as AccountContract?;
         _isLoading = false;
       });
     } catch (e) {
@@ -154,6 +160,10 @@ class _AccountPageState extends State<AccountPage> {
       MaterialPageRoute(builder: (context) => AddAccountPage()),
     );
   }
+}
+
+extension on List<AccountContract> {
+  get accountContractName => accountContractName;
 }
 
 class _TotalBalanceCard extends StatelessWidget {
