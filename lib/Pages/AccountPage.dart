@@ -5,6 +5,7 @@ import '../Models/AccountContract.dart';
 import '../Models/ApiService.dart';
 import 'NotificationPage.dart';
 import 'AccountDetailsPage.dart';
+import 'AddAccountPage.dart'; // Import the new page
 
 class AccountPage extends StatefulWidget {
   @override
@@ -95,9 +96,27 @@ class _AccountPageState extends State<AccountPage> {
                     },
                   ),
                   SizedBox(height: 24),
-                  Text(
-                    'My Cards',
-                    style: Theme.of(context).textTheme.titleLarge,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'My Cards',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      ElevatedButton.icon(
+                        icon: Icon(Icons.add),
+                        label: Text("Add Account"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.indigo,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () => _navigateToAddAccount(context),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -119,7 +138,6 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ],
       ),
-      bottomNavigationBar: _BottomActionBar(),
     );
   }
 
@@ -127,6 +145,13 @@ class _AccountPageState extends State<AccountPage> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AccountDetailsPage()),
+    );
+  }
+
+  void _navigateToAddAccount(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddAccountPage()),
     );
   }
 }
@@ -263,28 +288,6 @@ class _AccountCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _BottomActionBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [],
       ),
     );
   }
