@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
-import 'CardPage.dart';  // Import the CardPage to navigate
 
 class CardContractformPage extends StatefulWidget {
   @override
@@ -31,6 +30,27 @@ class _CardContractFormPageState extends State<CardContractformPage> {
     apiService = ApiService();
   }
 
+  void _showSuccessNotification() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('New card has been added successfully'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 3),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
       final cardData = {
@@ -52,14 +72,26 @@ class _CardContractFormPageState extends State<CardContractformPage> {
 
       apiService.createCardContract(cardData);
 
-      // Pass the data to the CardPage
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => CardPage(cardData: cardData,),
-        ),
-      );
+      // Show success notification
+      _showSuccessNotification();
+
+      // Clear form fields for a new entry
+      _clearFormFields();
     }
+  }
+
+  // Helper method to clear all form fields after submission
+  void _clearFormFields() {
+    _firstNameController.clear();
+    _lastNameController.clear();
+    _accountNumberController.clear();
+    _bankBranchController.clear();
+    _cardNumberController.clear();
+    setState(() {
+      _selectedTitle = 'Mr.';
+      _selectedProduct = 'CREDIT';
+      _selectedCurrency = 'USD';
+    });
   }
 
   @override

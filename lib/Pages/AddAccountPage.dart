@@ -48,12 +48,34 @@ class _AddAccountPageState extends State<AddAccountPage> {
 
       apiService.createAccountContract(accountData: accountData);
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => AccountPage(accountData: accountData),
+      // Show success notification
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 10),
+              Text('Account Has Been Added Successfully'),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         ),
       );
+
+      // Delay navigation slightly to show the notification
+      Future.delayed(Duration(milliseconds: 1500), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AccountPage(accountData: accountData),
+          ),
+        );
+      });
     }
   }
 
