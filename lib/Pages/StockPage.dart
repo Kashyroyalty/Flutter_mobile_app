@@ -68,102 +68,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     }
   }
 
-  void _showTopUpDialog() {
-    TextEditingController amountController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Top Up Account',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: amountController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  labelText: 'Amount',
-                  prefixText: '\$',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.blue, width: 2),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Current Balance: \$${currentBalance.toStringAsFixed(2)}',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text('Cancel'),
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      double amount = double.tryParse(amountController.text) ?? 0;
-                      if (amount > 0) {
-                        setState(() {
-                          currentBalance += amount;
-                          transactions.insert(
-                            0,
-                            Transaction(
-                              id: DateTime.now().toString(),
-                              title: 'Top Up',
-                              amount: amount,
-                              date: DateTime.now(),
-                              category: TransactionCategory.topUp,
-                            ),
-                          );
-                        });
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Successfully topped up \$${amount.toStringAsFixed(2)}'),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    },
-                    child: Text('Top Up'),
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,10 +98,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
               );
             },
           ),
-     ],
-    ),
+        ],
+      ),
       body: _buildBody(),
-      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
@@ -377,7 +280,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Top Ups',
+                  'Income',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: !isExpensesTab ? Colors.white : Colors.grey,
@@ -440,7 +343,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isExpensesTab ? 'Recent Expenses' : 'Recent Top Ups',
+          isExpensesTab ? 'Recent Expenses' : 'Recent Income',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -513,15 +416,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton.extended(
-      onPressed: _showTopUpDialog,
-      icon: Icon(Icons.add),
-      label: Text('Top Up'),
-      backgroundColor: Colors.blue,
     );
   }
 

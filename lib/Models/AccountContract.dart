@@ -16,7 +16,7 @@ class AccountContract {
   final String branchCode;
   final String branchName;
   final String cbsNumber;
-  final double balance;
+  late final double balance;
   final String currency;
   final String currencyNumericCode;
   final String dateClose;
