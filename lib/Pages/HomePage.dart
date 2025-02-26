@@ -283,57 +283,6 @@ class _HomePageState extends State<HomePage> {
                   children: _cards.map((card) => CardDesign(card: card)).toList(),
                 ),
               ),
-              SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20.0),
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: accountData.isEmpty
-                    ? Center(child: CircularProgressIndicator())
-                    : DropdownButtonFormField<AccountContract>(
-                  decoration: InputDecoration(
-                    labelText: 'Select Account',
-                    border: InputBorder.none,
-                  ),
-                  value: _selectedAccount,
-                  items: accountData.map((account) {
-                    return DropdownMenuItem<AccountContract>(
-                      value: account,
-                      child: Text(account.accountContractName ?? 'Unnamed Account'),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedAccount = value;
-                    });
-                  },
-                  isExpanded: true,
-                ),
-              ),
-              SizedBox(height: 20),
-              if (_selectedAccount != null) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Available Balance'),
-                    _buildObscuredAmount(
-                      '\$${_selectedAccount!.balance}',
-                    ),
-                    IconButton(
-                      icon: Icon(_obscureBalance ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () {
-                        setState(() {
-                          _obscureBalance = !_obscureBalance;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ],
-
               SizedBox(height: 30),
               Text(
                 'Recent Transactions',

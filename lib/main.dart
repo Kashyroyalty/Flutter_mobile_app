@@ -61,7 +61,7 @@ class _MyAppState extends State<MyApp> {
 
       initialRoute: '/',
       routes: {
-        '/language': (context) => LanguagePage(onLanguageChange: _changeLanguage),
+        //'/language': (context) => LanguagePage(onLanguageChange: _changeLanguage),
         '/splashscreen': (context) => SplashScreen(),
         '/login': (context) => LoginPage(),
         '/register': (context) => RegistrationPage(),

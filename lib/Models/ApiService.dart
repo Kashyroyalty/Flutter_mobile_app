@@ -27,8 +27,8 @@ class ApiService {
     }
   }
 
-  Future<List<AccountContract>> fetchAccountContracts([String? s]) async {
-    final url = Uri.parse("$kBaseUrl/api/account-contracts");
+  Future<List<AccountContract>> fetchAccountContracts(String contractId) async {
+    final url = Uri.parse("$kBaseUrl/account-contracts/$contractId");
 
     print("API Response: ${url.toString()}");
 
@@ -217,7 +217,7 @@ class ApiService {
   }
 
   Future<http.Response> createAccountContract({required Map<String, dynamic> accountData}) async {
-    final url = Uri.parse("$kBaseUrl/account-contracts/createAccountContract");
+    final url = Uri.parse("$kBaseUrl/account_contracts_id/createAccountContract");
 
     print("\n--- Creating Account Contract ---");
     print("Request: POST $url");
