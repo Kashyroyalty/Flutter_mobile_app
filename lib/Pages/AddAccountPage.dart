@@ -67,14 +67,15 @@ class _AddAccountPageState extends State<AddAccountPage> {
         ),
       );
 
-      // Delay navigation slightly to show the notification
-      Future.delayed(Duration(milliseconds: 1500), () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AccountPage(accountData: accountData),
-          ),
-        );
+      // Reset the form after successful submission
+      _formKey.currentState!.reset();
+      _accountNumberController.clear();
+      _bankBranchController.clear();
+      _firstNameController.clear();
+      _lastNameController.clear();
+      setState(() {
+        _selectedCurrency = 'USD';
+        _selectedTitle = 'Mr.';
       });
     }
   }
