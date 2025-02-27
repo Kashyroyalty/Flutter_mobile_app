@@ -81,53 +81,6 @@ class _AccountPageState extends State<AccountPage> {
       ),
       body: CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _isLoading
-                      ? CircularProgressIndicator()
-                      : _TotalBalanceCard(
-                    accountName: (accountData?.accountContractName.isNotEmpty ?? false)
-                        ? accountData!.accountContractName
-                        : "No Account Name",
-                    balance: accountData?.balance ?? 0.0,
-                    isBalanceHidden: _isBalanceHidden,
-                    onToggleBalance: () {
-                      setState(() {
-                        _isBalanceHidden = !_isBalanceHidden;
-                      });
-                    },
-                  ),
-                  SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'My Cards',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      ElevatedButton.icon(
-                        icon: Icon(Icons.add),
-                        label: Text("Add Account"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.indigo,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () => _navigateToAddAccount(context),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
           SliverPadding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverList(
