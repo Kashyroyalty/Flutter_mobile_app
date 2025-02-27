@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/LanguagePage.dart';
 
+import 'WelcomePage.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -23,9 +25,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
     Future.delayed(Duration(seconds: 3), () {
       if (mounted) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LanguagePage(onLanguageChange: (Locale ) {  },)));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => WelcomePage()),
+        );
       }
     });
+
 
     _controller = AnimationController(
       vsync: this,

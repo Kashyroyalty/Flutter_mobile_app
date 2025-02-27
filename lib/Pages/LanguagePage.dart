@@ -17,9 +17,6 @@ class _LanguageSelectorScreenState extends State<LanguagePage> {
 
   final List<Map<String, String>> languages = [
     {'code': 'en', 'name': 'English', 'nativeName': 'English'},
-    {'code': 'sw', 'name': 'Kiswahili', 'nativeName': 'Kiswahili'},
-    {'code': 'fr', 'name': 'French', 'nativeName': 'Français'},
-    {'code': 'es', 'name': 'Spanish', 'nativeName': 'Español'},
   ];
 
   @override

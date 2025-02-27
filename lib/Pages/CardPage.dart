@@ -64,6 +64,7 @@ class _CardPageState extends State<CardPage> {
       CardContract contract = await apiService.fetchCardContract("2507355660");
       setState(() {
         _cards.add(contract);
+        _selectedCardIndex = 0;
         _isLoading = false;
       });
     } catch (e) {
@@ -155,13 +156,16 @@ class _CardPageState extends State<CardPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBlurContainer('Account Number: ${card.cbsNumber}', _isHidden),
-          _buildBlurContainer('Available Balance: ${formatBalance(card.availableBalance as num)} ${card.currency}', _isHidden),
-          _buildBlurContainer('Card Status: ${card.cardContractStatusData?.externalStatusName}', _isHidden),
-          _buildBlurContainer('Card Expiry Date: ${card.cardExpiryDate}', _isHidden),
-          _buildBlurContainer('Product Name: ${card.productName}', _isHidden),
-          _buildBlurContainer('Cardholder: ${card.embossedData.firstName} ${card.embossedData.lastName}', _isHidden),
-          _buildBlurContainer('Credit Limit: ${formatBalance(card.creditLimit?.toDouble() as num)} ${card.currency}', _isHidden),
+          if (card != null) ...[
+            _buildBlurContainer('Card Number: ${card.cardContractNumber ?? "N/A"}', _isHidden),
+            _buildBlurContainer('Available Balance: ${formatBalance(card.availableBalance ?? 0)} ${card.currency ?? "N/A"}', _isHidden),
+            _buildBlurContainer('Card Status: ${card.cardContractStatusData?.externalStatusName ?? "N/A"}', _isHidden),
+            _buildBlurContainer('Card Expiry Date: ${card.cardExpiryDate ?? "N/A"}', _isHidden),
+            _buildBlurContainer('Product Name: ${card.productName ?? "N/A"}', _isHidden),
+            _buildBlurContainer('Cardholder: ${card.embossedData?.firstName ?? "N/A"} ${card.embossedData?.lastName ?? ""}', _isHidden),
+            _buildBlurContainer('Credit Limit: ${formatBalance(card.creditLimit?.toDouble() ?? 0)} ${card.currency ?? "N/A"}', _isHidden),
+          ] else
+            Center(child: Text("No card data available")),
         ],
       ),
     );
