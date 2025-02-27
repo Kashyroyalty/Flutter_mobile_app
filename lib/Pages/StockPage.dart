@@ -280,7 +280,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'Income',
+                  'Top Up',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: !isExpensesTab ? Colors.white : Colors.grey,
@@ -343,7 +343,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isExpensesTab ? 'Recent Expenses' : 'Recent Income',
+          isExpensesTab ? 'Recent Expenses' : 'Recent Top Up',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
