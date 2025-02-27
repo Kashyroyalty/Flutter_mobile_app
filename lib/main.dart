@@ -7,7 +7,6 @@ import 'package:online_banking_system/Screens/SplashScreen.dart';
 import 'Pages/HomePage.dart';
 import 'Pages/AccountPage.dart';
 import 'Pages/CardPage.dart';
-import 'Pages/LanguagePage.dart';
 import 'Pages/StockPage.dart';
 import 'Screens/privacy_screen.dart';
 import 'Screens/account_summary_screen.dart';
@@ -15,7 +14,7 @@ import 'Screens/create_profile_screen1.dart';
 import 'Screens/verification_screen.dart';
 import 'Screens/password_creation_screen.dart';
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 

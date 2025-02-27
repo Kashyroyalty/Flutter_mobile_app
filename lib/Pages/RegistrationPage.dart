@@ -9,6 +9,8 @@ class RegistrationPage extends StatefulWidget {
   _RegistrationPageState createState() => _RegistrationPageState();
 }
 
+
+
 class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
 
@@ -24,6 +26,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
