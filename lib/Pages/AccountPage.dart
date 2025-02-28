@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
-import 'package:online_banking_system/widgets/AccountDetails.dart';
+import 'package:online_banking_system/widgets/Accounts.dart';
 import '../Models/AccountContract.dart';
 import '../Models/ApiService.dart';
+import '../widgets/AccountDetails.dart';
 import 'NotificationPage.dart';
-import 'AddAccountPage.dart'; // Import the new page
+import 'AddAccountPage.dart';
 
 class AccountPage extends StatefulWidget {
   final Map<String, dynamic>? accountData;
@@ -18,17 +19,40 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   AccountContract? accountData;
   bool _isLoading = true;
-  bool _isBalanceHidden = true;
+  bool _isBalanceHidden = false;
 
-  get card => null;
+  // Sample data for multiple accounts
+  final List<Map<String, dynamic>> accounts = [
+    {
+      'accountName': 'Main Account',
+      'cardNumber': '**** 8832',
+      'balance': 8846.00,
+      'cardType': 'Mastercard',
+      'color': Color(0xFF341813),
+    },
+    {
+      'accountName': 'Savings Account',
+      'cardNumber': '**** 4567',
+      'balance': 12350.75,
+      'cardType': 'Visa',
+      'color': Color(0xFFFF3800),
+    },
+    {
+      'accountName': 'Investment Account',
+      'cardNumber': '**** 9012',
+      'balance': 5250.50,
+      'cardType': 'Visa',
+      'color': Color(0xFF00B4D8),
+    },
+  ];
 
   @override
   void initState() {
     super.initState();
+    fetchAccountData();
     if (widget.accountData != null) {
       print("Received Account Data: ${widget.accountData}");
     }
-    fetchAccountData();
   }
 
   Future<void> fetchAccountData() async {
@@ -47,6 +71,19 @@ class _AccountPageState extends State<AccountPage> {
         _isLoading = false;
       });
     }
+  }
+
+  void _toggleBalanceVisibility() {
+    setState(() {
+      _isBalanceHidden = !_isBalanceHidden;
+    });
+  }
+
+  void _navigateToAccountDetails(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AccountDetailsPage()),
+    );
   }
 
   @override
@@ -79,31 +116,86 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ],
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                _AccountCard(
-                  cardNumber: '**** 8832',
-                  balance: 8846.00,
-                  cardType: 'Mastercard',
-                  color: Colors.teal,
-                  onTap: () => _navigateToAccountDetails(context),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
+        children: [
+          // Balance visibility toggle
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Your Accounts',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ]),
+                InkWell(
+                  onTap: _toggleBalanceVisibility,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _isBalanceHidden
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          size: 18,
+                          color: Colors.blue.shade700,
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          _isBalanceHidden ? 'Show Balance' : 'Hide Balance',
+                          style: TextStyle(
+                            color: Colors.blue.shade700,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Account cards - compact scrollable list
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(horizontal: 16),
+              itemCount: accounts.length,
+              itemBuilder: (context, index) {
+                final account = accounts[index];
+                return Accounts(
+                  accountName: account['accountName'],
+                  cardNumber: account['cardNumber'],
+                  balance: account['balance'],
+                  cardType: account['cardType'],
+                  color: account['color'],
+                  isBalanceHidden: _isBalanceHidden,
+                  onTap: () => _navigateToAccountDetails(context),
+                );
+              },
             ),
           ),
         ],
       ),
-    );
-  }
-
-  void _navigateToAccountDetails(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AccountDetailsPage()),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.blue,
+        child: Icon(Icons.add),
+        onPressed: () => _navigateToAddAccount(context),
+      ),
     );
   }
 
@@ -117,141 +209,4 @@ class _AccountPageState extends State<AccountPage> {
 
 extension on List<AccountContract> {
   get accountContractName => accountContractName;
-}
-
-class _TotalBalanceCard extends StatelessWidget {
-  final String accountName;
-  final double balance;
-  final bool isBalanceHidden;
-  final VoidCallback onToggleBalance;
-
-  const _TotalBalanceCard({
-    required this.accountName,
-    required this.balance,
-    required this.isBalanceHidden,
-    required this.onToggleBalance,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.indigo, Colors.indigoAccent],
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            accountName,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Total Balance',
-            style: TextStyle(color: Colors.white70),
-          ),
-          SizedBox(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                isBalanceHidden ? '••••••' : '\$${balance.toStringAsFixed(2)}',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  isBalanceHidden ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.white70,
-                ),
-                onPressed: onToggleBalance,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _AccountCard extends StatelessWidget {
-  final String cardNumber;
-  final double balance;
-  final String cardType;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _AccountCard({
-    required this.cardNumber,
-    required this.balance,
-    required this.cardType,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 16),
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.credit_card, color: color),
-                      SizedBox(width: 8),
-                      Text(
-                        cardType,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: color,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    cardNumber,
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              Text(
-                '\$${balance.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Available Balance',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }
