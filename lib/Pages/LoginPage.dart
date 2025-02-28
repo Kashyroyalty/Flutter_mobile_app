@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Constants/sizes.dart';
+import 'package:online_banking_system/Screens/password_creation_screen.dart';
 import 'RegistrationPage.dart';
 import 'ForgotPassword.dart'; // Import ForgotPassword
 import '../main.dart'; // Import MainScreen
@@ -75,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => PasswordCreationScreen()),
       );
     }
   }

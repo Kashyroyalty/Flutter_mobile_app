@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
-
-
-import 'Card_Verification_screen.dart';
 import 'WelcomePage.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -27,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => CardVerificationScreen()),
+          MaterialPageRoute(builder: (context) => WelcomePage()),
         );
       }
     });
@@ -132,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
               onPressed: () {
                 // Ensure it navigates to LanguagePage manually if user presses the button early
-                Navigator.pushReplacementNamed(context, '/card verification');
+                Navigator.pushReplacementNamed(context, '/welcome');
               },
               child: Text(
                 "Get Started",

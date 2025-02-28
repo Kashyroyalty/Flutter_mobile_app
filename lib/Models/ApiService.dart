@@ -29,7 +29,7 @@ class ApiService {
 
 
   Future<List<AccountContract>> fetchAccountContracts(String contractId) async {
-    final url = Uri.parse("$kBaseUrl/account-contracts/$contractId");
+    final url = Uri.parse("$kBaseUrl/api/account-contracts/$contractId");
 
     print("API Response: ${url.toString()}");
 
@@ -253,32 +253,28 @@ class ApiService {
   }
 
 
-  static Future<bool> verifyCard(String clientId, String email,String phone) async {
-    final url = Uri.parse("$kBaseUrl/clients/$clientId");
+  Future<http.Response> searchManagement(String accountContractId) async {
+    final url = Uri.parse("$kBaseUrl/getAccountContractId/$accountContractId");
 
-    print("\n--- Searching for card client ID ---");
-    print("Request: GET $url");
+    print("\n--- Searching Account Contract ---");
+    print("Request: POST $url");
+    print("Request Body: {\"accountContractId\": \"$accountContractId\"}");
 
-    try {
-      final response = await http.get(
-        url,
-        headers: {"Content-Type": "application/json"},
-      );
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"accountContractId": accountContractId}),
+    );
 
-      print("Response: ${response.statusCode} - ${response.body}");
-      print("-----------------------------\n");
+    print("\n--- POST Response ---");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
+    print("----------------------\n");
 
-      if (response.statusCode == 200) {
-        Map<String, dynamic> responseData = jsonDecode(response.body);
-        return responseData['found'] ?? false; // Adjust based on API response format
-      } else {
-        return false;
-      }
-    } catch (e) {
-      print("Error verifying card: $e");
-      return false;
-    }
+    return response;
   }
+
+
 }
 
 

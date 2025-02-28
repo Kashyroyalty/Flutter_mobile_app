@@ -3,17 +3,17 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/RegistrationPage.dart';
-import 'package:online_banking_system/Screens/Card_Verification_screen.dart';
 import 'package:online_banking_system/Screens/SplashScreen.dart';
+import 'package:online_banking_system/Screens/WelcomePage.dart';
 import 'Pages/HomePage.dart';
 import 'Pages/AccountPage.dart';
 import 'Pages/CardPage.dart';
+import 'Pages/InputOtp.dart';
 import 'Pages/LanguagePage.dart';
 import 'Pages/StockPage.dart';
 import 'Screens/privacy_screen.dart';
 import 'Screens/account_summary_screen.dart';
 import 'Screens/create_profile_screen1.dart';
-import 'Screens/verification_screen.dart';
 import 'Screens/password_creation_screen.dart';
 
 void main() async {
@@ -63,10 +63,11 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/splashscreen': (context) => SplashScreen(),
-        '/card verification':(context) => CardVerificationScreen(),
         '/login': (context) => LoginPage(),
         '/register': (context) => RegistrationPage(),
         '/home': (context) => HomePage(),
+        '/otp': (context) => InputOtp(),
+        '/welcome':(context) => WelcomePage(),
         '/account': (context) => AccountPage(),
         '/card': (context) => CardPage(cardData: {}),
         '/stock': (context) => StatisticsPage(),
@@ -74,13 +75,13 @@ class _MyAppState extends State<MyApp> {
         '/privacy': (context) => PrivacyScreen(),
         '/accounts': (context) => AccountSummaryScreen(),
         '/createProfile1': (context) => CreateProfileScreen1(),
-        '/verification': (context) => VerificationScreen(),
         '/passwordCreation': (context) => PasswordCreationScreen(),
       },
       debugShowCheckedModeBanner: false,
     );
   }
 }
+
 
 
 class AppLocalizations {

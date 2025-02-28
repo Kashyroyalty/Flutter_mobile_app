@@ -19,7 +19,7 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   AccountContract? accountData;
   bool _isLoading = true;
-  bool _isBalanceHidden = false;
+  bool _isBalanceHidden = true;
 
   // Sample data for multiple accounts
   final List<Map<String, dynamic>> accounts = [
