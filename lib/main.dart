@@ -3,10 +3,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/RegistrationPage.dart';
+import 'package:online_banking_system/Screens/Card_Verification_screen.dart';
 import 'package:online_banking_system/Screens/SplashScreen.dart';
 import 'Pages/HomePage.dart';
 import 'Pages/AccountPage.dart';
 import 'Pages/CardPage.dart';
+import 'Pages/LanguagePage.dart';
 import 'Pages/StockPage.dart';
 import 'Screens/privacy_screen.dart';
 import 'Screens/account_summary_screen.dart';
@@ -60,14 +62,15 @@ class _MyAppState extends State<MyApp> {
 
       initialRoute: '/',
       routes: {
-        //'/language': (context) => LanguagePage(onLanguageChange: _changeLanguage),
         '/splashscreen': (context) => SplashScreen(),
+        '/card verification':(context) => CardVerificationScreen(),
         '/login': (context) => LoginPage(),
         '/register': (context) => RegistrationPage(),
         '/home': (context) => HomePage(),
         '/account': (context) => AccountPage(),
         '/card': (context) => CardPage(cardData: {}),
         '/stock': (context) => StatisticsPage(),
+        '/language': (context) => LanguagePage(onLanguageChange: _changeLanguage),
         '/privacy': (context) => PrivacyScreen(),
         '/accounts': (context) => AccountSummaryScreen(),
         '/createProfile1': (context) => CreateProfileScreen1(),
