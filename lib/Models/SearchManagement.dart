@@ -1,17 +1,20 @@
-class Client {
+class ClientSearch {
   final String clientIdentifier;
   final String clientIdentifierType;
 
-  Client({
+
+  ClientSearch({
     required this.clientIdentifier,
     required this.clientIdentifierType,
+
   });
 
   // Convert a JSON map into a Client instance
-  factory Client.fromJson(Map<String, dynamic> json) {
-    return Client(
+  factory ClientSearch.fromJson(Map<String, dynamic> json) {
+    return ClientSearch(
       clientIdentifier: json['clientIdentifier'],
       clientIdentifierType: json['clientIdentifierType'],
+
     );
   }
 
@@ -23,3 +26,22 @@ class Client {
     };
   }
 }
+
+class Account {
+  String accountContractIdentifier;
+  String accountContractIdentifierType;
+
+  Account({
+    required this.accountContractIdentifier,
+    required this.accountContractIdentifierType,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      "accountContractIdentifier": accountContractIdentifier,
+      "accountContractIdentifierType": accountContractIdentifierType,
+    };
+  }
+}
+
+

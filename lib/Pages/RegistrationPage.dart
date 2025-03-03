@@ -6,7 +6,6 @@ import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Constants/sizes.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 
-import '../Constants/Strings.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -17,23 +16,18 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _accountController = TextEditingController();
+  final TextEditingController _clientController = TextEditingController();
 
-  Future<http.Response> searchManagement(String accountContractId) async {
-    final url = Uri.parse("$kBaseUrl/getAccountContractId/$accountContractId");
-
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"accountContractId": accountContractId}),
-    );
-
-    return response;
+  late  ApiService apiService;
+  @override
+  void initState() {
+    super.initState();
+    apiService = ApiService();
   }
 
   void _onRegisterPressed() async {
     if (_formKey.currentState!.validate()) {
-      String accountNumber = _accountController.text.trim();
+      String email_address = _clientController.text.trim();
 
       // Show loading Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -45,12 +39,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
       try {
         // Call API to check account contract
-        final response = await searchManagement(accountNumber);
+        final response = await apiService.fetchClientContract(email_address);
 
         if (response.statusCode == 200) {
+          print(response.body);
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Registration successful!"),
+
               duration: Duration(seconds: 2),
             ),
           );
@@ -62,7 +59,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         } else {
           // Extract error message from response body (if any)
           final responseBody = jsonDecode(response.body);
-          String errorMessage = responseBody['message'] ?? "Invalid account contract";
+          String errorMessage = responseBody['message'] ?? "Invalid email address";
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -101,7 +98,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               crossAxisAlignment: CrossAxisAlignment.center, // Centers items horizontally
               children: [
                 Text(
-                  "Verify Account",
+                  "Verify Client ",
                   style: TextStyle(
                     fontSize: kTextSizeTitles,
                     fontWeight: FontWeight.bold,
@@ -123,8 +120,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 TextFormField(
                   keyboardType: TextInputType.number,
                   style: TextStyle(color: kTextColorLightTheme),
+                  controller: _clientController,
                   decoration: InputDecoration(
-                    labelText: "Account Number",
+                    labelText: "Client Email",
                     labelStyle: TextStyle(color: kTextColorLightTheme),
                     filled: true,
                     fillColor: Colors.white,
@@ -133,16 +131,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     ),
                     counterText: "", // Hides the default character counter
                   ),
-                  maxLength: 16, // Limits input to 16 digits
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return "Please enter your account number";
+                      return "Please enter your email";
                     }
-                    if (!RegExp(r'^\d+$').hasMatch(value)) {
-                      return "The field only accepts numbers";
-                    }
-                    if (value.length < 15) {
-                      return "The field should contain at least 15 digits";
+                    if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                      return "Please enter a valid email address";
                     }
                     return null;
                   },

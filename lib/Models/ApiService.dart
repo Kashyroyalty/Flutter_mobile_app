@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
 import 'package:online_banking_system/Models/CardPlastics.dart';
+import 'package:online_banking_system/Models/ClientContract.dart';
+import 'package:online_banking_system/Models/SearchManagement.dart';
 import '../Constants/Strings.dart';
 import 'AccountContract.dart';
 import 'NotificationContract.dart';
@@ -253,26 +255,25 @@ class ApiService {
   }
 
 
-  Future<http.Response> searchManagement(String accountContractId) async {
-    final url = Uri.parse("$kBaseUrl/getAccountContractId/$accountContractId");
+  Future<http.Response> fetchClientContract(String Email) async {
+    final url = Uri.parse("$kBaseUrl/clients/contract-id?email=$Email");
 
-    print("\n--- Searching Account Contract ---");
-    print("Request: POST $url");
-    print("Request Body: {\"accountContractId\": \"$accountContractId\"}");
+    print("Fetching data: GET $url");
 
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"accountContractId": accountContractId}),
-    );
+    final response = await http.get(url);
 
-    print("\n--- POST Response ---");
-    print("Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
-    print("----------------------\n");
+    if (response.statusCode == 200) {
+      return ClientContactData.fromJson(jsonDecode(response.body));
 
-    return response;
+    } else {
+      print("\n--- ERROR (GET) ---");
+      print("Status Code: ${response.statusCode}");
+      print("Error Response: ${response.body}");
+      print("---------------------\n");
+      throw Exception('Failed to load client contract');
+    }
   }
+
 
 
 }
