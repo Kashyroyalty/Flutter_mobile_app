@@ -209,22 +209,25 @@ class _PinInputPageState extends State<PinInputPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  GridView.count(
-                    shrinkWrap: true,
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1.5,
-                    children: [
-                      ...List.generate(
-                        9,
-                            (index) => _buildKeypadButton('${index + 1}'),
-                      ),
-                      _buildKeypadButton('C', isSpecial: true),
-                      _buildKeypadButton('0'),
-                      _buildKeypadButton('OK', isSpecial: true, isVerify: true),
+                  SizedBox(
+                    height: 300,
+                    child: GridView.count(
+                      physics: NeverScrollableScrollPhysics(),  // Prevents nested scrolling issues
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 16,
+                      crossAxisSpacing: 16,
+                      childAspectRatio: 1.5,
+                      children: [
+                        ...List.generate(
+                          9,
+                              (index) => _buildKeypadButton('${index + 1}'),
+                        ),
+                        _buildKeypadButton('C', isSpecial: true),
+                        _buildKeypadButton('0'),
+                        _buildKeypadButton('OK', isSpecial: true, isVerify: true),
                     ],
                   ),
+              ),
                 ],
               ),
             ),
