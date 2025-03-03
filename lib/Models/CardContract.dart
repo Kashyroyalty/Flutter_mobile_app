@@ -92,6 +92,8 @@ class CardContract {
   static fromMap(Map<String, String> cardData) {
     // Implement logic as needed
   }
+
+  map(CardContract Function(dynamic item) param0) {}
 }
 
 class CardContractStatusData {

@@ -5,6 +5,12 @@ class TransactionContract {
   final double total;
   final List<Transaction> transactions;
 
+  var date;
+
+  var accountContractName;
+
+  var transactionDescription;
+
   TransactionContract({
     required this.count,
     required this.limit,
@@ -41,11 +47,11 @@ class Transaction {
   final String authorizationCode;
   final bool authorized;
   final double authorizationId;
-  final double baseAmount;
+  final num baseAmount;
   final List<CustomTransactionData> customTransactionData;
   final String customTransactionCondition;
   final String customTransactionTypeCode;
-  final double feeAmount;
+  final num feeAmount;
   final String feeDescription;
   final double financialDocumentId;
   final String fxRate;
@@ -141,13 +147,13 @@ class Transaction {
       authorizationCode: json['authorizationCode'],
       authorized: json['authorized'],
       authorizationId: json['authorizationId'],
-      baseAmount: json['baseAmount'].toDouble(),
+      baseAmount: json['baseAmount'].toNum(),
       customTransactionData: (json['customTransactionData'] as List)
           .map((item) => CustomTransactionData.fromJson(item))
           .toList(),
       customTransactionCondition: json['customTransactionCondition'],
       customTransactionTypeCode: json['customTransactionTypeCode'],
-      feeAmount: json['feeAmount'].toDouble(),
+      feeAmount: json['feeAmount'].toNum(),
       feeDescription: json['feeDescription'],
       financialDocumentId: json['financialDocumentId'],
       fxRate: json['fxRate'],
