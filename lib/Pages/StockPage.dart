@@ -5,7 +5,9 @@ import 'package:online_banking_system/Pages/NotificationPage.dart';
 
 import '../Models/AccountContract.dart';
 import '../Models/ApiService.dart';
+import '../Models/CardContract.dart';
 import '../Models/TransactionContract.dart';
+import '../widgets/CardExpense.dart';
 import 'ProfilePage.dart';
 
 enum TransactionCategory {
@@ -29,44 +31,73 @@ class _StatisticsPageState extends State<StatisticsPage> {
   double currentBalance = 0.0;
   AccountContract? accountData;
   bool _isLoading = true;
+  bool _hasError = false;
+  List<CardContract> _cards = [];
+  int _selectedCardIndex = -1;
   List<Transaction> transactions = [];
-  bool isLoading = true;
+
   String errorMessage = '';
+
+
+  CardContract? get cardData => _selectedCardIndex >= 0 ? _cards[_selectedCardIndex] : null;
+  double get cardBalance => cardData?.availableBalance ?? 0.0;
+
 
   @override
   void initState() {
     super.initState();
-    fetchTransactions();
-  }
+    fetchClientCards(
 
-  Future<void> fetchTransactions() async {
+    );
+  }
+  Future<void> fetchTransactions(String cardId) async {
     try {
-      TransactionContract contract = await ApiService().fetchTransactionContract("5176632120");
+      TransactionContract contract = await ApiService().fetchTransactionContract(cardId);
       setState(() {
-        transactions.add(contract as Transaction);
+        transactions = contract.transactions.map((t) => Transaction(
+          id: t.transactionId,
+          title: t.transactionType,
+          amount: t.transactionAmount,
+          date: DateTime.parse(t.transactionDate),
+          category: TransactionCategory.values.firstWhere(
+                (c) => c.toString().split('.').last == t.transactionDescription,
+            orElse: () => TransactionCategory.transfer,
+          ),
+        )).toList();
       });
     } catch (e) {
-      print("Error fetching card contract: $e");
+      print("Error fetching transactions: $e");
     }
   }
 
-  Future<void> fetchAccountData() async {
+  Future<void> fetchClientCards() async {
     try {
-      print("Fetching account data...");
-      final account = await ApiService().fetchAccountContracts("5176632120");
-      print("Account Data Fetched: ${account.accountContractName}");
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
 
-      setState(() {
-        accountData = account as AccountContract?;
-        _isLoading = false;
-      });
+      int? clientId = await ApiService().getClientId();
+      if (clientId == null) {
+        throw Exception("Client ID not found");
+      }
+
+      List<CardContract> fetchedCards = await ApiService().fetchClientCards(clientId);
+      if (fetchedCards.isNotEmpty) {
+        setState(() {
+          _cards = fetchedCards;
+          _selectedCardIndex = 0;
+        });
+        await fetchTransactions(fetchedCards[0].cardContractId as String);
+      }
     } catch (e) {
-      print("Error fetching account data: $e");
-      setState(() {
-        _isLoading = false;
-      });
+      print("Error fetching cards or transactions: $e");
+      setState(() => _hasError = true);
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +141,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildBalanceCard(),
+          CardWidget(
+            cardData: cardData,
+            cardBalance: cardBalance,
+            monthlyExpenses: _calculateTotalExpenses(),
+          ),
           SizedBox(height: 24),
           _buildDateRange(),
           SizedBox(height: 24),
@@ -124,77 +159,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  Widget _buildBalanceCard() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue[700]!, Colors.blue[500]!],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.2),
-            blurRadius: 12,
-            offset: Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Current Balance',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.8),
-              fontSize: 16,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            '\$${currentBalance.toStringAsFixed(2)}',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(height: 24),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Monthly Expenses',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  '\$${_calculateTotalExpenses().toStringAsFixed(2)}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+
+
 
   Widget _buildDateRange() {
     DateTime now = DateTime.now();

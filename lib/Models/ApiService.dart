@@ -142,9 +142,9 @@ class ApiService {
 
 
 
-  Future<http.Response> updateCardStatus(String contractId, String statusCode, String reason) async {
+  Future<http.Response> updateCardStatus(String contractId, {required String clientId, required String statusCode, required String reason}) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/status");
-    final requestData = {"reason": reason, "statusCode": statusCode};
+    final requestData = {"reason": reason, "statusCode": statusCode ,"clientId":clientId};
 
     print("\n--- Updating Card Status ---");
     print("Request: PUT $url");

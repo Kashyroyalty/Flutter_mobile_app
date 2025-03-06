@@ -144,13 +144,13 @@ class _CardPageState extends State<CardPage> {
         );
         break;
       case CardMenuOptions.viewDetails:
-        // TODO: Handle this case.
+      // TODO: Handle this case.
         throw UnimplementedError();
       case CardMenuOptions.resetPin:
-        // TODO: Handle this case.
+      // TODO: Handle this case.
         throw UnimplementedError();
       case CardMenuOptions.activateCard:
-        // TODO: Handle this case.
+      // TODO: Handle this case.
         throw UnimplementedError();
     }
   }

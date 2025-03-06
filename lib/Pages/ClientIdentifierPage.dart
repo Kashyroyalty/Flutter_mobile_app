@@ -293,13 +293,3 @@ class _clientidentifierpageState extends State<clientidentifierpage> {
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      scaffoldBackgroundColor: Colors.grey[100],
-    ),
-    home: clientidentifierpage(),
-  ));
-}

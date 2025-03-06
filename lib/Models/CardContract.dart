@@ -10,8 +10,8 @@ class CardContract {
   final double? blockedAmount;
   final String? cardExpiryDate;
   final int? cardContractId;
-  final String? cardContractName;
-  final String? cardContractNumber;
+  final String cardContractName;
+  final String cardContractNumber;
   final CardContractStatusData? cardContractStatusData;
   final int? cardholderId;
   final String? cbsNumber;

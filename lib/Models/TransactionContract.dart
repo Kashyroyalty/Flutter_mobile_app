@@ -83,7 +83,7 @@ class Transaction {
   final String transactionCurrencyNumericCode;
   final String transactionDate;
   final String transactionDescription;
-  final double transactionId;
+  final String transactionId;
   final String transactionStatus;
   final String transactionType;
   final String transactionTypeCode;
