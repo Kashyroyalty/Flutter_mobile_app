@@ -1,11 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Constants/sizes.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
@@ -17,17 +16,23 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _clientController = TextEditingController();
+  late ApiService apiService;
 
-  late  ApiService apiService;
   @override
   void initState() {
     super.initState();
     apiService = ApiService();
   }
 
+  Future<void> saveClientId(int clientId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('clientId', clientId);
+    print("✅ Client ID successfully stored: $clientId");
+  }
+
   void _onRegisterPressed() async {
     if (_formKey.currentState!.validate()) {
-      String email_address = _clientController.text.trim();
+      String emailAddress = _clientController.text.trim();
 
       // Show loading Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -39,46 +44,47 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
       try {
         // Call API to check account contract
-        final response = await apiService.fetchClientContract(email_address);
+        final response = await apiService.fetchClientContract(emailAddress);
 
-        if (response.statusCode == 200) {
-          print(response.body);
+        print("🔍 API Response: $response");
+
+        if (response.isNotEmpty) {
+          // Ensure response is a valid integer client ID
+          int? clientId = int.tryParse(response);
+          if (clientId == null) {
+            throw Exception("Invalid client ID received from API.");
+          }
+
+          print("✅ Client ID received: $clientId");
+
+          // Save client ID in SharedPreferences
+          await saveClientId(clientId);
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Registration successful!"),
-
               duration: Duration(seconds: 2),
             ),
           );
 
-          // Navigate to Login Page
+          // Navigate to Login Page after a short delay
           Future.delayed(const Duration(seconds: 2), () {
             Navigator.pushReplacementNamed(context, '/login');
           });
         } else {
-          // Extract error message from response body (if any)
-          final responseBody = jsonDecode(response.body);
-          String errorMessage = responseBody['message'] ?? "Invalid email address";
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Error: $errorMessage"),
-              backgroundColor: Colors.red,
-            ),
-          );
+          throw Exception("Invalid email address or no client contract found.");
         }
       } catch (e) {
+        print("❌ Error during registration: $e");
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text("Network error: $e"),
+            content: Text("Error: $e"),
             backgroundColor: Colors.red,
           ),
         );
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -88,17 +94,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
         title: const Text("Register"),
         backgroundColor: kTopBar,
       ),
-      body: Center( // Centers the form vertically and horizontally
+      body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisSize: MainAxisSize.min, // Ensures the column doesn't take full height
-              crossAxisAlignment: CrossAxisAlignment.center, // Centers items horizontally
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Verify Client ",
+                  "Verify Client",
                   style: TextStyle(
                     fontSize: kTextSizeTitles,
                     fontWeight: FontWeight.bold,
@@ -116,9 +122,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 15),
-                // Account Number Field
+                // Email Field
                 TextFormField(
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.emailAddress,
                   style: TextStyle(color: kTextColorLightTheme),
                   controller: _clientController,
                   decoration: InputDecoration(
@@ -129,7 +135,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    counterText: "", // Hides the default character counter
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -142,14 +147,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                // Register Button with increased width
+                // Register Button
                 SizedBox(
-                  width: double.infinity, // Makes button stretch across available width
+                  width: double.infinity,
                   child: ElevatedButton(
                     onPressed: _onRegisterPressed,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: kButtonColor,
-                      padding: const EdgeInsets.symmetric(vertical: 14), // Larger button
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -168,7 +173,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 Center(
                   child: TextButton(
                     onPressed: () {
-                      // Navigate to Login Page
                       Navigator.pushReplacementNamed(context, '/login');
                     },
                     child: Text(

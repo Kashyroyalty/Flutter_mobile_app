@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 
 class Accounts extends StatelessWidget {
   final String accountName;
-  final String cardNumber;
-  final double balance;
-  final String cardType;
+  final String accountNumber;
+  final num balance;
   final Color color;
   final bool isBalanceHidden;
   final VoidCallback onTap;
@@ -12,12 +11,11 @@ class Accounts extends StatelessWidget {
   const Accounts({
     Key? key,
     required this.accountName,
-    required this.cardNumber,
     required this.balance,
-    required this.cardType,
     required this.color,
     required this.isBalanceHidden,
     required this.onTap,
+    required this.accountNumber,
   }) : super(key: key);
 
   @override
@@ -30,7 +28,7 @@ class Accounts extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          height: 100, // Reduced height for compact layout
+          height: 150, // Reduced height for compact layout
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             gradient: LinearGradient(
@@ -57,25 +55,17 @@ class Accounts extends StatelessWidget {
                       Text(
                         accountName,
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 25,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
                       SizedBox(height: 4),
                       Text(
-                        cardNumber,
+                        accountNumber,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 20,
                           color: Colors.white.withOpacity(0.8),
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        cardType,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white.withOpacity(0.7),
                         ),
                       ),
                     ],
@@ -99,7 +89,7 @@ class Accounts extends StatelessWidget {
                       Text(
                         'Balance',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 17,
                           color: Colors.white.withOpacity(0.8),
                         ),
                       ),
@@ -107,7 +97,7 @@ class Accounts extends StatelessWidget {
                       Text(
                         isBalanceHidden ? '••••••' : '\$${balance.toStringAsFixed(2)}',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 19,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),

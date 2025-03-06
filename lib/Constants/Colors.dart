@@ -12,7 +12,7 @@ const kHeadingColor = Color(0xFF151515);
 const kBarColor = Color(0xFF2f3542);
 const kButtonColor = Colors.blue;
 
-const kCardColor = Colors.indigo;
+const kCardColor = Colors.blue;
 
 const kOnBoardingColor_1 = Color(0xff333846);
 const kOnBoardingColor_2 = Color(0xff2E3850);

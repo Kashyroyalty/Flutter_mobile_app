@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
@@ -48,35 +50,65 @@ class _CardPageState extends State<CardPage> {
   void _addNewCard(Map<String, String> cardData) {
     try {
       CardContract newCard = CardContract.fromMap(cardData);
-      setState(() {
-        _cards.add(newCard);
-        _selectedCardIndex = _cards.length - 1;
-      });
+      if (!_cards.any((card) => card.cardContractNumber == newCard.cardContractNumber)) {
+        setState(() {
+          _cards.add(newCard);
+          _selectedCardIndex = _cards.length - 1;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Card already exists!')));
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding new card: $e'))
-      );
+          SnackBar(content: Text('Error adding new card: $e')));
     }
   }
 
   Future<void> fetchCards() async {
+    setState(() {
+      _isLoading = true;
+      _hasError = false;
+    });
+
     try {
-      CardContract contract = await apiService.fetchCardContract("2507355660");
+      int? clientId = await apiService.getClientId();
+
+      if (clientId == null) {
+        print("Error: Client ID not found");
+        setState(() {
+          _isLoading = false;
+          _hasError = true;
+        });
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: Client ID not found')));
+        return;
+      }
+
+      print("Fetching cards for client ID: $clientId");
+
+      List<CardContract> fetchedCards = await apiService.fetchClientCards(clientId);
+
       setState(() {
-        _cards.add(contract);
-        _selectedCardIndex = 0;
+        _cards = fetchedCards; // Replace the list instead of appending
+        _selectedCardIndex = _cards.isNotEmpty ? 0 : -1;
         _isLoading = false;
       });
+
+      print("Fetched unique cards: ${_cards.length}");
     } catch (e) {
+      print("Error fetching cards: $e");
+
       setState(() {
         _isLoading = false;
         _hasError = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error fetching cards: $e'))
-      );
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error fetching cards: $e')));
     }
   }
+
 
   void _handleMenuOption(CardMenuOptions option, CardContract card) async {
     switch (option) {

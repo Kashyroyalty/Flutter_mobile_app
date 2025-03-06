@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
 import 'package:online_banking_system/Models/CardPlastics.dart';
 import 'package:online_banking_system/Models/ClientContract.dart';
 import 'package:online_banking_system/Models/SearchManagement.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Constants/Strings.dart';
 import 'AccountContract.dart';
 import 'NotificationContract.dart';
@@ -28,6 +30,8 @@ class ApiService {
       throw Exception('Failed to load card contract');
     }
   }
+
+
 
 
   Future<List<AccountContract>> fetchAccountContracts(String contractId) async {
@@ -241,6 +245,7 @@ class ApiService {
   }
 
 
+
   Future<http.Response> activateCard(String contractId) async {
     final url = Uri.parse("$kBaseUrl/api/cards/$contractId/active");
     final requestData = {"activated": "true"};
@@ -255,7 +260,7 @@ class ApiService {
   }
 
 
-  Future<http.Response> fetchClientContract(String Email) async {
+  Future<String> fetchClientContract(String Email) async {
     final url = Uri.parse("$kBaseUrl/clients/contract-id?email=$Email");
 
     print("Fetching data: GET $url");
@@ -263,7 +268,8 @@ class ApiService {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      return ClientContactData.fromJson(jsonDecode(response.body));
+      print(response.body);
+      return response.body;
 
     } else {
       print("\n--- ERROR (GET) ---");
@@ -274,9 +280,103 @@ class ApiService {
     }
   }
 
+  Future<int?> getClientId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      int? clientId = prefs.getInt('clientId');
+
+      if (clientId == null) {
+        print("Client ID not found in SharedPreferences.");
+      } else {
+        print("Retrieved Client ID: $clientId");
+      }
+
+      return clientId;
+    } catch (e) {
+      print("Error retrieving client ID: $e");
+      return null;
+    }
+  }
 
 
+
+
+  Future<List<CardContract>> fetchClientCards(int clientId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$kBaseUrl/clients/$clientId/card-contracts'),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      print("API Response Status Code: ${response.statusCode}");
+      print("API Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final Map<String,dynamic> jsonData = json.decode(response.body);
+
+        // Extract the "clientCardContracts" list
+        List<dynamic> cardsList = jsonData["clientCardContracts"] ?? [];
+
+        // Convert to List<CardContract>
+        List<CardContract> cards = cardsList.map((data) => CardContract.fromJson(data)).toList();
+
+        // Ensure API returns expected data
+        if (cards.isEmpty) {
+          throw Exception("No cards found for the given client ID.");
+        }
+
+        return cards;
+      } else {
+        throw Exception(
+            "Failed to fetch cards: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("Exception in fetchClientCards: $e");
+      throw Exception("Error fetching cards: $e");
+    }
+  }
+
+  Future<List<AccountContract>> fetchClientAccounts(int clientId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$kBaseUrl/clients/$clientId/account-contracts'),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      print("API Response Status Code: ${response.statusCode}");
+      print("API Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        final Map<String,dynamic> jsonData = json.decode(response.body);
+
+        // Extract the "clientAccountContracts" list
+        List<dynamic> accountlist = jsonData["clientAccountContracts"] ?? [];
+
+        // Convert to List<AccountContract>
+        List<AccountContract> account = accountlist.map((data) => AccountContract.fromJson(data)).toList();
+
+        // Ensure API returns expected data
+        if (account.isEmpty) {
+          throw Exception("No account found for the given client ID.");
+        }
+
+        return account;
+      } else {
+        throw Exception(
+            "Failed to fetch account: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("Exception in fetchClientAccounts: $e");
+      throw Exception("Error fetching Accounts: $e");
+    }
+  }
 }
+
+
+
+
+
+
 
 
 

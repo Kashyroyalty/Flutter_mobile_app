@@ -74,16 +74,16 @@ class _InputOtpState extends State<InputOtp> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 16),
                 _buildOtpDisplay(),
-                SizedBox(height: 20),
+                SizedBox(height: 16),
                 _buildKeypad(),
-                SizedBox(height: 24),
+                SizedBox(height: 18),
                 isLoading
                     ? CircularProgressIndicator()
                     : SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 40,
                   child: ElevatedButton(
                     onPressed: _verifyOtp,
                     style: ElevatedButton.styleFrom(
@@ -108,7 +108,7 @@ class _InputOtpState extends State<InputOtp> {
 
   Widget _buildOtpDisplay() {
     return Card(
-      elevation: 8,
+      elevation: 6,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -120,8 +120,8 @@ class _InputOtpState extends State<InputOtp> {
             6,
                 (index) => Container(
               margin: const EdgeInsets.symmetric(horizontal: 8),
-              width: 16,
-              height: 16,
+              width: 14,
+              height: 14,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: index < otp.length ? Colors.blue : Colors.grey[300],
