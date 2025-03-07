@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
 import 'package:online_banking_system/Pages/SettingPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/ApiService.dart';
 import '../Models/TransactionContract.dart';
 
@@ -15,30 +18,107 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  late ApiService apiService;
+  String? clientId;
+  String? clientName;
+  List<String> accounts = [];
+  String? selectedAccount;
+  double? accountBalance;
+  bool _showBalance = false;
+
+  List<String> cards = [];
+  String? selectedCard;
+  double? cardBalance;
+  bool _showCardBalance = false;
+
+  bool _isLoading = true;
+  bool _isBalanceHidden = true;
+
   List<TransactionContract> _transactions = [];
   DateTime? _startDate;
   DateTime? _endDate;
-  late ApiService apiService;
-  bool _showBalance = true;
+
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+
   @override
-  void initState() {
-    super.initState();
-    apiService = ApiService();
-    fetchTransactions();
+    void initState() {
+      super.initState();
+        apiService = ApiService();
+          fetchClientId();
   }
 
-  Future<void> fetchTransactions() async {
+  Future<void> fetchClientId() async {
+    try {
+      int? fetchedClientId = await apiService.getClientId();
+
+      if (fetchedClientId == null) {
+        throw Exception("Client ID not found");
+      }
+
+      setState(() {
+        clientId = fetchedClientId.toString();
+        _isLoading = false;
+      });
+
+      print("Client ID successfully retrieved: $clientId");
+
+      // Call fetchClientData after setting clientId
+      fetchClientData();
+
+    } catch (e) {
+      print("Error fetching client ID: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+
+  Future<void> fetchClientData() async {
+    if (clientId == null) return;
+    try {
+      var clientData = await apiService.fetchClientData(clientId!);
+
+      setState(() {
+        clientName = clientData["firstName"];
+
+        // Fetch and set accounts
+        accounts = List<String>.from(clientData["accounts"].keys);
+        selectedAccount = accounts.isNotEmpty ? accounts[0] : null;
+        accountBalance = selectedAccount != null ? clientData["accounts"][selectedAccount] : 0.0;
+
+        // Fetch and set cards
+        cards = List<String>.from(clientData["cards"].keys);
+        selectedCard = cards.isNotEmpty ? cards[0] : null;
+        cardBalance = selectedCard != null ? clientData["cards"][selectedCard] : 0.0;
+      });
+
+    } catch (e) {
+      print("Error fetching client details: $e");
+    }
+  }
+
+
+  Future<void> fetchTransactionContract() async {
+    if (clientId == null) return;
     try {
       List<TransactionContract> fetchedTransactions =
-      (await apiService.fetchTransactionContract("5176632120")) as List<TransactionContract>;
+      (await apiService.fetchTransactionContract(clientId!)) as List<TransactionContract>;
       setState(() {
         _transactions = fetchedTransactions;
       });
     } catch (e) {
       print("Error fetching transactions: $e");
     }
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
   }
 
   List<TransactionContract> getFilteredTransactions() {
@@ -66,18 +146,6 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
-
-  String _getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) {
-      return 'Good morning';
-    } else if (hour < 17) {
-      return 'Good afternoon';
-    } else {
-      return 'Good evening';
-    }
-  }
-
   void _navigateTo(String route) {
     // Close the drawer first
     Navigator.pop(context);
@@ -147,13 +215,6 @@ class _HomePageState extends State<HomePage> {
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'View Profile',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -227,7 +288,7 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${_getGreeting()}, User',
+                                '${_getGreeting()}, ${clientName ?? "User"}',
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
@@ -297,113 +358,75 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Row for 'Your balance' text and visibility toggle
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Your balance',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _showBalance ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.black54,
-                          size: 20,
-                        ),
-                        padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
-                        onPressed: () {
-                          setState(() {
-                            _showBalance = !_showBalance;
-                          });
-                        },
-                      ),
-                    ],
+                  DropdownButton<String>(
+                    value: selectedAccount,
+                    items: accounts.map((String account) {
+                      return DropdownMenuItem<String>(
+                        value: account,
+                        child: Text(account), // Show account name
+                      );
+                    }).toList(),
+                    onChanged: (newAccount) {
+                      setState(() {
+                        selectedAccount = newAccount;
+                        accountBalance = newAccount != null ? apiService.getAccountBalance(clientId!, newAccount) : 0.0;
+                      });
+                    },
                   ),
-                  SizedBox(height: 10),
-                  // Balance amount in its own row
-                  Text(
-                    _showBalance ? '\$3,200.00' : '••••••',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 15),
 
-                  // Add money button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Add money', style: TextStyle(fontSize: 16)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlue,
-                        padding: EdgeInsets.symmetric(vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
+                  Text(
+                    _showBalance ? '\$${accountBalance?.toStringAsFixed(2) ?? "0.00"}' : '••••••',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: Icon(_showBalance ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _showBalance = !_showBalance;
+                      });
+                    },
                   ),
                 ],
               ),
             ),
-
-            // Your cards section
+// Your cards section
             Container(
-              width: double.infinity,
-              margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
               padding: EdgeInsets.all(20),
+              margin: EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: Offset(0, 2),
-                  ),
-                ],
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Your cards',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {},
-                        icon: Icon(Icons.add, size: 16),
-                        label: Text('New card'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ],
+                  DropdownButton<String>(
+                    value: selectedCard,
+                    items: cards.map((String card) {
+                      return DropdownMenuItem<String>(
+                        value: card,
+                        child: Text(card), // Show card name
+                      );
+                    }).toList(),
+                    onChanged: (newCard) {
+                      setState(() {
+                        selectedCard = newCard;
+                        cardBalance = newCard != null ? apiService.getCardBalance(clientId!, newCard) : 0.0;
+                      });
+                    },
                   ),
-                  // Here you would add your card widgets
-                  SizedBox(height: 10),
-                  Container(
-                    height: 80,
-                    width: double.infinity,
-                    child: Center(
-                      child: Text(
-                        'Your cards will appear here',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
+
+                  Text(
+                    _showCardBalance ? '\$${cardBalance?.toStringAsFixed(2) ?? "0.00"}' : '••••••',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  IconButton(
+                    icon: Icon(_showCardBalance ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _showCardBalance = !_showCardBalance;
+                      });
+                    },
                   ),
                 ],
               ),

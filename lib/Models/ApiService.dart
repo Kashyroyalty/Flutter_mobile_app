@@ -61,6 +61,7 @@ class ApiService {
     print("Fetching data: GET $url");
 
     final response = await http.get(url);
+    print("Transaction response: ${response.body}");
 
     if (response.statusCode == 200) {
       return TransactionContract.fromJson(jsonDecode(response.body));
@@ -370,7 +371,37 @@ class ApiService {
       throw Exception("Error fetching Accounts: $e");
     }
   }
+
+  Future<Map<String, dynamic>> fetchClientData(String clientId) async {
+    final url = Uri.parse("$kBaseUrl/clients/$clientId");
+
+    print("Fetching data: GET $url");
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      print("Client data response: ${response.body}");
+      return json.decode(response.body); // Convert response body to a Map
+
+    } else {
+      print("\n--- ERROR (GET) ---");
+      print("Status Code: ${response.statusCode}");
+      print("Error Response: ${response.body}");
+      print("---------------------\n");
+      throw Exception('Failed to load client data');
+    }
+  }
+
+  double getAccountBalance(String clientId, String account) {
+    return 5000.00; // Placeholder logic
+  }
+
+  double getCardBalance(String clientId, String card) {
+    return 1000.00; // Placeholder logic
+  }
 }
+
 
 
 

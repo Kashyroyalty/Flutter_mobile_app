@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:http/http.dart' as http;
@@ -22,6 +24,7 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
   late CardContract _contractData;
   String _currentStatus = 'N/A';
   String _lastUpdated = 'N/A';
+  Int? clientId;
 
   final List<Map<String, String>> _statusOptions = [
     {'code': '00', 'description': 'Card is ready'},
@@ -36,10 +39,10 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
   void initState() {
     super.initState();
     apiService = ApiService();
-    _fetchContractData();
+    _fetchClientIdAndContract();
   }
 
-  Future<void> _fetchContractData() async {
+  Future<void>  _fetchClientIdAndContract() async {
     try {
       CardContract contract = await apiService.fetchCardContract("2507355660");
       setState(() {
