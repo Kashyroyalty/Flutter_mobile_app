@@ -3,8 +3,6 @@ import 'dart:ffi';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Models/CardContract.dart';
 import 'package:online_banking_system/Models/CardPlastics.dart';
-import 'package:online_banking_system/Models/ClientContract.dart';
-import 'package:online_banking_system/Models/SearchManagement.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Constants/Strings.dart';
 import 'AccountContract.dart';
@@ -400,6 +398,100 @@ class ApiService {
   double getCardBalance(String clientId, String card) {
     return 1000.00; // Placeholder logic
   }
+
+  Future<http.Response> updateCardContract(String contractId, Map<String, dynamic> updatedDetails) async {
+    final prefs = await SharedPreferences.getInstance();
+    final clientId = prefs.getString('client_id') ?? '';
+
+    if (clientId.isEmpty) {
+      print('Client ID not found');
+      return http.Response('Client ID not found', 400); // Return a mock bad request response
+    }
+
+    final url = Uri.parse("$kBaseUrl/cards/card_contract_id/$contractId");
+    final requestData = {
+      'client_id': clientId,
+      ...updatedDetails, // Merge other details
+    };
+
+    print("\n--- Updating Card Contract ---");
+    print("Request: PUT $url");
+    print("Request Body: ${jsonEncode(requestData)}");
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer YOUR_API_TOKEN', // Replace with actual token if needed
+      },
+      body: jsonEncode(requestData),
+    );
+
+    print("Response: ${response.statusCode} - ${response.body}");
+    print("------------------------------\n");
+
+    return response;
+  }
+
+
+
+  Future<void> getCardContract() async {
+    final prefs = await SharedPreferences.getInstance();
+    final clientId = prefs.getString('client_id') ?? '';
+
+    if (clientId.isEmpty) {
+      print('Client ID not found');
+      return;
+    }
+
+    final response = await http.get(
+      Uri.parse('https://api.example.com/card-contracts?client_id=$clientId'),
+      headers: {
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Card contract details: $data');
+    } else {
+      print('Failed to retrieve card contract: ${response.body}');
+    }
+  }
+
+  Future<void> getTransactions(String contractId) async {
+    final response = await http.get(
+      Uri.parse('https://api.example.com/transactions?contract_id=$contractId'),
+      headers: {
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Transactions: $data');
+    } else {
+      print('Failed to fetch transactions: ${response.body}');
+    }
+  }
+
+  Future<void> getCardUsageLimit(String contractId) async {
+    final response = await http.get(
+      Uri.parse('https://api.example.com/card-contracts/$contractId/limits'),
+      headers: {
+        'Authorization': 'Bearer YOUR_API_TOKEN',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Card Usage Limits: $data');
+    } else {
+      print('Failed to fetch card usage limits: ${response.body}');
+    }
+  }
+
+
 }
 
 

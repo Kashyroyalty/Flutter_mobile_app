@@ -26,6 +26,8 @@ class CardContract {
   final String? productName;
   final String? sequenceNumber;
   final String? encryptedCardContractNumber;
+  final String cardSubtypeCode;
+  final String productionCode;
 
   CardContract({
     required this.accountContractId,
@@ -53,47 +55,45 @@ class CardContract {
     required this.productName,
     required this.sequenceNumber,
     required this.encryptedCardContractNumber,
+    required this.cardSubtypeCode,
+    required this.productionCode,
   });
 
   factory CardContract.fromJson(Map<String, dynamic> json) {
     return CardContract(
       accountContractId: (json['accountContractId'] ?? 0.0),
-      accountContractNumber: json['accountContractNumber'] as String ?? '',
-      amendmentDate: json['amendmentDate'] as String ?? '',
+      accountContractNumber: json['accountContractNumber'] as String? ?? '',
+      amendmentDate: json['amendmentDate'] as String? ?? '',
       amendmentOfficerId: (json['amendmentOfficerId'] ?? 0.0),
-      amendmentOfficerName: json['amendmentOfficerName'] as String ?? '',
+      amendmentOfficerName: json['amendmentOfficerName'] as String? ?? '',
       availableBalance: (json['availableBalance'] as num?)?.toDouble(),
-      blockedAmount: (json['blockedAmount']as num?)?.toDouble(),
-      cardExpiryDate: json['cardExpiryDate'] as String ?? '',
+      blockedAmount: (json['blockedAmount'] as num?)?.toDouble(),
+      cardExpiryDate: json['cardExpiryDate'] as String? ?? '',
       cardContractId: (json['cardContractId'] ?? 0.0),
       cardContractName: json['cardContractName'] as String? ?? '',
       cardContractNumber: json['cardContractNumber'] as String? ?? '',
       cardContractStatusData: json.containsKey('cardContractStatusData') && json['cardContractStatusData'] != null
           ? CardContractStatusData.fromJson(json['cardContractStatusData'] as Map<String, dynamic>)
-          : CardContractStatusData.defaultData(), // Safe default object
-      cardholderId: (json['cardholderId']?? 0.0),
+          : CardContractStatusData.defaultData(),
+      cardholderId: (json['cardholderId'] ?? 0.0),
       cbsNumber: json['cbsNumber'] as String? ?? '',
       creditLimit: (json['creditLimit'] as num?)?.toDouble(),
       currency: json['currency'] as String? ?? '',
-      dateOpen: json['dateOpen']  as String?? '',
+      dateOpen: json['dateOpen'] as String? ?? '',
       embossedData: json.containsKey('embossedData') && json['embossedData'] != null
           ? EmbossedData.fromJson(json['embossedData'] as Map<String, dynamic>)
-          : EmbossedData.defaultData(), // Safe default object
-      maxPinAttempts: (json['maxPinAttempts']?? 0.0),
+          : EmbossedData.defaultData(),
+      maxPinAttempts: (json['maxPinAttempts'] ?? 0.0),
       parentProductCode: json['parentProductCode'] as String? ?? '',
       pinAttemptsCounter: (json['pinAttemptsCounter'] ?? 0.0),
       productCode: json['productCode'] as String? ?? '',
       productName: json['productName'] as String? ?? '',
       sequenceNumber: json['sequenceNumber'] as String? ?? '',
       encryptedCardContractNumber: json['encryptedCardContractNumber'] as String? ?? '',
+      cardSubtypeCode: json['cardSubtypeCode'] as String? ?? '',
+      productionCode: json['productionCode'] as String? ?? '',
     );
   }
-
-  static fromMap(Map<String, String> cardData) {
-    // Implement logic as needed
-  }
-
-  map(CardContract Function(dynamic item) param0) {}
 }
 
 class CardContractStatusData {
@@ -121,7 +121,6 @@ class CardContractStatusData {
     );
   }
 
-  // Default constructor to avoid null issues
   factory CardContractStatusData.defaultData() {
     return CardContractStatusData(
       externalStatusCode: '',
@@ -149,7 +148,6 @@ class EmbossedData {
     );
   }
 
-  // Default constructor to avoid null issues
   factory EmbossedData.defaultData() {
     return EmbossedData(
       firstName: '',

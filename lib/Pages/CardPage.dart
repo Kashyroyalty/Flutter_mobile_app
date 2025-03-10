@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Models/ApiService.dart';
@@ -12,6 +10,7 @@ import 'package:online_banking_system/Pages/ProfilePage.dart';
 import 'dart:ui';
 
 import '../widgets/CardDesign.dart';
+import 'UpdateCardDetails.dart';
 
 
 
@@ -49,8 +48,9 @@ class _CardPageState extends State<CardPage> {
 
   void _addNewCard(Map<String, String> cardData) {
     try {
-      CardContract newCard = CardContract.fromMap(cardData);
-      if (!_cards.any((card) => card.cardContractNumber == newCard.cardContractNumber)) {
+      CardContract newCard = CardContract.fromJson(cardData);
+      if (!_cards.any((card) =>
+      card.cardContractNumber == newCard.cardContractNumber)) {
         setState(() {
           _cards.add(newCard);
           _selectedCardIndex = _cards.length - 1;
@@ -81,13 +81,15 @@ class _CardPageState extends State<CardPage> {
           _hasError = true;
         });
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: Client ID not found')));
+            .showSnackBar(
+            SnackBar(content: Text('Error: Client ID not found')));
         return;
       }
 
       print("Fetching cards for client ID: $clientId");
 
-      List<CardContract> fetchedCards = await apiService.fetchClientCards(clientId);
+      List<CardContract> fetchedCards = await apiService.fetchClientCards(
+          clientId);
 
       setState(() {
         _cards = fetchedCards; // Replace the list instead of appending
@@ -125,7 +127,8 @@ class _CardPageState extends State<CardPage> {
 
       case CardMenuOptions.pinAttempts:
         try {
-          await apiService.updateCardPinAttempts(card.cardContractId.toString());
+          await apiService.updateCardPinAttempts(
+              card.cardContractId.toString());
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('PIN attempts reset successfully'))
           );
@@ -189,13 +192,23 @@ class _CardPageState extends State<CardPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (card != null) ...[
-            _buildBlurContainer('Card Number: ${card.cardContractNumber ?? "N/A"}', _isHidden),
-            _buildBlurContainer('Available Balance: ${formatBalance(card.availableBalance ?? 0)} ${card.currency ?? "N/A"}', _isHidden),
-            _buildBlurContainer('Card Status: ${card.cardContractStatusData?.externalStatusName ?? "N/A"}', _isHidden),
-            _buildBlurContainer('Card Expiry Date: ${card.cardExpiryDate ?? "N/A"}', _isHidden),
-            _buildBlurContainer('Product Name: ${card.productName ?? "N/A"}', _isHidden),
-            _buildBlurContainer('Cardholder: ${card.embossedData?.firstName ?? "N/A"} ${card.embossedData?.lastName ?? ""}', _isHidden),
-            _buildBlurContainer('Credit Limit: ${formatBalance(card.creditLimit?.toDouble() ?? 0)} ${card.currency ?? "N/A"}', _isHidden),
+            _buildBlurContainer(
+                'Card Number: ${card.cardContractNumber ?? "N/A"}', _isHidden),
+            _buildBlurContainer('Available Balance: ${formatBalance(
+                card.availableBalance ?? 0)} ${card.currency ?? "N/A"}',
+                _isHidden),
+            _buildBlurContainer('Card Status: ${card.cardContractStatusData
+                ?.externalStatusName ?? "N/A"}', _isHidden),
+            _buildBlurContainer(
+                'Card Expiry Date: ${card.cardExpiryDate ?? "N/A"}', _isHidden),
+            _buildBlurContainer(
+                'Product Name: ${card.productName ?? "N/A"}', _isHidden),
+            _buildBlurContainer(
+                'Cardholder: ${card.embossedData?.firstName ?? "N/A"} ${card
+                    .embossedData?.lastName ?? ""}', _isHidden),
+            _buildBlurContainer('Credit Limit: ${formatBalance(
+                card.creditLimit?.toDouble() ?? 0)} ${card.currency ?? "N/A"}',
+                _isHidden),
           ] else
             Center(child: Text("No card data available")),
         ],
@@ -271,91 +284,143 @@ class _CardPageState extends State<CardPage> {
           physics: AlwaysScrollableScrollPhysics(),
           child: Padding(
             padding: EdgeInsets.all(20.0),
-            child: _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : _hasError
-                ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Failed to load cards"),
-                  ElevatedButton(
-                    onPressed: fetchCards,
-                    child: Text("Try Again"),
-                  ),
-                ],
-              ),
-            )
-                : _cards.isEmpty
-                ? Center(child: Text("No cards available"))
-                : Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: List.generate(
-                      _cards.length,
-                          (index) => _buildCardWithMenu(_cards[index], index),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Card Details',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              children: [
+                if (_isLoading)
+                  Center(child: CircularProgressIndicator())
+                else
+                  if (_hasError)
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("Failed to load cards"),
+                          ElevatedButton(
+                            onPressed: fetchCards,
+                            child: Text("Try Again"),
+                          ),
+                        ],
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(_isHidden ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () {
-                        setState(() {
-                          _isHidden = !_isHidden;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                _buildCardDetails(_cards[_selectedCardIndex]),
-                SizedBox(height: 30),
-                Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      final result = await Navigator.push<Map<String, String>>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CardContractformPage(),
+                    )
+                  else
+                    if (_cards.isEmpty)
+                      Center(child: Text("No cards available"))
+                    else
+                      ...[
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: List.generate(
+                              _cards.length,
+                                  (index) =>
+                                  _buildCardWithMenu(_cards[index], index),
+                            ),
+                          ),
                         ),
-                      );
+                        SizedBox(height: 30),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Card Details',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                  _isHidden ? Icons.visibility_off : Icons
+                                      .visibility),
+                              onPressed: () {
+                                setState(() {
+                                  _isHidden = !_isHidden;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        _cards.isNotEmpty
+                            ? _buildCardDetails(
+                            _cards[_selectedCardIndex]) // Ensure we have a valid card
+                            : Center(child: Text("No card selected")),
+                        SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                final result = await Navigator.push<
+                                    Map<String, String>>(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        CardContractformPage(),
+                                  ),
+                                );
 
-                      if (result != null) {
-                        _addNewCard(result);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: Text(
-                      "Add new card",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
+                                if (result != null) {
+                                  _addNewCard(result);
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: Text(
+                                "Add new card",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (_cards.isNotEmpty) {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => UpdateCardDetails(
+                                          card: _cards[_selectedCardIndex]),
+                                    ),
+                                  );
+                                  fetchCards(); // Refresh cards after update
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(
+                                        'No card selected to update')),
+                                  );
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.orange,
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 15),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              child: Text(
+                                "Update card details",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
               ],
             ),
           ),
