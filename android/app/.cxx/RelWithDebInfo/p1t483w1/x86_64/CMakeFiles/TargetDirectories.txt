@@ -1,0 +1,2 @@
+C:/Users/HP/Desktop/online_banking_system/android/app/.cxx/RelWithDebInfo/p1t483w1/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/HP/Desktop/online_banking_system/android/app/.cxx/RelWithDebInfo/p1t483w1/x86_64/CMakeFiles/rebuild_cache.dir

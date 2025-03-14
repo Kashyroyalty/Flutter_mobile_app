@@ -13,13 +13,10 @@ class UpdateCardDetails extends StatefulWidget {
 
 class _UpdateCardDetailsPageState extends State<UpdateCardDetails> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _cardStatusController;
   late TextEditingController _creditLimitController;
   late TextEditingController _cardHolderNameController;
   late ApiService apiService;
   bool _isLoading = false;
-
-  get updatedDetails => updatedDetails;
 
   @override
   void initState() {
@@ -27,20 +24,21 @@ class _UpdateCardDetailsPageState extends State<UpdateCardDetails> {
     apiService = ApiService();
 
     // Initialize controllers with existing values
-    _cardStatusController = TextEditingController(text: widget.card.cardContractStatusData?.externalStatusName ?? "");
-    _creditLimitController = TextEditingController(text: widget.card.creditLimit?.toString() ?? "0");
-    _cardHolderNameController = TextEditingController(text: "${widget.card.embossedData?.firstName ?? ""} ${widget.card.embossedData?.lastName ?? ""}");
+    _creditLimitController =
+        TextEditingController(text: widget.card.creditLimit?.toString() ?? "0");
+    _cardHolderNameController = TextEditingController(
+        text:
+        "${widget.card.embossedData?.firstName ?? ""} ${widget.card.embossedData?.lastName ?? ""}");
   }
 
   @override
   void dispose() {
-    _cardStatusController.dispose();
     _creditLimitController.dispose();
     _cardHolderNameController.dispose();
     super.dispose();
   }
 
-  Future<void> updateCardContract(Map<String, dynamic> contractId) async {
+  Future<void> updateCardContract() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -50,17 +48,31 @@ class _UpdateCardDetailsPageState extends State<UpdateCardDetails> {
     try {
       Map<String, dynamic> updatedDetails = {
         "cardContractId": widget.card.cardContractId,
-        "cardStatus": _cardStatusController.text,
         "creditLimit": double.tryParse(_creditLimitController.text) ?? 0,
         "cardHolderName": _cardHolderNameController.text,
       };
 
-      await apiService.updateCardContract(updatedDetails as String,contractId);
+      // Send update request to API
+      await apiService.updateCardContract(
+          widget.card.cardContractId.toString(), // First argument (contract ID)
+          updatedDetails // Second argument (updated details map)
+      );
+
+      // Update UI state to reflect the changes
+      setState(() {
+        widget.card.creditLimit = double.tryParse(_creditLimitController.text) ?? 0;
+        widget.card.embossedData?.firstName = _cardHolderNameController.text.split(" ").first;
+        widget.card.embossedData?.lastName = _cardHolderNameController.text.split(" ").length > 1
+            ? _cardHolderNameController.text.split(" ").last
+            : "";
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Card details updated successfully')),
       );
 
-      Navigator.pop(context, updatedDetails);
+      // Return updated details to previous screen
+      Navigator.pop(context, widget.card);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error updating card details: $e')),
@@ -83,17 +95,6 @@ class _UpdateCardDetailsPageState extends State<UpdateCardDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Card Status"),
-              TextFormField(
-                controller: _cardStatusController,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Enter card status",
-                ),
-                validator: (value) => value!.isEmpty ? "Enter card status" : null,
-              ),
-              SizedBox(height: 16),
-
               Text("Credit Limit"),
               TextFormField(
                 controller: _creditLimitController,
@@ -102,7 +103,8 @@ class _UpdateCardDetailsPageState extends State<UpdateCardDetails> {
                   border: OutlineInputBorder(),
                   hintText: "Enter credit limit",
                 ),
-                validator: (value) => value!.isEmpty ? "Enter credit limit" : null,
+                validator: (value) =>
+                value!.isEmpty ? "Enter credit limit" : null,
               ),
               SizedBox(height: 16),
 
@@ -113,17 +115,15 @@ class _UpdateCardDetailsPageState extends State<UpdateCardDetails> {
                   border: OutlineInputBorder(),
                   hintText: "Enter cardholder name",
                 ),
-                validator: (value) => value!.isEmpty ? "Enter cardholder name" : null,
+                validator: (value) =>
+                value!.isEmpty ? "Enter cardholder name" : null,
               ),
               SizedBox(height: 16),
 
               _isLoading
                   ? Center(child: CircularProgressIndicator())
                   : ElevatedButton(
-                onPressed: () async {
-                  await updateCardContract(updatedDetails);
-                },
-
+                onPressed: updateCardContract,
                 child: Text("Update Details"),
               ),
             ],

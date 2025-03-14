@@ -32,6 +32,8 @@ class _CardPageState extends State<CardPage> {
   bool _isHidden = true;
   late ApiService apiService;
 
+  get clientId => clientId;
+
   @override
   void initState() {
     super.initState();
@@ -404,7 +406,7 @@ class _CardPageState extends State<CardPage> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.orange,
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 40, vertical: 15),
+                                    horizontal: 25, vertical: 15),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),

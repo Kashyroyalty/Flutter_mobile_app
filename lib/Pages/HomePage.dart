@@ -6,7 +6,6 @@ import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
 import 'package:online_banking_system/Pages/SettingPage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/ApiService.dart';
 import '../Models/TransactionContract.dart';
 
@@ -19,7 +18,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late ApiService apiService;
-  String? clientId;
+  int? clientId;
   String? clientName;
   List<String> accounts = [];
   String? selectedAccount;
@@ -57,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       }
 
       setState(() {
-        clientId = fetchedClientId.toString();
+        clientId = fetchedClientId;
         _isLoading = false;
       });
 
@@ -65,7 +64,6 @@ class _HomePageState extends State<HomePage> {
 
       // Call fetchClientData after setting clientId
       fetchClientData();
-
     } catch (e) {
       print("Error fetching client ID: $e");
       setState(() {
@@ -79,33 +77,30 @@ class _HomePageState extends State<HomePage> {
   Future<void> fetchClientData() async {
     if (clientId == null) return;
     try {
-      var clientData = await apiService.fetchClientData(clientId!);
+      var clientData = await apiService.fetchClientData(clientId!.toString());
 
       setState(() {
         clientName = clientData["firstName"];
-
-        // Fetch and set accounts
         accounts = List<String>.from(clientData["accounts"].keys);
         selectedAccount = accounts.isNotEmpty ? accounts[0] : null;
         accountBalance = selectedAccount != null ? clientData["accounts"][selectedAccount] : 0.0;
 
-        // Fetch and set cards
         cards = List<String>.from(clientData["cards"].keys);
         selectedCard = cards.isNotEmpty ? cards[0] : null;
         cardBalance = selectedCard != null ? clientData["cards"][selectedCard] : 0.0;
       });
-
     } catch (e) {
       print("Error fetching client details: $e");
     }
   }
 
 
+
   Future<void> fetchTransactionContract() async {
     if (clientId == null) return;
     try {
       List<TransactionContract> fetchedTransactions =
-      (await apiService.fetchTransactionContract(clientId!)) as List<TransactionContract>;
+      (await apiService.fetchTransactionContract(clientId!.toString())) as List<TransactionContract>;
       setState(() {
         _transactions = fetchedTransactions;
       });
@@ -369,7 +364,7 @@ class _HomePageState extends State<HomePage> {
                     onChanged: (newAccount) {
                       setState(() {
                         selectedAccount = newAccount;
-                        accountBalance = newAccount != null ? apiService.getAccountBalance(clientId!, newAccount) : 0.0;
+                        accountBalance = newAccount != null ? apiService.getAccountBalance(clientId! as String, newAccount) : 0.0;
                       });
                     },
                   ),
@@ -411,7 +406,7 @@ class _HomePageState extends State<HomePage> {
                     onChanged: (newCard) {
                       setState(() {
                         selectedCard = newCard;
-                        cardBalance = newCard != null ? apiService.getCardBalance(clientId!, newCard) : 0.0;
+                        cardBalance = newCard != null ? apiService.getCardBalance(clientId! as String, newCard) : 0.0;
                       });
                     },
                   ),

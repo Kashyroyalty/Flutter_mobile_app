@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Constants/Colors.dart';
@@ -18,21 +19,44 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _clientController = TextEditingController();
   late ApiService apiService;
 
+  late String email;
+  late String password;
+
   @override
   void initState() {
     super.initState();
     apiService = ApiService();
   }
 
+  // Save client ID in SharedPreferences
   Future<void> saveClientId(int clientId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('clientId', clientId);
     print("✅ Client ID successfully stored: $clientId");
   }
 
+  // Save email and password in SharedPreferences
+  Future<void> saveCredentials(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('registered_email', email);
+    await prefs.setString('registered_password', password);
+    print("✅ Credentials saved: Email - $email | Password - $password");
+  }
+
+  Future<String> fetchPassword(String email) async {
+    final response = await http.get(Uri.parse('https://yourapi.com/getPassword?email=$email'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['password'];
+    } else {
+      throw Exception("Failed to fetch password from API");
+    }
+  }
+
   void _onRegisterPressed() async {
     if (_formKey.currentState!.validate()) {
-      String emailAddress = _clientController.text.trim();
+      email = _clientController.text.trim();
+
 
       // Show loading Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -43,13 +67,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
       );
 
       try {
-        // Call API to check account contract
-        final response = await apiService.fetchClientContract(emailAddress);
-
+        // Call API to check card contract
+        final response = await apiService.fetchClientContract(email);
         print("🔍 API Response: $response");
 
         if (response.isNotEmpty) {
-          // Ensure response is a valid integer client ID
           int? clientId = int.tryParse(response);
           if (clientId == null) {
             throw Exception("Invalid client ID received from API.");
@@ -57,8 +79,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
           print("✅ Client ID received: $clientId");
 
-          // Save client ID in SharedPreferences
+          // Fetch password from API
+          password = await fetchPassword(email);
+          print("📧 Registered Email: $email");
+          print("🔑 Fetched Password: $password");
+
+          // Save client ID and credentials
           await saveClientId(clientId);
+          await saveCredentials(email, password);
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -85,6 +113,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

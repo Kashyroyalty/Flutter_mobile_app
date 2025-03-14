@@ -24,7 +24,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PasswordResetPage()),
+                MaterialPageRoute(builder: (context) => PasswordChangePage()),
               );
             },
           ),

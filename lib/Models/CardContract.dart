@@ -15,7 +15,7 @@ class CardContract {
   final CardContractStatusData? cardContractStatusData;
   final int? cardholderId;
   final String? cbsNumber;
-  final double? creditLimit;
+  late final double? creditLimit;
   final String? currency;
   final String? dateOpen;
   final EmbossedData embossedData;
@@ -133,8 +133,8 @@ class CardContractStatusData {
 }
 
 class EmbossedData {
-  final String firstName;
-  final String lastName;
+  late final String firstName;
+  late final String lastName;
 
   EmbossedData({
     required this.firstName,

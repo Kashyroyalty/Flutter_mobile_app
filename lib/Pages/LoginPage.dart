@@ -17,6 +17,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _isPasswordHidden = true;
   final LocalAuthentication auth = LocalAuthentication();
   bool isBiometricAvailable = false;
   List<BiometricType> availableBiometrics = [];
@@ -232,21 +233,35 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void _performLogin(String email, String password) {
-    // For a real app, verify credentials against your backend here
-    // This is just a placeholder for demonstration
+  Future<void> _performLogin(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text("Login successful!"),
-      backgroundColor: Colors.green,
-      duration: Duration(seconds: 2),
-    ));
+    // Retrieve stored credentials
+    final storedEmail = prefs.getString('registered_email');
+    final storedPassword = prefs.getString('registered_password');
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => PasswordCreationScreen()),
-    );
+    if (storedEmail?.toLowerCase().trim() == email.toLowerCase().trim() &&
+        storedPassword?.trim() == password.trim()) {
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Login successful!"),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 2),
+      ));
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => PasswordCreationScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Invalid credentials. Please try again."),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 2),
+      ));
+    }
   }
+
 
   void _onLoginPressed() {
     if (_formKey.currentState!.validate()) {
@@ -311,7 +326,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 15),
               TextFormField(
                 controller: _passwordController,
-                obscureText: true,
+                obscureText: _isPasswordHidden, // Toggle visibility
                 style: TextStyle(color: kTextColorLightTheme),
                 decoration: InputDecoration(
                   labelText: "Password",
@@ -321,6 +336,17 @@ class _LoginPageState extends State<LoginPage> {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordHidden ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordHidden = !_isPasswordHidden; // Toggle state
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -329,6 +355,7 @@ class _LoginPageState extends State<LoginPage> {
                   return null;
                 },
               ),
+
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _onLoginPressed,

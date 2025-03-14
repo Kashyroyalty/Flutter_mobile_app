@@ -1,167 +1,154 @@
 import 'package:flutter/material.dart';
-import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({Key? key}) : super(key: key);
+  final Map<String, dynamic> userData;
+
+  const EditProfilePage({super.key, required this.userData});
 
   @override
-  _EditProfilePageState createState() => _EditProfilePageState();
+  State<EditProfilePage> createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Text editing controllers
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _addressController;
+  late TextEditingController _nationController;
 
-  // Loading state
-  bool _isLoading = false;
+  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with current user data
-    _emailController.text = 'current.user@example.com';  // Replace with actual user data
-    _phoneController.text = '+1234567890';  // Replace with actual user data
-    _addressController.text = '123 Main St';  // Replace with actual user data
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
-    super.dispose();
+    _firstNameController = TextEditingController(text: widget.userData['first_name']);
+    _lastNameController = TextEditingController(text: widget.userData['last_name']);
+    _emailController = TextEditingController(text: widget.userData['email']);
+    _phoneController = TextEditingController(text: widget.userData['phone']);
+    _addressController = TextEditingController(text: widget.userData['address']);
+    _nationController = TextEditingController(text: widget.userData['nation']);
   }
 
   Future<void> _updateProfile() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    if (!_formKey.currentState!.validate()) return;
 
-      try {
-        // Simulate API call
-        await Future.delayed(const Duration(seconds: 2));
+    setState(() => _isSaving = true);
 
-        // Here you would typically make an API call to update the profile
-        // final response = await YourApiService.updateProfile(
-        //   email: _emailController.text,
-        //   phone: _phoneController.text,
-        //   address: _addressController.text,
-        // );
+    final updatedData = {
+      "first_name": _firstNameController.text,
+      "last_name": _lastNameController.text,
+      "email": _emailController.text,
+      "phone": _phoneController.text,
+      "address": _addressController.text,
+      "nation": _nationController.text,
+    };
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error updating profile: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } finally {
-        setState(() {
-          _isLoading = false;
-        });
+    bool success = await _sendDataToAPI(updatedData);
+
+    if (success) {
+      await _saveDataToLocal(updatedData);
+      if (mounted) {
+        Navigator.pop(context, updatedData);
       }
+    } else {
+      setState(() => _isSaving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Failed to update profile. Try again."))
+      );
     }
+  }
+
+  Future<bool> _sendDataToAPI(Map<String, String> data) async {
+    const String apiUrl = "https://yourapi.com/updateuserprofile";
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {"Content-Type": "application/json"},
+        body: json.encode(data),
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error updating profile: $e");
+      return false;
+    }
+  }
+
+  Future<void> _saveDataToLocal(Map<String, String> data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('first_name', data['first_name']!);
+    await prefs.setString('last_name', data['last_name']!);
+    await prefs.setString('email', data['email']!);
+    await prefs.setString('phone', data['phone']!);
+    await prefs.setString('address', data['address']!);
+    await prefs.setString('nation', data['nation']!);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        backgroundColor: kButtonColor,
-        elevation: 4,
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email_outlined),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
+      appBar: AppBar(title: const Text("Edit Profile"), backgroundColor: Colors.blueAccent),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              _buildTextField("First Name", _firstNameController),
+              _buildTextField("Last Name", _lastNameController),
+              _buildTextField("Email", _emailController, keyboardType: TextInputType.emailAddress),
+              _buildTextField("Phone", _phoneController, keyboardType: TextInputType.phone),
+              _buildTextField("Address", _addressController),
+              _buildTextField("Nation", _nationController),
+              const SizedBox(height: 20),
+              _isSaving
+                  ? const CircularProgressIndicator()
+                  : ElevatedButton(
+                onPressed: _updateProfile,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.phone_outlined),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _addressController,
-                  decoration: const InputDecoration(
-                    labelText: 'Address',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.location_on_outlined),
-                  ),
-                  maxLines: 3,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your address';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _updateProfile,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text(
-                    'Update Profile',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
-              ],
-            ),
+                child: const Text("Save Changes", style: TextStyle(color: Colors.white)),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+        ),
+        validator: (value) => value == null || value.isEmpty ? "Please enter $label" : null,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    _nationController.dispose();
+    super.dispose();
   }
 }

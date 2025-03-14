@@ -11,12 +11,21 @@ import 'TransactionContract.dart';
 
 class ApiService {
 
+
+
   Future<CardContract> fetchCardContract(String contractId) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId");
+    final token = await getAuthToken();  // Retrieve token
 
     print("Fetching data: GET $url");
 
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+      },
+    );
 
     if (response.statusCode == 200) {
       return CardContract.fromJson(jsonDecode(response.body));
@@ -34,10 +43,17 @@ class ApiService {
 
   Future<List<AccountContract>> fetchAccountContracts(String contractId) async {
     final url = Uri.parse("$kBaseUrl/api/account-contracts/$contractId");
+    final token = await getAuthToken();  // Retrieve token
 
     print("API Response: ${url.toString()}");
 
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
@@ -55,10 +71,18 @@ class ApiService {
 
   Future<TransactionContract> fetchTransactionContract(String contractId) async {
     final url = Uri.parse("$kBaseUrl/transaction/$contractId");
+    final token = await getAuthToken();  // Retrieve token
 
     print("Fetching data: GET $url");
 
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+      },
+    );
+
     print("Transaction response: ${response.body}");
 
     if (response.statusCode == 200) {
@@ -86,9 +110,17 @@ class ApiService {
 
     for (var endpoint in endpoints) {
       final url = Uri.parse("$kBaseUrl/api/$clientId/$endpoint");
+      final token = await getAuthToken();  // Retrieve token
+
       print("Fetching data: GET $url");
 
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+        },
+      );
 
       if (response.statusCode == 200) {
         notifications.add(NotificationContract.fromJson(jsonDecode(response.body)));
@@ -119,9 +151,16 @@ class ApiService {
 
     for (var endpoint in endpoints) {
       final url = Uri.parse("$kBaseUrl/api/cards/$cardContractId/$endpoint");
+      final token = await getAuthToken();  // Retrieve token
       print("Fetching data: GET $url");
 
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+        },
+      );
 
       if (response.statusCode == 200) {
         cardplastics.add(CardPlastics.fromJson(jsonDecode(response.body)));
@@ -145,6 +184,7 @@ class ApiService {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/status");
     final requestData = {"reason": reason, "statusCode": statusCode ,"clientId":clientId};
 
+
     print("\n--- Updating Card Status ---");
     print("Request: PUT $url");
     print("Request Body: ${jsonEncode(requestData)}");
@@ -164,6 +204,7 @@ class ApiService {
   Future<http.Response> updateCardPinAttempts(String contractId) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/online-pin-attempts-counter");
     final requestData = {"cleared": "true"};
+
 
     print("\n--- Clearing PIN Attempts ---");
     print("Request: PUT $url");
@@ -185,6 +226,7 @@ class ApiService {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/reset-pin");
     final requestData = {"reset": "true"};
 
+
     print("\n--- Resetting Card PIN ---");
     print("Request: PUT $url");
     print("Request Body: ${jsonEncode(requestData)}");
@@ -203,6 +245,7 @@ class ApiService {
 
   Future<http.Response> createCardContract(Map<String, String> cardData) async {
     final url = Uri.parse("$kBaseUrl/cards/createCardContract");
+    final token = await getAuthToken();  // Retrieve token
 
     print("\n--- Creating Card Contract ---");
     print("Request: POST $url");
@@ -213,6 +256,7 @@ class ApiService {
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(cardData),
     );
+
 
     print("\n--- POST Response ---");
     print("Status Code: ${response.statusCode}");
@@ -232,6 +276,7 @@ class ApiService {
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
+
       body: jsonEncode(accountData),
     );
 
@@ -249,6 +294,7 @@ class ApiService {
     final url = Uri.parse("$kBaseUrl/api/cards/$contractId/active");
     final requestData = {"activated": "true"};
 
+
     final response = await http.put(url,headers: {"Content-Type": "application/json"},
       body: jsonEncode(requestData),);
 
@@ -261,10 +307,17 @@ class ApiService {
 
   Future<String> fetchClientContract(String Email) async {
     final url = Uri.parse("$kBaseUrl/clients/contract-id?email=$Email");
+    final token = await getAuthToken();  // Retrieve token
 
     print("Fetching data: GET $url");
 
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+      },
+    );
 
     if (response.statusCode == 200) {
       print(response.body);
@@ -297,7 +350,48 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>?> fetchUserProfile(int clientId) async {
+    final response = await http.get(Uri.parse("$kBaseUrl/clients/client_id/$clientId"));
 
+
+    if (response.statusCode == 200) {
+      print("API Response: ${response.body}");
+      return jsonDecode(response.body);
+    } else {
+      print("Error: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      throw Exception('Failed to load profile');
+    }
+  }
+
+
+
+  static Future<String> updateUserProfile(Int ClientId, Map<String, dynamic> updatedData) async {
+    final url = Uri.parse("$kBaseUrl/clients/client_id/$ClientId");
+
+
+    print("Updating data: PUT $url");
+    print("Request Body: ${jsonEncode(updatedData)}");
+
+    final response = await http.put(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(updatedData),
+    );
+
+    if (response.statusCode == 200) {
+      print("Update Successful: ${response.body}");
+      return response.body;
+    } else {
+      print("\n--- ERROR (PUT) ---");
+      print("Status Code: ${response.statusCode}");
+      print("Error Response: ${response.body}");
+      print("---------------------\n");
+      throw Exception('Failed to update user profile');
+    }
+  }
 
 
   Future<List<CardContract>> fetchClientCards(int clientId) async {
@@ -305,7 +399,9 @@ class ApiService {
       final response = await http.get(
         Uri.parse('$kBaseUrl/clients/$clientId/card-contracts'),
         headers: {"Content-Type": "application/json"},
+
       );
+
 
       print("API Response Status Code: ${response.statusCode}");
       print("API Response Body: ${response.body}");
@@ -341,6 +437,7 @@ class ApiService {
         Uri.parse('$kBaseUrl/clients/$clientId/account-contracts'),
         headers: {"Content-Type": "application/json"},
       );
+      final token = await getAuthToken();  // Retrieve token
 
       print("API Response Status Code: ${response.statusCode}");
       print("API Response Body: ${response.body}");
@@ -372,10 +469,17 @@ class ApiService {
 
   Future<Map<String, dynamic>> fetchClientData(String clientId) async {
     final url = Uri.parse("$kBaseUrl/clients/$clientId");
+    final token = await getAuthToken();  // Retrieve token
 
     print("Fetching data: GET $url");
 
-    final response = await http.get(url);
+    final response = await http.get(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+        if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+      },
+    );
 
     if (response.statusCode == 200) {
       print(response.body);
@@ -402,6 +506,7 @@ class ApiService {
   Future<http.Response> updateCardContract(String contractId, Map<String, dynamic> updatedDetails) async {
     final prefs = await SharedPreferences.getInstance();
     final clientId = prefs.getString('client_id') ?? '';
+    final token = await getAuthToken();  // Retrieve token
 
     if (clientId.isEmpty) {
       print('Client ID not found');
@@ -422,7 +527,7 @@ class ApiService {
       url,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_API_TOKEN', // Replace with actual token if needed
+        "Authorization": "AppToken $token",
       },
       body: jsonEncode(requestData),
     );
@@ -438,6 +543,7 @@ class ApiService {
   Future<void> getCardContract() async {
     final prefs = await SharedPreferences.getInstance();
     final clientId = prefs.getString('client_id') ?? '';
+    final token = await getAuthToken();  // Retrieve token
 
     if (clientId.isEmpty) {
       print('Client ID not found');
@@ -447,7 +553,7 @@ class ApiService {
     final response = await http.get(
       Uri.parse('https://api.example.com/card-contracts?client_id=$clientId'),
       headers: {
-        'Authorization': 'Bearer YOUR_API_TOKEN',
+        "Authorization": "AppToken $token",
       },
     );
 
@@ -460,10 +566,11 @@ class ApiService {
   }
 
   Future<void> getTransactions(String contractId) async {
+    final token = await getAuthToken();  // Retrieve token
     final response = await http.get(
       Uri.parse('https://api.example.com/transactions?contract_id=$contractId'),
       headers: {
-        'Authorization': 'Bearer YOUR_API_TOKEN',
+        "Authorization": "AppToken $token",
       },
     );
 
@@ -476,10 +583,11 @@ class ApiService {
   }
 
   Future<void> getCardUsageLimit(String contractId) async {
+    final token = await getAuthToken();  // Retrieve token
     final response = await http.get(
       Uri.parse('https://api.example.com/card-contracts/$contractId/limits'),
       headers: {
-        'Authorization': 'Bearer YOUR_API_TOKEN',
+        "Authorization": "AppToken $token",
       },
     );
 
@@ -491,8 +599,81 @@ class ApiService {
     }
   }
 
+  Future<http.Response> registerUser(Map<String, String> userData) async {
+  final url = Uri.parse("$kBaseUrl/api/v1/users/register");
+  final token = await getAuthToken();
 
+  print("\n--- Storing user data  ---");
+  print("Request: POST $url");
+  print("Request Body: ${jsonEncode(userData)}");
+
+  final response = await http.post(
+  url,
+    headers: {
+      "Content-Type": "application/json",
+      if (token != null) "Authorization": "AppToken $token",  // Add Authorization header
+    },
+  );
+
+  print("\n--- POST Response ---");
+  print("Status Code: ${response.statusCode}");
+  print("Response Body: ${response.body}");
+  print("----------------------\n");
+
+  return response;
+  }
+
+
+  Future<String?> getAuthToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('authToken');
+
+    if (token == null) {
+      print("Error: Auth token not found in SharedPreferences.");
+    } else {
+      print("Retrieved Auth Token: $token");
+    }
+
+    return token;
+  }
+
+  Future<Object> verifyOTP(String email,String otp_code) async{
+    final url = Uri.parse("$kBaseUrl/auth/login/otp" );
+    final response = await http.post(
+      url,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: jsonEncode(
+        "{ email : $email,"+
+        "otp : $otp_code }")
+    );
+
+    print(response.body);
+    return response;
+  }
+
+  Future<http.Response> changePassword(String currentPassword, String newPassword, String confirmPassword) async {
+    final url = Uri.parse("$kBaseUrl/api/v1/users");
+
+    final response = await http.patch(
+      url,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode({
+        "currentPassword": currentPassword,
+        "newPassword": newPassword,
+        "confirmationPassword": confirmPassword,
+      }),
+    );
+
+    print(response.body);
+    return response;
+  }
 }
+
+
 
 
 

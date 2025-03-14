@@ -54,8 +54,8 @@ const String kEditProfile = "Edit profile";
 const String kLogout = "Log out";
 const String kDeleteAccount = "Delete account";
 
- const String kBaseUrl = "http://192.168.1.44:8063";
-//const String kBaseUrl = "http://192.168.1.146:8063";
+ const String kBaseUrl = "http://192.168.1.44:8567";
+// const String kBaseUrl = "http://192.168.1.146:8567";
 
 
 

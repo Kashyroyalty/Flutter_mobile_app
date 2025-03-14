@@ -1,24 +1,12 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Profile Page',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-      ),
-      home: const ProfilePage(),
-    );
-  }
-}
+import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Models/ApiService.dart';
+import 'EditProfilePage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -28,147 +16,118 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final _formKey = GlobalKey<FormState>();
-  bool _isEditing = false;
+  bool _isLoading = true;
+  bool _hasError = false;
   File? _image;
-  bool _showSuccess = false;
+  Map<String, dynamic> _userData = {};
 
-  // Form controllers
-  final _firstNameController = TextEditingController(text: 'Arthur');
-  final _lastNameController = TextEditingController(text: 'Nancy');
-  final _emailController = TextEditingController(text: 'bradley.ortiz@gmail.com');
-  final _phoneController = TextEditingController(text: '477-046-1827');
-  final _addressController = TextEditingController(text: '116 Jaskolski Stravenue Suite 883');
-  final _nationController = TextEditingController(text: 'Colombia');
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _nationController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+    _loadProfileImage();
+  }
+
+  Future<void> _loadProfileData() async {
+    await fetchUserProfile();
+  }
+
+  Future<void> fetchUserProfile() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
+
+      int? clientId = await ApiService().getClientId();
+      if (clientId == null) {
+        throw Exception("Client ID not found");
+      }
+
+      Map<String, dynamic>? userData = await ApiService().fetchUserProfile(clientId);
+      if (userData != null) {
+        _saveUserDataToPrefs(userData);
+        _setUserData(userData);
+      }
+    } catch (e) {
+      print("Error fetching user profile: $e");
+      setState(() => _hasError = true);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _saveUserDataToPrefs(Map<String, dynamic> userData) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_profile', jsonEncode(userData));
+  }
+
+  void _setUserData(Map<String, dynamic> userData) {
+    setState(() {
+      _userData = userData;
+      _firstNameController.text = userData['first_name'] ?? '';
+      _lastNameController.text = userData['last_name'] ?? '';
+      _emailController.text = userData['email'] ?? '';
+      _phoneController.text = userData['phone'] ?? '';
+      _addressController.text = userData['address'] ?? '';
+      _nationController.text = userData['nation'] ?? '';
+    });
+  }
 
   Future<void> _pickImage() async {
-    ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      setState(() {
-        _image = File(image.path);
-      });
+    try {
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('profile_image', pickedFile.path);
+      }
+    } catch (e) {
+      print("Error picking image: $e");
     }
   }
 
-  void _toggleEdit() {
-    setState(() {
-      _isEditing = !_isEditing;
-    });
-  }
-
-  void _saveProfile() {
-    if (_formKey.currentState!.validate()) {
-      // Here you would typically send the data to a server
+  Future<void> _loadProfileImage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? imagePath = prefs.getString('profile_image');
+    if (imagePath != null && mounted) {
       setState(() {
-        _isEditing = false;
-        _showSuccess = true;
-      });
-
-      // Hide success message after 3 seconds
-      Future.delayed(const Duration(seconds: 3), () {
-        if (mounted) {
-          setState(() {
-            _showSuccess = false;
-          });
-        }
+        _image = File(imagePath);
       });
     }
-  }
-
-  void _cancelEdit() {
-    setState(() {
-      _isEditing = false;
-      // Reset form to original values
-      _firstNameController.text = 'Arthur';
-      _lastNameController.text = 'Nancy';
-      _emailController.text = 'bradley.ortiz@gmail.com';
-      _phoneController.text = '477-046-1827';
-      _addressController.text = '116 Jaskolski Stravenue Suite 883';
-      _nationController.text = 'Colombia';
-    });
-  }
-
-  void _changePassword() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Change Password'),
-        content: const TextField(
-          obscureText: true,
-          decoration: InputDecoration(
-            labelText: 'New Password',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              // Here you would typically send the new password to a server
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Password changed successfully!')),
-              );
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
+      appBar: AppBar(
+        title: const Text("My Profile"),
+        backgroundColor: Colors.blueAccent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: RefreshIndicator(
+        onRefresh: _loadProfileData,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Padding(
-            padding: const EdgeInsets.all(0),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  color: Colors.blueAccent,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.black),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        'My Profile',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                if (_showSuccess)
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'Profile updated successfully!',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
                 Center(
                   child: Stack(
                     children: [
@@ -184,18 +143,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         right: 0,
                         child: GestureDetector(
                           onTap: _pickImage,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: const Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                              size: 20,
-                            ),
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: Colors.blue,
+                            child: const Icon(Icons.edit, color: Colors.white),
                           ),
                         ),
                       ),
@@ -203,84 +154,40 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                Form(
-                  key: _formKey,
+                _buildReadOnlyField('First Name', _firstNameController),
+                _buildReadOnlyField('Last Name', _lastNameController),
+                _buildReadOnlyField('Email', _emailController),
+                _buildReadOnlyField('Phone', _phoneController),
+                _buildReadOnlyField('Address', _addressController),
+                _buildReadOnlyField('Nation', _nationController),
+                const SizedBox(height: 20),
+                Center(
                   child: Column(
                     children: [
-                      _buildTextField(
-                        'First Name',
-                        _firstNameController,
-                        enabled: _isEditing,
-                      ),
-                      _buildTextField(
-                        'Last Name',
-                        _lastNameController,
-                        enabled: _isEditing,
-                      ),
-                      _buildPasswordField(),
-                      _buildTextField(
-                        'Email',
-                        _emailController,
-                        enabled: _isEditing,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      _buildTextField(
-                        'Phone',
-                        _phoneController,
-                        enabled: _isEditing,
-                        keyboardType: TextInputType.phone,
-                      ),
-                      _buildTextField(
-                        'Address',
-                        _addressController,
-                        enabled: _isEditing,
-                      ),
-                      _buildTextField(
-                        'Nation',
-                        _nationController,
-                        enabled: _isEditing,
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const EditProfilePage(userData: {},)),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            backgroundColor: kButtonColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            "Edit Profile",
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    if (!_isEditing)
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: _toggleEdit,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 25),
-
-                          ),
-                          child: const Text('Edit Profile'),
-
-                        ),
-                      ),
-                    if (_isEditing) ...[
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: _saveProfile,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                          ),
-                          child: const Text('Save Changes'),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextButton(
-                          onPressed: _cancelEdit,
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                          ),
-                          child: const Text('Cancel'),
-                        ),
-                      ),
-                    ],
-                  ],
                 ),
               ],
             ),
@@ -290,58 +197,18 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildTextField(
-      String label,
-      TextEditingController controller, {
-        bool enabled = false,
-        TextInputType? keyboardType,
-      }) {
+  Widget _buildReadOnlyField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: TextFormField(
         controller: controller,
-        enabled: enabled,
-        keyboardType: keyboardType,
+        readOnly: true,
         decoration: InputDecoration(
           labelText: label,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
           ),
-          filled: !enabled,
-          fillColor: !enabled ? const Color(0xFFF5F5F5) : null,
         ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please enter $label';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  Widget _buildPasswordField() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
-      child: TextFormField(
-        enabled: false,
-        obscureText: true,
-        decoration: InputDecoration(
-          labelText: 'Password',
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
-          filled: true,
-          fillColor: const Color(0xFFF5F5F5),
-          suffixIcon: TextButton(
-            onPressed: _changePassword,
-            child: const Text(
-              'CHANGE PASSWORD',
-              style: TextStyle(color: Colors.green),
-            ),
-          ),
-        ),
-        initialValue: '••••••••',
       ),
     );
   }

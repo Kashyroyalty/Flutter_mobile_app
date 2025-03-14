@@ -38,18 +38,28 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   String errorMessage = '';
 
+  int? _clientId;
+
+  int? get clientId => _clientId;
+
 
   CardContract? get cardData => _selectedCardIndex >= 0 ? _cards[_selectedCardIndex] : null;
   double get cardBalance => cardData?.availableBalance ?? 0.0;
 
 
+
   @override
   void initState() {
     super.initState();
-    fetchClientCards(
-
-    );
+    fetchClientCards();
+    fetchClientId();
   }
+
+  Future<void> fetchClientId() async {
+    _clientId = await ApiService().getClientId();
+    setState(() {});
+  }
+  
   Future<void> fetchTransactions(String cardId) async {
     try {
       TransactionContract contract = await ApiService().fetchTransactionContract(cardId);
@@ -123,10 +133,15 @@ class _StatisticsPageState extends State<StatisticsPage> {
               child: Icon(Icons.person, size: 18, color: Colors.grey[700]),
             ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ProfilePage()),
-              );
+              if (_clientId != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
+              } else {
+                print("Client ID not found");
+              }
+
             },
           ),
         ],

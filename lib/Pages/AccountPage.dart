@@ -19,6 +19,8 @@ class _AccountPageState extends State<AccountPage> {
   bool _isBalanceHidden = true;
   late ApiService apiService;
 
+
+
   @override
   void initState() {
     super.initState();

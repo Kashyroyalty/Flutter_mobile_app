@@ -1,6 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../main.dart';
- // Import the MainScreen page
 
 class InputOtp extends StatefulWidget {
   @override
@@ -9,7 +9,20 @@ class InputOtp extends StatefulWidget {
 
 class _InputOtpState extends State<InputOtp> {
   String otp = '';
+  int currentOtp = 0;
   bool isLoading = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+    if (args != null && args.containsKey('otp')) {
+      currentOtp = args['otp']; // Get the passed OTP
+      print("Current OTP: $currentOtp"); // Debugging: Print OTP
+    } else {
+      _generateNewOtp(); // Generate a new OTP if not passed
+    }
+  }
 
   void _addDigit(String digit) {
     if (otp.length < 6) {
@@ -27,12 +40,12 @@ class _InputOtpState extends State<InputOtp> {
 
   void _verifyOtp() {
     if (otp.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('OTP must be 6 digits'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showSnackBar('OTP must be 6 digits', Colors.red);
+      return;
+    }
+
+    if (otp != currentOtp.toString()) {
+      _showSnackBar('Invalid OTP, please try again', Colors.red);
       return;
     }
 
@@ -51,6 +64,20 @@ class _InputOtpState extends State<InputOtp> {
     });
   }
 
+  void _generateNewOtp() {
+    setState(() {
+      currentOtp = Random().nextInt(900000) + 100000; // Generate a new 6-digit OTP
+    });
+    print("New OTP: $currentOtp"); // Debugging: Print new OTP
+    _showSnackBar("New OTP generated!", Colors.green);
+  }
+
+  void _showSnackBar(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: color),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,41 +91,61 @@ class _InputOtpState extends State<InputOtp> {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Enter the OTP sent to your phone",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 16),
-                _buildOtpDisplay(),
-                SizedBox(height: 16),
-                _buildKeypad(),
-                SizedBox(height: 18),
-                isLoading
-                    ? CircularProgressIndicator()
-                    : SizedBox(
-                  width: double.infinity,
-                  height: 40,
-                  child: ElevatedButton(
-                    onPressed: _verifyOtp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Enter the OTP sent to your phone",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16),
+                  _buildOtpDisplay(),
+                  SizedBox(height: 16),
+                  _buildKeypad(),
+                  SizedBox(height: 18),
+                  isLoading
+                      ? CircularProgressIndicator()
+                      : SizedBox(
+                    width: double.infinity,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: _verifyOtp,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Verify OTP',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
-                    child: Text(
-                      'Verify OTP',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                  SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: _generateNewOtp,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
+                    child: Text(
+                      "Refresh OTP",
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
                 ),
-              ],
+              ),
+                ],
+              ),
             ),
           ),
         ),
@@ -136,6 +183,7 @@ class _InputOtpState extends State<InputOtp> {
   Widget _buildKeypad() {
     return GridView.count(
       shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
       crossAxisCount: 3,
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,

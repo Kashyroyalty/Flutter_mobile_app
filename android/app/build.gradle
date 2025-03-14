@@ -27,7 +27,7 @@ android {
     defaultConfig {
         applicationId = "com.example.online_banking_system"
         minSdk = flutter.minSdkVersion
-        targetSdk = 31  // Set a specific target SDK version for compatibility
+        targetSdk = 33  // Set a specific target SDK version for compatibility
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
