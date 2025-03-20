@@ -1,5 +1,8 @@
-import 'dart:math';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Models/ApiService.dart';
 import '../main.dart';
 
 class InputOtp extends StatefulWidget {
@@ -8,44 +11,82 @@ class InputOtp extends StatefulWidget {
 }
 
 class _InputOtpState extends State<InputOtp> {
-  String otp = '';
-  int currentOtp = 0;
+  String otpCode = '';
+  int? currentOtp; // Nullable int for better handling
   bool isLoading = false;
+
+  String get refreshToken => refreshToken;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
-    if (args != null && args.containsKey('otp')) {
-      currentOtp = args['otp']; // Get the passed OTP
-      print("Current OTP: $currentOtp"); // Debugging: Print OTP
-    } else {
-      _generateNewOtp(); // Generate a new OTP if not passed
+    _loadAndFetchOtp();
+  }
+
+  /// Loads saved email and fetches OTP from API
+  Future<void> _loadAndFetchOtp() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      String? email = prefs.getString('saved_email');
+
+      if (email == null || email.isEmpty) {
+        print("❌ Error: No logged-in email found.");
+        return;
+      }
+
+      await _fetchOtp(email);
+    } catch (e) {
+      print("❌ Error loading email: $e");
     }
   }
 
-  void _addDigit(String digit) {
-    if (otp.length < 6) {
+  /// Fetches OTP from API
+  Future<void> _fetchOtp(String email) async {
+    try {
+      if (email.isEmpty) {
+        print("❌ Error: No email provided.");
+        return;
+      }
+
+      int? fetchedOtp = await ApiService.fetchOtp(email);
+
       setState(() {
-        otp += digit;
+        currentOtp = fetchedOtp;
+      });
+
+      print("✅ Fetched OTP: $currentOtp"); // Debugging output
+    } catch (e) {
+      print("❌ Error fetching OTP: $e");
+    }
+  }
+
+  /// Adds a digit to OTP input
+  void _addDigit(String digit) {
+    if (otpCode.length < 6) {
+      setState(() {
+        otpCode += digit;
       });
     }
   }
 
+  /// Clears OTP input
   void _clearOtp() {
     setState(() {
-      otp = '';
+      otpCode = '';
     });
   }
 
-  void _verifyOtp() {
-    if (otp.length < 6) {
+  void _verifyOtp() async {
+    if (otpCode.length < 6) {
       _showSnackBar('OTP must be 6 digits', Colors.red);
       return;
     }
 
-    if (otp != currentOtp.toString()) {
-      _showSnackBar('Invalid OTP, please try again', Colors.red);
+    final prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('saved_email');
+
+    if (email == null || email.isEmpty) {
+      _showSnackBar('No saved email found', Colors.red);
       return;
     }
 
@@ -53,25 +94,73 @@ class _InputOtpState extends State<InputOtp> {
       isLoading = true;
     });
 
-    Future.delayed(Duration(seconds: 2), () {
+    try {
+      final response = await ApiService.verifyOTP(email, otpCode);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        String? accessToken = data['access_token'];
+        String? refreshToken = data['refresh_token']; // Fetch from response, not SharedPreferences
+
+        if (accessToken != null && accessToken.isNotEmpty && refreshToken != null && refreshToken.isNotEmpty) {
+          await prefs.setString('access_token', accessToken);
+          await prefs.setString('refresh_token', refreshToken); // Store updated refresh token
+
+          print("✅ Access Token Updated: $accessToken");
+          print("🔄 Refresh Token Updated: $refreshToken");
+
+          setState(() {
+            isLoading = false;
+          });
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => MainScreen()),
+          );
+        } else {
+          setState(() {
+            isLoading = false;
+          });
+
+          _showSnackBar('Invalid response from server. No token received.', Colors.red);
+        }
+      } else if (response.statusCode == 401) {
+        print("🔄 Access token expired. Attempting to refresh...");
+
+        String? oldRefreshToken = prefs.getString('refresh_token');
+        if (oldRefreshToken != null) {
+          String? newAccessToken = await ApiService.refreshAccessToken(oldRefreshToken);
+
+          if (newAccessToken != null && newAccessToken.isNotEmpty) {
+            await prefs.setString('access_token', newAccessToken); // Store updated access token
+            print("🔄 New Access Token: $newAccessToken");
+
+            _verifyOtp(); // Retry OTP verification with refreshed token
+          } else {
+            _showSnackBar('Session expired. Please log in again.', Colors.red);
+          }
+        } else {
+          _showSnackBar('Session expired. Please log in again.', Colors.red);
+        }
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+
+        _showSnackBar('Invalid OTP, please try again.', Colors.red);
+      }
+    } catch (e) {
       setState(() {
         isLoading = false;
       });
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
-      );
-    });
+
+      print("❌ Error verifying OTP: $e");
+      _showSnackBar('Something went wrong. Please try again.', Colors.red);
+    }
   }
 
-  void _generateNewOtp() {
-    setState(() {
-      currentOtp = Random().nextInt(900000) + 100000; // Generate a new 6-digit OTP
-    });
-    print("New OTP: $currentOtp"); // Debugging: Print new OTP
-    _showSnackBar("New OTP generated!", Colors.green);
-  }
-
+  /// Displays a snackbar message
   void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: color),
@@ -126,24 +215,6 @@ class _InputOtpState extends State<InputOtp> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: _generateNewOtp,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                    child: Text(
-                      "Refresh OTP",
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ),
-                ),
-              ),
                 ],
               ),
             ),
@@ -171,7 +242,7 @@ class _InputOtpState extends State<InputOtp> {
               height: 14,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: index < otp.length ? Colors.blue : Colors.grey[300],
+                color: index < otpCode.length ? Colors.blue : Colors.grey[300],
               ),
             ),
           ),
@@ -204,9 +275,9 @@ class _InputOtpState extends State<InputOtp> {
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: () {
-          if (isBackspace && otp.isNotEmpty) {
+          if (isBackspace && otpCode.isNotEmpty) {
             setState(() {
-              otp = otp.substring(0, otp.length - 1);
+              otpCode = otpCode.substring(0, otpCode.length - 1);
             });
           } else if (label == 'C') {
             _clearOtp();

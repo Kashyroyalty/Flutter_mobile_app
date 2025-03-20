@@ -1,13 +1,15 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Constants/Strings.dart';
 import '../Models/ApiService.dart';
 
 
 class PasswordCreationScreen extends StatefulWidget {
+  const PasswordCreationScreen({super.key});
+
   @override
   _PasswordCreationScreenState createState() => _PasswordCreationScreenState();
 }
@@ -24,6 +26,13 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
 
+
+  // Function to store the new password in SharedPreferences
+  Future<void> _storeNewPassword(String newPassword) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_password', newPassword);
+  }
+
   // Function to call the API and update password
   Future<void> changePassword() async {
     if (!_formKey.currentState!.validate()) return;
@@ -38,13 +47,14 @@ class _PasswordCreationScreenState extends State<PasswordCreationScreen> {
       );
 
       if (response == 200) {
+        await _storeNewPassword(_newPassword!);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Password updated successfully. Please log in with your new password.")),
         );
         Navigator.pushReplacementNamed(context, '/login');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response.toString() ?? "Password change failed.")),
+          SnackBar(content: Text("Password change failed. Please try again.")),
         );
       }
     } catch (e) {

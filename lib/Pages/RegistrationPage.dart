@@ -19,9 +19,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController _clientController = TextEditingController();
   late ApiService apiService;
 
-  late String email;
-  late String password;
-
   @override
   void initState() {
     super.initState();
@@ -35,28 +32,28 @@ class _RegistrationPageState extends State<RegistrationPage> {
     print("✅ Client ID successfully stored: $clientId");
   }
 
-  // Save email and password in SharedPreferences
+  // Save email and one-time password in SharedPreferences
   Future<void> saveCredentials(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('registered_email', email);
-    await prefs.setString('registered_password', password);
-    print("✅ Credentials saved: Email - $email | Password - $password");
+    await prefs.setString('one_time_password', password);
+    await prefs.setBool('password_used', false);
+
+    print("✅ Credentials saved: Email - $email | OTP - $password");
+    print("Stored Email: ${prefs.getString('registered_email')}");
+    print("Stored Password: ${prefs.getString('one_time_password')}");
   }
 
-  Future<String> fetchPassword(String email) async {
-    final response = await http.get(Uri.parse('https://yourapi.com/getPassword?email=$email'));
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['password'];
-    } else {
-      throw Exception("Failed to fetch password from API");
-    }
+  // Generate a random one-time password
+  String generateOTP() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
+    return List.generate(8, (index) => chars[random.nextInt(chars.length)]).join();
   }
 
   void _onRegisterPressed() async {
     if (_formKey.currentState!.validate()) {
-      email = _clientController.text.trim();
-
+      String email = _clientController.text.trim();
 
       // Show loading Snackbar
       ScaffoldMessenger.of(context).showSnackBar(
@@ -79,18 +76,19 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
           print("✅ Client ID received: $clientId");
 
-          // Fetch password from API
-          password = await fetchPassword(email);
-          print("📧 Registered Email: $email");
-          print("🔑 Fetched Password: $password");
+          // Generate a one-time password
+          String otp = generateOTP();
 
-          // Save client ID and credentials
+          print("📧 Registered Email: $email");
+          print("🔑 One-Time Password: $otp (Use only once)");
+
+          // Save client ID and OTP
           await saveClientId(clientId);
-          await saveCredentials(email, password);
+          await saveCredentials(email, otp);
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Registration successful!"),
+              content: Text("Registration successful! OTP generated."),
               duration: Duration(seconds: 2),
             ),
           );
@@ -114,6 +112,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
     }
   }
 
+  Future<void> checkStoredEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? storedEmail = prefs.getString('registered_email');
+
+    if (storedEmail != null) {
+      print("✅ Verified: Stored Email in SharedPreferences: $storedEmail");
+    } else {
+      print("❌ Error: No email found in SharedPreferences.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

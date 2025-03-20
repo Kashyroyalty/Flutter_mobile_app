@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
+import 'package:online_banking_system/Pages/InputOtp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Constants/sizes.dart';
@@ -30,6 +31,16 @@ class _LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     _checkBiometrics();
+    _loadSavedEmail(); // Load email from SharedPreferences
+  }
+
+  Future<void> _loadSavedEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('saved_email') ?? "";
+
+    setState(() {
+      _emailController.text = savedEmail; // Auto-fill email if found
+    });
   }
 
   Future<void> _checkBiometrics() async {
@@ -108,11 +119,27 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
 
-      // Store email and password securely for future biometric login
-      await prefs.setString('${email}_secured_email', email);
-      // In a real app, you would encrypt the password or use a more secure method
-      // This is just for demonstration
-      await prefs.setString('${email}_secured_password', _passwordController.text);
+      // Ensure biometric storage does not overwrite existing valid credentials
+      final storedEmail = prefs.getString('${email}_secured_email');
+      final storedPassword = prefs.getString('${email}_secured_password');
+
+      if (storedEmail != null && storedPassword != null) {
+        print("Biometric credentials already exist for $email.");
+        return;
+      }
+
+      // Check if user has entered credentials before enabling biometrics
+      if (_passwordController.text.isEmpty) {
+        print("Error: Password is empty. Biometric cannot be enabled without a password.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Enter password before enabling biometrics."), backgroundColor: Colors.red),
+        );
+        return;
+      }
+
+      // Store email and password securely
+      await prefs.setString('registered_email', email.toLowerCase().trim());
+      await prefs.setString('_secured_password', _passwordController.text);
 
       // Mark biometrics as enabled for this user
       await prefs.setBool('${email}_biometric_enabled', true);
@@ -120,10 +147,20 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         isBiometricEnabled = true;
       });
+
+      print("Biometric authentication enabled for $email.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Biometric authentication enabled successfully!"), backgroundColor: Colors.green),
+      );
+
     } catch (e) {
       print("Error enabling biometrics: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error enabling biometrics: $e"), backgroundColor: Colors.red),
+      );
     }
   }
+
 
   Future<Map<String, String>> _getBiometricCredentials() async {
     try {
@@ -239,9 +276,17 @@ class _LoginPageState extends State<LoginPage> {
     // Retrieve stored credentials
     final storedEmail = prefs.getString('registered_email');
     final storedPassword = prefs.getString('registered_password');
+    final isFirstTimeLogin = prefs.getBool('${email}_first_time') ?? true;
+
+    print("Stored Email: $storedEmail");
+    print("Stored Password: $storedPassword");
+    print("Entered Email: $email");
+    print("Entered Password: $password");
 
     if (storedEmail?.toLowerCase().trim() == email.toLowerCase().trim() &&
         storedPassword?.trim() == password.trim()) {
+      // Save email in SharedPreferences for future use
+      await prefs.setString('saved_email', email);
 
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Login successful!"),
@@ -249,10 +294,18 @@ class _LoginPageState extends State<LoginPage> {
         duration: Duration(seconds: 2),
       ));
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => PasswordCreationScreen()),
-      );
+      if (isFirstTimeLogin) {
+        prefs.setBool('${email}_first_time', false);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => PasswordCreationScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => InputOtp()),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Invalid credentials. Please try again."),
@@ -261,6 +314,7 @@ class _LoginPageState extends State<LoginPage> {
       ));
     }
   }
+
 
 
   void _onLoginPressed() {

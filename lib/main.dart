@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
@@ -11,6 +13,7 @@ import 'Pages/CardPage.dart';
 import 'Pages/InputOtp.dart';
 import 'Pages/LanguagePage.dart';
 import 'Pages/StockPage.dart';
+import 'Screens/TokenExpiryPopUp.dart';
 import 'Screens/privacy_screen.dart';
 import 'Screens/account_summary_screen.dart';
 import 'Screens/create_profile_screen1.dart';
@@ -124,6 +127,31 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   bool shouldReload(LocalizationsDelegate<AppLocalizations> old) => false;
 }
 
+void showTokenExpiryPopup(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false, // Prevent dismissing without action
+    builder: (context) => AlertDialog(
+      title: Text('Session Expiring'),
+      content: Text('Your session is about to expire. Please take action.'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            // Close the current dialog
+            Navigator.of(context).pop();
+
+            // Ensure the popup is shown again after the current frame
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              showTokenExpiryPopup(context);
+            });
+          },
+          child: Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
 class MainScreen extends StatefulWidget {
   @override
   _MainScreenState createState() => _MainScreenState();
@@ -131,6 +159,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  late Timer _timer;
 
   static final List<Widget> _pages = <Widget>[
     HomePage(),
@@ -144,6 +173,30 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
     });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _startSessionTimer();
+  }
+
+  void _startSessionTimer() {
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (context) => TokenExpiryPopup(onSessionContinued: () {  }, onLogout: () {  },),
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
