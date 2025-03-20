@@ -127,30 +127,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   bool shouldReload(LocalizationsDelegate<AppLocalizations> old) => false;
 }
 
-void showTokenExpiryPopup(BuildContext context) {
-  showDialog(
-    context: context,
-    barrierDismissible: false, // Prevent dismissing without action
-    builder: (context) => AlertDialog(
-      title: Text('Session Expiring'),
-      content: Text('Your session is about to expire. Please take action.'),
-      actions: [
-        TextButton(
-          onPressed: () {
-            // Close the current dialog
-            Navigator.of(context).pop();
 
-            // Ensure the popup is shown again after the current frame
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              showTokenExpiryPopup(context);
-            });
-          },
-          child: Text('OK'),
-        ),
-      ],
-    ),
-  );
-}
 
 class MainScreen extends StatefulWidget {
   @override

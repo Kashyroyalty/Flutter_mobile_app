@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/ApiService.dart';
 import '../Pages/LoginPage.dart';
 
-
 class TokenExpiryPopup extends StatefulWidget {
   final VoidCallback onSessionContinued;
   final VoidCallback onLogout;
@@ -19,38 +18,49 @@ class TokenExpiryPopup extends StatefulWidget {
 }
 
 class _TokenExpiryPopupState extends State<TokenExpiryPopup> {
+  bool _isLoading = false;
+  String? _errorMessage;
 
   Future<void> _refreshAccessToken() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? refreshToken = prefs.getString('refresh_token'); // Retrieve stored refresh token
+    String? refreshToken = prefs.getString('refresh_token');
 
     if (refreshToken != null && refreshToken.isNotEmpty) {
-      String? newAccessToken = await ApiService.refreshAccessToken(refreshToken); // Use refresh token to get new access token
+      String? newAccessToken = await ApiService.refreshAccessToken(refreshToken);
+
       if (newAccessToken != null && newAccessToken.isNotEmpty) {
-        await prefs.setString('access_token', newAccessToken); // Store the new access token
+        await prefs.setString('access_token', newAccessToken);
 
         if (mounted) {
-          Navigator.of(context).pop(); // Dismiss the popup
+          Navigator.of(context).pop(); // Close the popup
         }
         widget.onSessionContinued();
         return;
       }
     }
 
-    // If token refresh fails, force logout
-    _logout();
+    // If refresh token fails, show error
+    setState(() {
+      _isLoading = false;
+      _errorMessage = "Session refresh failed. Please log in again.";
+    });
   }
 
   Future<void> _logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('access_token'); // Remove access token
-    await prefs.remove('refresh_token'); // Remove refresh token if stored
+    await prefs.remove('access_token');
+    await prefs.remove('refresh_token');
     await ApiService.logout();
 
     if (mounted) {
-      Navigator.of(context).pop(); // Dismiss the popup
+      Navigator.of(context).pop(); // Close the popup
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LoginPage()), // Redirect to login page
+        MaterialPageRoute(builder: (context) => LoginPage()),
       );
     }
     widget.onLogout();
@@ -58,19 +68,50 @@ class _TokenExpiryPopupState extends State<TokenExpiryPopup> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Session Expiring"),
-      content: const Text("Are you still using the app? Your session is about to expire."),
-      actions: [
-        TextButton(
-          onPressed: _logout,
-          child: const Text("Logout"),
+    return WillPopScope( // Prevents back button dismissal
+      onWillPop: () async => false,
+      child: AlertDialog(
+        title: const Text("Session Expiring"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_errorMessage == null)
+              const Text("Are you still using the app? Your session is about to expire."),
+            if (_isLoading)
+              const Padding(
+                padding: EdgeInsets.only(top: 10),
+                child: CircularProgressIndicator(),
+              ),
+            if (_errorMessage != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Text(
+                  _errorMessage!,
+                  style: const TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+          ],
         ),
-        TextButton(
-          onPressed: _refreshAccessToken,
-          child: const Text("Continue"),
-        ),
-      ],
+        actions: [
+          if (_errorMessage == null) ...[
+            TextButton(
+              onPressed: _logout,
+              child: const Text("Logout"),
+            ),
+            TextButton(
+              onPressed: _isLoading ? null : _refreshAccessToken,
+              child: const Text("Continue"),
+            ),
+          ],
+          if (_errorMessage != null) ...[
+            TextButton(
+              onPressed: _logout,
+              child: const Text("Retry Login"),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -78,7 +119,7 @@ class _TokenExpiryPopupState extends State<TokenExpiryPopup> {
 void showTokenExpiryPopup(BuildContext context, VoidCallback onSessionContinued, VoidCallback onLogout) {
   showDialog(
     context: context,
-    barrierDismissible: false,
+    barrierDismissible: false, // Prevents tapping outside to dismiss
     builder: (context) => TokenExpiryPopup(
       onSessionContinued: onSessionContinued,
       onLogout: onLogout,
