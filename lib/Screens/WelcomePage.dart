@@ -13,42 +13,46 @@ class WelcomePage extends StatelessWidget {
     final localizations = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: kBackgroundColor,
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Middle Content (Title & Subtitle centered)
-            Expanded(
+            // Logo or Banner
+            Padding(
+              padding: const EdgeInsets.only(top: 60.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center, // Centers the text vertically
                 children: [
-                  Text(
-                    localizations?.translate("welcome_title") ?? OnBoardingTitle_1,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'CustomFont2',
-                      fontSize: kTextSizeTitles,
-                      fontStyle: FontStyle.italic,
-                      decoration: TextDecoration.underline,
-                      color: kTextColorLightTheme,
-                    ),
+                  Icon(
+                    Icons.credit_card,
+                    size: 100,
+                    color: kButtonColor,
                   ),
                   SizedBox(height: 20),
                   Text(
-                    localizations?.translate("welcome_subtitle") ?? OnBoardingSubtitle_1,
+                    localizations?.translate("manage_cards_title") ?? "Manage Your Cards Effortlessly",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: kTextSizeTitles,
+                      fontWeight: FontWeight.bold,
+                      color: kButtonColor,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    localizations?.translate("manage_cards_subtitle") ?? "Track transactions, update limits, and secure your finances.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: kTextSize,
-                      color: kTextColorLightTheme,
+                      color: Colors.black,
                     ),
                   ),
                 ],
               ),
             ),
 
-            // Bottom Buttons
+            // Buttons
             Column(
               children: [
                 ElevatedButton(
@@ -57,14 +61,14 @@ class WelcomePage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: kButtonColor,
-                    foregroundColor: kButtonText,
-                    padding: EdgeInsets.symmetric(horizontal: 130, vertical: 16),
-                    textStyle: TextStyle(fontSize: 18),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                    textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(12.0),
                     ),
                   ),
-                  child: Text(localizations?.translate("login") ?? "Log In"),
+                  child: Text(localizations?.translate("login") ?? "Access Your Account"),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
@@ -72,15 +76,16 @@ class WelcomePage extends StatelessWidget {
                     Navigator.pushNamed(context, '/register');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: kButtonColor,
-                    foregroundColor: kButtonText,
-                    padding: EdgeInsets.symmetric(horizontal: 130, vertical: 16),
-                    textStyle: TextStyle(fontSize: 18),
+                    backgroundColor: Colors.white,
+                    foregroundColor: kButtonColor,
+                    padding: EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                    textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                      borderRadius: BorderRadius.circular(12.0),
+                      side: BorderSide(color: kButtonColor),
                     ),
                   ),
-                  child: Text(localizations?.translate("register") ?? "Register"),
+                  child: Text(localizations?.translate("register") ?? "Create an Account"),
                 ),
               ],
             ),

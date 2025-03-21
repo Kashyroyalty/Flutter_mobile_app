@@ -6,10 +6,9 @@ import 'package:online_banking_system/Pages/InputOtp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
 import 'package:online_banking_system/Constants/sizes.dart';
-import 'package:online_banking_system/Screens/password_creation_screen.dart';
 import 'RegistrationPage.dart';
 import 'ForgotPassword.dart';
-import '../main.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -276,7 +275,6 @@ class _LoginPageState extends State<LoginPage> {
     // Retrieve stored credentials
     final storedEmail = prefs.getString('registered_email');
     final storedPassword = prefs.getString('registered_password');
-    final isFirstTimeLogin = prefs.getBool('${email}_first_time') ?? true;
 
     print("Stored Email: $storedEmail");
     print("Stored Password: $storedPassword");
@@ -294,18 +292,11 @@ class _LoginPageState extends State<LoginPage> {
         duration: Duration(seconds: 2),
       ));
 
-      if (isFirstTimeLogin) {
-        prefs.setBool('${email}_first_time', false);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => PasswordCreationScreen()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => InputOtp()),
-        );
-      }
+      // Redirect directly to OTP input page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => InputOtp()),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Invalid credentials. Please try again."),
@@ -325,12 +316,18 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        title: Text("Login"),
-        backgroundColor: kTopBar,
-      ),
+    return WillPopScope(
+        onWillPop: () async {
+      // Navigate to the welcome page instead of default behavior
+      Navigator.pushReplacementNamed(context, '/welcome'); // Make sure to define this route
+      return false; // Prevent default back behavior
+    },
+        child: Scaffold(
+          backgroundColor: kBackgroundColor,
+            appBar: AppBar(
+               title: Text("Login"),
+                backgroundColor: kTopBar,
+    ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -514,6 +511,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ),
+    )
     );
   }
 }

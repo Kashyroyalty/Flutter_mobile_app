@@ -822,6 +822,22 @@ class ApiService {
     return response;
   }
 
+  Future<void> _storeEmailOnLogin(String email) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? previousEmails = prefs.getStringList("previous_login_emails");
+
+    if (previousEmails == null) {
+      previousEmails = [];
+    }
+
+    // Add email if it's not already in the list
+    if (!previousEmails.contains(email)) {
+      previousEmails.add(email);
+      await prefs.setStringList("previous_login_emails", previousEmails);
+    }
+  }
+
+
 
   Future<http.Response> changePassword(String currentPassword, String newPassword, String confirmPassword) async {
     final url = Uri.parse("$kBaseUrl/api/v1/users/change-password");

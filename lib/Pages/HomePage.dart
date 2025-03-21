@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:online_banking_system/Pages/HelpAndSupportPage.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
@@ -237,8 +238,13 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               leading: Icon(Icons.help_outline),
-              title: Text('Help & Support'),
-              onTap: () => _navigateTo('help'),
+              title: Text('Help and Support'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HelpAndSupportPage()),
+                );
+              },
             ),
             Divider(),
             ListTile(

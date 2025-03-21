@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class PasswordChangePage extends StatefulWidget {
-  const PasswordChangePage({Key? key}) : super(key: key);
+class Resetpasswordpage extends StatefulWidget {
+  const Resetpasswordpage({Key? key}) : super(key: key);
 
   @override
-  _PasswordChangePageState createState() => _PasswordChangePageState();
+  _ResetpasswordpageState createState() => _ResetpasswordpageState();
 }
 
-class _PasswordChangePageState extends State<PasswordChangePage> {
+class _ResetpasswordpageState extends State<Resetpasswordpage> {
   bool _currentPasswordVisible = false;
   bool _newPasswordVisible = false;
   bool _confirmPasswordVisible = false;

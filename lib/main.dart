@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:online_banking_system/Pages/HelpAndSupportPage.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/RegistrationPage.dart';
+import 'package:online_banking_system/Pages/ResetPasswordPage.dart';
 import 'package:online_banking_system/Screens/SplashScreen.dart';
 import 'package:online_banking_system/Screens/WelcomePage.dart';
 import 'Pages/HomePage.dart';
@@ -17,7 +19,8 @@ import 'Screens/TokenExpiryPopUp.dart';
 import 'Screens/privacy_screen.dart';
 import 'Screens/account_summary_screen.dart';
 import 'Screens/create_profile_screen1.dart';
-import 'Screens/password_creation_screen.dart';
+import 'Pages/ResetPasswordPage.dart';
+
 
 void main() async {
   runApp(MyApp());
@@ -78,7 +81,8 @@ class _MyAppState extends State<MyApp> {
         '/privacy': (context) => PrivacyScreen(),
         '/accounts': (context) => AccountSummaryScreen(),
         '/createProfile1': (context) => CreateProfileScreen1(),
-        '/passwordCreation': (context) => PasswordCreationScreen(),
+        '/resetpassword': (context) => Resetpasswordpage(),
+        '/support': (context) => HelpAndSupportPage(),
       },
       debugShowCheckedModeBanner: false,
     );
@@ -158,7 +162,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   void _startSessionTimer() {
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(Duration(minutes: 120), (timer) {
       if (mounted) {
         showDialog(
           context: context,

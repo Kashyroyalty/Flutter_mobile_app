@@ -96,8 +96,7 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - lang/
-#    - profile/
- #   - dashen_bank_logo.jpg
+    # assets/default_profile.svg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

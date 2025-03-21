@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
-import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
-import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
-import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
-import 'package:online_banking_system/Pages/PasswardChangePage.dart';
 import 'package:online_banking_system/Pages/LanguagePage.dart';
-import 'package:online_banking_system/Pages/ProfilePage.dart';
+import 'package:online_banking_system/Pages/ResetPasswordPage.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -24,7 +19,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => PasswordChangePage()),
+                MaterialPageRoute(builder: (context) => Resetpasswordpage()),
               );
             },
           ),
