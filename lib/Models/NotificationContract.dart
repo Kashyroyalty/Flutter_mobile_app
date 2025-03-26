@@ -11,6 +11,10 @@ class NotificationContract {
   final String fields;
   final bool read;
   final bool auth;
+  final String title;
+  final String message;
+  final String time;
+  final String date;
 
   NotificationContract({
     required this.getClientFI,
@@ -23,6 +27,10 @@ class NotificationContract {
     required this.fields,
     required this.read,
     required this.auth,
+    required this.title,
+    required this.message,
+    required this.time,
+    required this.date,
   });
 
   factory NotificationContract.fromJson(Map<String, dynamic> json) {
@@ -37,6 +45,10 @@ class NotificationContract {
       fields: json['fields'],
       read: json['read'],
       auth: json['auth'],
+      title: json['title'] ?? 'Unknown',
+      message: json['message'] ?? '',
+      time: json['time'] ?? '',
+      date: json['date'] ?? '',
     );
   }
 

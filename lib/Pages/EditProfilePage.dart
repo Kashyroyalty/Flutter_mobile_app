@@ -73,7 +73,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         headers: {"Content-Type": "application/json"},
         body: json.encode(data),
       );
-
       return response.statusCode == 200;
     } catch (e) {
       print("Error updating profile: $e");
@@ -94,33 +93,52 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Edit Profile"), backgroundColor: Colors.blueAccent),
-      body: Padding(
+      appBar: AppBar(
+        title: const Text("Edit Profile"),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              _buildTextField("First Name", _firstNameController),
-              _buildTextField("Last Name", _lastNameController),
-              _buildTextField("Email", _emailController, keyboardType: TextInputType.emailAddress),
-              _buildTextField("Phone", _phoneController, keyboardType: TextInputType.phone),
-              _buildTextField("Address", _addressController),
-              _buildTextField("Nation", _nationController),
-              const SizedBox(height: 20),
-              _isSaving
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                onPressed: _updateProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text("Save Changes", style: TextStyle(color: Colors.white)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Profile Avatar
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.blue.shade100,
+              child: const Icon(Icons.person, size: 50, color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _buildTextField("First Name", _firstNameController),
+                  _buildTextField("Last Name", _lastNameController),
+                  _buildTextField("Email", _emailController, keyboardType: TextInputType.emailAddress),
+                  _buildTextField("Phone", _phoneController, keyboardType: TextInputType.phone),
+                  _buildTextField("Address", _addressController),
+                  _buildTextField("Nation", _nationController),
+                  const SizedBox(height: 20),
+                  _isSaving
+                      ? const CircularProgressIndicator()
+                      : SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _updateProfile,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text("Save Changes", style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -134,11 +152,30 @@ class _EditProfilePageState extends State<EditProfilePage> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+          prefixIcon: Icon(_getIconForLabel(label)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         validator: (value) => value == null || value.isEmpty ? "Please enter $label" : null,
       ),
     );
+  }
+
+  IconData _getIconForLabel(String label) {
+    switch (label) {
+      case "First Name":
+      case "Last Name":
+        return Icons.person;
+      case "Email":
+        return Icons.email;
+      case "Phone":
+        return Icons.phone;
+      case "Address":
+        return Icons.location_on;
+      case "Nation":
+        return Icons.flag;
+      default:
+        return Icons.text_fields;
+    }
   }
 
   @override

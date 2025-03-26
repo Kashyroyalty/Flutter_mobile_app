@@ -4,9 +4,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/ApiService.dart';
 import 'EditProfilePage.dart';
+import 'ProfileProvider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -85,9 +87,9 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        setState(() {
-          _image = File(pickedFile.path);
-        });
+        File image = File(pickedFile.path);
+        Provider.of<ProfileProvider>(context, listen: false).setProfileImage(image);
+
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('profile_image', pickedFile.path);
       }
@@ -131,12 +133,16 @@ class _ProfilePageState extends State<ProfilePage> {
                 Center(
                   child: Stack(
                     children: [
-                      CircleAvatar(
-                        radius: 60,
-                        backgroundColor: Colors.white,
-                        backgroundImage: _image != null
-                            ? FileImage(_image!)
-                            : const AssetImage('assets/default_profile.png') as ImageProvider,
+                      Consumer<ProfileProvider>(
+                        builder: (context, profileProvider, child) {
+                          return CircleAvatar(
+                            radius: 60,
+                            backgroundColor: Colors.white,
+                            backgroundImage: profileProvider.profileImage != null
+                                ? FileImage(profileProvider.profileImage!)
+                                : const AssetImage('assets/default_profile.jpg') as ImageProvider,
+                          );
+                        },
                       ),
                       Positioned(
                         bottom: 0,

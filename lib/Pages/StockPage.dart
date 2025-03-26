@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:online_banking_system/Pages/NotificationPage.dart';
+import 'package:provider/provider.dart';
 
 import '../Models/AccountContract.dart';
 import '../Models/ApiService.dart';
@@ -9,6 +10,7 @@ import '../Models/CardContract.dart';
 import '../Models/TransactionContract.dart';
 import '../widgets/CardExpense.dart';
 import 'ProfilePage.dart';
+import 'ProfileProvider.dart';
 
 enum TransactionCategory {
   transfer(icon: Icons.swap_horiz),
@@ -127,21 +129,21 @@ class _StatisticsPageState extends State<StatisticsPage> {
             },
           ),
           IconButton(
-            icon: CircleAvatar(
-              radius: 14,
-              backgroundColor: Colors.grey[300],
-              child: Icon(Icons.person, size: 18, color: Colors.grey[700]),
+            icon: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, child) {
+                return CircleAvatar(
+                  radius: 14,
+                  backgroundImage: profileProvider.profileImage != null
+                      ? FileImage(profileProvider.profileImage!)
+                      : const AssetImage('assets/default_profile.jpg') as ImageProvider,
+                );
+              },
             ),
             onPressed: () {
-              if (_clientId != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              } else {
-                print("Client ID not found");
-              }
-
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
             },
           ),
         ],

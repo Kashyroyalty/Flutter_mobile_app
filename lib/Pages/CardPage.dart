@@ -7,9 +7,11 @@ import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
+import 'package:provider/provider.dart';
 import 'dart:ui';
 
 import '../widgets/CardDesign.dart';
+import 'ProfileProvider.dart';
 import 'UpdateCardDetails.dart';
 
 
@@ -266,10 +268,15 @@ class _CardPageState extends State<CardPage> {
             },
           ),
           IconButton(
-            icon: CircleAvatar(
-              radius: 14,
-              backgroundColor: Colors.grey[300],
-              child: Icon(Icons.person, size: 18, color: Colors.grey[700]),
+            icon: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, child) {
+                return CircleAvatar(
+                  radius: 14,
+                  backgroundImage: profileProvider.profileImage != null
+                      ? FileImage(profileProvider.profileImage!)
+                      : const AssetImage('assets/default_profile.jpg') as ImageProvider,
+                );
+              },
             ),
             onPressed: () {
               Navigator.push(

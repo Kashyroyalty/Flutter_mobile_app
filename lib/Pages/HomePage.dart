@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,8 +8,11 @@ import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/NotificationPage.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
 import 'package:online_banking_system/Pages/SettingPage.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Models/ApiService.dart';
 import '../Models/TransactionContract.dart';
+import 'ProfileProvider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +22,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  File? _profileImage;
   late ApiService apiService;
   int? clientId;
   String? clientName;
@@ -31,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   double? cardBalance;
   bool _showCardBalance = false;
 
+
   bool _isLoading = true;
   bool _isBalanceHidden = true;
 
@@ -38,15 +44,27 @@ class _HomePageState extends State<HomePage> {
   DateTime? _startDate;
   DateTime? _endDate;
 
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
     void initState() {
       super.initState();
+      _loadProfileImage();
         apiService = ApiService();
           fetchClientId();
   }
+
+  Future<void> _loadProfileImage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? imagePath = prefs.getString('profile_image');
+    if (imagePath != null) {
+      setState(() {
+        _profileImage = File(imagePath);
+      });
+    }
+  }
+
 
   Future<void> fetchClientId() async {
     try {
@@ -195,22 +213,36 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      color: Colors.black,
-                      size: 30,
+                  Row(
+                  children: [
+                  Consumer<ProfileProvider>(
+                    builder: (context, profileProvider, child) {
+                      return CircleAvatar(
+                        radius: 30, // Adjust size if needed
+                           backgroundImage: profileProvider.profileImage != null
+                             ? FileImage(profileProvider.profileImage!)
+                                : const AssetImage('assets/default_profile.jpg') as ImageProvider,
+                       );
+                       },
+                       ),
+
+                    SizedBox(width: 10),
+                    Text(
+                      'User Name',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 23,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                  ],
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'User Name',
+                    'user@email.com',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.white70,
+                      fontSize: 17,
                     ),
                   ),
                 ],
@@ -323,9 +355,15 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                       IconButton(
-                        icon: CircleAvatar(
-                          radius: 14,
-                          child: Icon(Icons.person, size: 18),
+                        icon: Consumer<ProfileProvider>(
+                          builder: (context, profileProvider, child) {
+                            return CircleAvatar(
+                              radius: 14,
+                              backgroundImage: profileProvider.profileImage != null
+                                  ? FileImage(profileProvider.profileImage!)
+                                  : const AssetImage('assets/default_profile.jpg') as ImageProvider,
+                            );
+                          },
                         ),
                         onPressed: () {
                           Navigator.push(

@@ -7,6 +7,7 @@ import 'package:online_banking_system/Pages/CardContractStatusPage.dart';
 import 'package:online_banking_system/Pages/CardPage.dart';
 import 'package:online_banking_system/Pages/ClientIdentifierPage.dart';
 import 'package:online_banking_system/Pages/PINAttemptsCounter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // lib/constants/enums.dart
 enum CardMenuOptions {
@@ -46,6 +47,7 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
     );
     _animation = Tween<double>(begin: 0, end: pi).animate(_controller);
   }
+
 
   Future<void> _handleMenuOption(CardMenuOptions option) async {
     switch (option) {
@@ -184,6 +186,52 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
     }
   }
 
+  Future<void> _promptForPassword() async {
+    String? enteredPassword;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedPassword = prefs.getString('registered_password'); // Assuming password is stored securely
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enter Password'),
+          content: TextField(
+            obscureText: true,
+            decoration: InputDecoration(labelText: 'Password'),
+            onChanged: (value) {
+              enteredPassword = value;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (enteredPassword == storedPassword) {
+                  Navigator.of(context).pop(true);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Incorrect password'), backgroundColor: Colors.red),
+                  );
+                }
+              },
+              child: Text('Submit'),
+            ),
+          ],
+        );
+      },
+    ).then((result) {
+      if (result == true) {
+        _flipCard();
+      }
+    });
+  }
 
 
   void _flipCard() {
@@ -202,7 +250,13 @@ class _CardDesignState extends State<CardDesign> with SingleTickerProviderStateM
     return Stack(
       children: [
         GestureDetector(
-          onTap: _flipCard,
+          onTap: () {
+            if (!_isFlipped) {
+              _promptForPassword();
+            } else {
+              _flipCard();
+            }
+          },
           child: AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {

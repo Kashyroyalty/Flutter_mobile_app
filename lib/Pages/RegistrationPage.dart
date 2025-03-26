@@ -72,7 +72,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
             Navigator.pushReplacementNamed(context, '/login');
           });
         } else {
-          throw Exception("Invalid email address or no client contract found.");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Invalid email address or no client contract found."),
+              backgroundColor: Colors.red,
+            ),
+          );
+          Future.delayed(const Duration(seconds: 2), () {
+            Navigator.pushReplacementNamed(context, '/self-register');
+          });
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

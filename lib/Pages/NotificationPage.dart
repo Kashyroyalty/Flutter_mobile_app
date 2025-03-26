@@ -38,7 +38,6 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  NotificationContract? notificationContract;
   TransactionContract? transactionContract;
   bool _showUnreadOnly = false;
   bool _isLoading = true;
@@ -57,10 +56,15 @@ class _NotificationsPageState extends State<NotificationsPage> with SingleTicker
 
   Future<void> fetchNotificationContracts() async {
     try {
-      var notificationContract = await ApiService().fetchNotificationContracts("338302830");
-      setState(() {
-        notificationContract = notificationContract;
+      List<NotificationContract> notifications = await ApiService().fetchNotificationContracts("338302830");
 
+      setState(() {
+        bankAlerts = notifications.map((notification) => NotificationItem(
+          title: notification.title ?? 'Unknown',
+          message: notification.message ?? '',
+          time: notification.time ?? '',
+          date: notification.date ?? '',
+        )).toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -73,9 +77,8 @@ class _NotificationsPageState extends State<NotificationsPage> with SingleTicker
 
   Future<void> fetchTransactionContract() async {
     try {
-       transactionContract = await ApiService().fetchTransactionContract("5176632120");
+      transactionContract = await ApiService().fetchTransactionContract("5176632120");
       setState(() {
-        transactionContract = transactionContract;
         _isLoading = false;
       });
     } catch (e) {

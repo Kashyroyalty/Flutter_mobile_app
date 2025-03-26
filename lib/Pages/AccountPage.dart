@@ -4,9 +4,11 @@ import 'package:online_banking_system/Models/ApiService.dart';
 import 'package:online_banking_system/Models/AccountContract.dart';
 import 'package:online_banking_system/Pages/ProfilePage.dart';
 import 'package:online_banking_system/widgets/Accounts.dart';
+import 'package:provider/provider.dart';
 import '../widgets/AccountDetails.dart';
 import 'NotificationPage.dart';
 import 'AddAccountPage.dart';
+import 'ProfileProvider.dart';
 
 class AccountPage extends StatefulWidget {
   @override
@@ -99,14 +101,22 @@ class _AccountPageState extends State<AccountPage> {
             ),
           ),
           IconButton(
-            icon: CircleAvatar(
-              radius: 14,
-              child: Icon(Icons.person, size: 18),
+            icon: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, child) {
+                return CircleAvatar(
+                  radius: 14,
+                  backgroundImage: profileProvider.profileImage != null
+                      ? FileImage(profileProvider.profileImage!)
+                      : const AssetImage('assets/default_profile.jpg') as ImageProvider,
+                );
+              },
             ),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfilePage()),
-            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
+            },
           ),
         ],
       ),

@@ -122,43 +122,52 @@ class ApiService {
       "auth_notification"
     ];
 
-    List<NotificationContract> notifications = [];
+    final urlBase = "$kBaseUrl/api/$clientId/";
+    final accessToken = await getAuthToken(); // Retrieve auth token
 
-    for (var endpoint in endpoints) {
-      final url = Uri.parse("$kBaseUrl/api/$clientId/$endpoint");
-      final accessToken = await getAuthToken(); // Retrieve token
-      print("Retrieved Token: $accessToken");
-
-      if (accessToken.isEmpty) {
-        print("Error: Missing  accessToken!");
-        throw Exception("Authorization token not found. Please log in again.");
-      }
-
-      print("Fetching data: GET $url");
-
-      final response = await http.get(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "AppToken $accessToken", // Add Authorization header
-        },
-      );
-
-      if (response.statusCode == 200) {
-        notifications.add(
-            NotificationContract.fromJson(jsonDecode(response.body)));
-      } else {
-        print("\n--- Response (GET) ---");
-        print("Status Code: \${response.statusCode}");
-        print('Response Headers: ${response.headers}');
-        print("Error Response: \${response.body}");
-        print("---------------------\n");
-        throw Exception('Failed to load notification contract for $endpoint');
-      }
+    if (accessToken.isEmpty) {
+      throw Exception("Authorization token not found. Please log in again.");
     }
 
-    return notifications;
+    print("Fetching notifications for client: $clientId");
+
+    // Create a list of futures to fetch all notifications in parallel
+    List<Future<NotificationContract>> requests = endpoints.map((endpoint) async {
+      final url = Uri.parse("$urlBase$endpoint");
+
+      try {
+        print("Requesting: GET $url");
+        final response = await http.get(
+          url,
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "AppToken $accessToken",
+          },
+        );
+
+        if (response.statusCode == 200) {
+          print("✅ Success: $endpoint");
+          return NotificationContract.fromJson(jsonDecode(response.body));
+        } else {
+          print("❌ Error fetching $endpoint (Status: ${response.statusCode})");
+          print("Response: ${response.body}");
+          throw Exception("Failed to load notification contract for $endpoint");
+        }
+      } catch (e) {
+        print("⚠️ Exception during request: $e");
+        throw Exception("Error fetching data for $endpoint: $e");
+      }
+    }).toList();
+
+    // Wait for all requests to complete
+    try {
+      return await Future.wait(requests);
+    } catch (e) {
+      print("🚨 Failed to fetch all notifications: $e");
+      throw Exception("Some notifications could not be retrieved.");
+    }
   }
+
 
 
   Future<List<CardPlastics>> fetchCardPlastics(String cardContractId) async {
@@ -433,6 +442,8 @@ class ApiService {
       throw Exception('Failed to update user profile');
     }
   }
+
+
 
 
   Future<List<CardContract>> fetchClientCards(int clientId) async {

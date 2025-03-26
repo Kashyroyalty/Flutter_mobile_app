@@ -7,13 +7,16 @@ import 'package:online_banking_system/Pages/HelpAndSupportPage.dart';
 import 'package:online_banking_system/Pages/LoginPage.dart';
 import 'package:online_banking_system/Pages/RegistrationPage.dart';
 import 'package:online_banking_system/Pages/ResetPasswordPage.dart';
+import 'package:online_banking_system/Pages/Self%20Registration.dart';
 import 'package:online_banking_system/Screens/SplashScreen.dart';
 import 'package:online_banking_system/Screens/WelcomePage.dart';
+import 'package:provider/provider.dart';
 import 'Pages/HomePage.dart';
 import 'Pages/AccountPage.dart';
 import 'Pages/CardPage.dart';
 import 'Pages/InputOtp.dart';
 import 'Pages/LanguagePage.dart';
+import 'Pages/ProfileProvider.dart';
 import 'Pages/StockPage.dart';
 import 'Screens/TokenExpiryPopUp.dart';
 import 'Screens/privacy_screen.dart';
@@ -22,9 +25,17 @@ import 'Screens/create_profile_screen1.dart';
 import 'Pages/ResetPasswordPage.dart';
 
 
-void main() async {
-  runApp(MyApp());
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
+
 
 
 class MyApp extends StatefulWidget {
@@ -83,6 +94,7 @@ class _MyAppState extends State<MyApp> {
         '/createProfile1': (context) => CreateProfileScreen1(),
         '/resetpassword': (context) => Resetpasswordpage(),
         '/support': (context) => HelpAndSupportPage(),
+        '/self-register': (context) => SelfRegistration(),
       },
       debugShowCheckedModeBanner: false,
     );

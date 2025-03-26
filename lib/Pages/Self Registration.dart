@@ -1,191 +1,177 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:online_banking_system/Constants/Colors.dart';
-import 'package:online_banking_system/Constants/sizes.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class Selfregistration  extends StatefulWidget {
-
+class SelfRegistration extends StatefulWidget {
+  const SelfRegistration({super.key});
 
   @override
-  _SelfregistrationState createState() => _SelfregistrationState();
+  State<SelfRegistration> createState() => _SelfRegistrationState();
 }
 
-
-
-class _SelfregistrationState extends State<Selfregistration> {
+class _SelfRegistrationState extends State<SelfRegistration> {
   final _formKey = GlobalKey<FormState>();
 
-  void _onRegisterPressed() {
-    if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("Registration successful!"),
-        duration: Duration(seconds: 2),
-      ));
-      // Navigate to the Login Page after showing the Snackbar
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.pushReplacementNamed(context, '/login');
-      });
+  late TextEditingController _firstNameController;
+  late TextEditingController _lastNameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  late TextEditingController _addressController;
+  late TextEditingController _nationController;
+
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _firstNameController = TextEditingController();
+    _lastNameController = TextEditingController();
+    _emailController = TextEditingController();
+    _phoneController = TextEditingController();
+    _addressController = TextEditingController();
+    _nationController = TextEditingController();
+  }
+
+  Future<void> _registerUser() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isSaving = true);
+
+    final newUserData = {
+      "first_name": _firstNameController.text,
+      "last_name": _lastNameController.text,
+      "email": _emailController.text,
+      "phone": _phoneController.text,
+      "address": _addressController.text,
+      "nation": _nationController.text,
+    };
+
+    await _saveDataToLocal(newUserData);
+
+    String oneTimePassword = _generateOneTimePassword();
+    print("Registered Email: ${newUserData['email']}");
+    print("One-Time Password: $oneTimePassword");
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Registration Successful. Check the console for login details.")));
+      Navigator.pop(context);
     }
   }
 
+  Future<void> _saveDataToLocal(Map<String, String> data) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('first_name', data['first_name']!);
+    await prefs.setString('last_name', data['last_name']!);
+    await prefs.setString('email', data['email']!);
+    await prefs.setString('phone', data['phone']!);
+    await prefs.setString('address', data['address']!);
+    await prefs.setString('nation', data['nation']!);
+  }
+
+  String _generateOneTimePassword() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    return List.generate(8, (index) => chars[Random().nextInt(chars.length)]).join();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor,
       appBar: AppBar(
-        title: Text("Register"),
-        backgroundColor: kTopBar,
+        title: const Text("Self Registration"),
+        backgroundColor: Colors.green,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Create Account",
-                style: TextStyle(
-                  fontSize: kTextSizeTitles,
-                  fontWeight: FontWeight.bold,
-                  color: kTextColorLightTheme,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Sign up to get started with mobile banking.",
-                style: TextStyle(
-                  fontSize: kTextSize,
-                  color:kTextColorLightTheme,
-                ),
-              ),
-              SizedBox(height: 20),
-              // Name Field
-              TextFormField(
-                style: TextStyle(color:kTextColorLightTheme),
-                decoration: InputDecoration(
-                  labelText: "Full Name",
-                  labelStyle: TextStyle(color: kTextColorLightTheme),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your name";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 15),
-              // Email Field
-              TextFormField(
-                style: TextStyle(color:kTextColorLightTheme),
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  labelStyle: TextStyle(color:kTextColorLightTheme),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your email";
-                  }
-                  if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                    return "Please enter a valid email address";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 15),
-              // Password Field
-              TextFormField(
-                obscureText: true,
-                style: TextStyle(color: kTextColorLightTheme),
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  labelStyle: TextStyle(color:kTextColorLightTheme),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.length < 6) {
-                    return "Password must be at least 6 characters";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 15),
-              // Confirm Password Field
-              TextFormField(
-                obscureText: true,
-                style: TextStyle(color:kTextColorLightTheme),
-                decoration: InputDecoration(
-                  labelText: "Confirm Password",
-                  labelStyle: TextStyle(color:kTextColorLightTheme),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please confirm your password";
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              // Register Button
-              ElevatedButton(
-                onPressed: _onRegisterPressed,
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  backgroundColor:kButtonColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    "Register",
-                    style: TextStyle(
-                      fontSize: 18,
-                      color:kButtonText,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.green.shade100,
+              child: const Icon(Icons.person, size: 50, color: Colors.white),
+            ),
+            const SizedBox(height: 16),
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  _buildTextField("First Name", _firstNameController),
+                  _buildTextField("Last Name", _lastNameController),
+                  _buildTextField("Email", _emailController, keyboardType: TextInputType.emailAddress),
+                  _buildTextField("Phone", _phoneController, keyboardType: TextInputType.phone),
+                  _buildTextField("Address", _addressController),
+                  _buildTextField("Nation", _nationController),
+                  const SizedBox(height: 20),
+                  _isSaving
+                      ? const CircularProgressIndicator()
+                      : SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _registerUser,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text("Register", style: TextStyle(color: Colors.white, fontSize: 16)),
                     ),
                   ),
-                ),
+                ],
               ),
-              SizedBox(height: 20),
-              // Login Redirect
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    // Navigate to Login Page
-                    Navigator.pushReplacementNamed(context, '/login');
-                  },
-                  child: Text(
-                    "Already have an account? Login",
-                    style: TextStyle(
-                      color:kTextColorLightTheme,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _buildTextField(String label, TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(_getIconForLabel(label)),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        validator: (value) => value == null || value.isEmpty ? "Please enter $label" : null,
+      ),
+    );
+  }
+
+  IconData _getIconForLabel(String label) {
+    switch (label) {
+      case "First Name":
+      case "Last Name":
+        return Icons.person;
+      case "Email":
+        return Icons.email;
+      case "Phone":
+        return Icons.phone;
+      case "Address":
+        return Icons.location_on;
+      case "Nation":
+        return Icons.flag;
+      default:
+        return Icons.text_fields;
+    }
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _addressController.dispose();
+    _nationController.dispose();
+    super.dispose();
   }
 }

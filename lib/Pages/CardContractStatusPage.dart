@@ -28,11 +28,8 @@ class _CardContractStatusPageState extends State<CardContractStatusPage> {
 
   final List<Map<String, String>> _statusOptions = [
     {'code': '00', 'description': 'Card is ready'},
-    {'code': '04', 'description': 'Blocked by bank'},
     {'code': '05', 'description': 'Temporarily blocked by user'},
-    {'code': '14', 'description': 'Card permanently closed'},
-    {'code': '41', 'description': 'Card reported lost'},
-    {'code': '43', 'description': 'Card reported stolen'},
+
   ];
 
   @override
