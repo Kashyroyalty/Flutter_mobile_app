@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
+import 'package:online_banking_system/Constants/Strings.dart';
 import 'package:online_banking_system/Pages/InputOtp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:online_banking_system/Constants/Colors.dart';
@@ -41,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       _emailController.text = savedEmail; // Auto-fill email if found
     });
   }
+
 
   Future<void> _checkBiometrics() async {
     try {
@@ -270,43 +275,48 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _performLogin(String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Retrieve stored credentials
-    final storedEmail = prefs.getString('registered_email');
-    final storedPassword = prefs.getString('registered_password');
-
-    print("Stored Email: $storedEmail");
-    print("Stored Password: $storedPassword");
-    print("Entered Email: $email");
-    print("Entered Password: $password");
-
-    if (storedEmail?.toLowerCase().trim() == email.toLowerCase().trim() &&
-        storedPassword?.trim() == password.trim()) {
-      // Save email in SharedPreferences for future use
-      await prefs.setString('saved_email', email);
-
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Login successful!"),
-        backgroundColor: Colors.green,
-        duration: Duration(seconds: 2),
-      ));
-
-      // Redirect directly to OTP input page
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => InputOtp()),
+    try {
+      var url = Uri.parse('$kBaseUrl/auth/login/password');
+      var response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({"email": email, "password": password}),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Invalid credentials. Please try again."),
+
+      if (response.statusCode == 200) {
+        var responseData = json.decode(response.body);
+        print("Login Successful: ${responseData}");
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('saved_email', email);
+
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Login successful!"),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ));
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => InputOtp()),
+        );
+      } else {
+        print("Login Failed: ${response.reasonPhrase}");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Invalid credentials. Please try again."),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Login request failed. Please try again."),
         backgroundColor: Colors.red,
         duration: Duration(seconds: 2),
       ));
     }
   }
-
-
 
   void _onLoginPressed() {
     if (_formKey.currentState!.validate()) {
