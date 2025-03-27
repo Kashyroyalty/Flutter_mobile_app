@@ -79,7 +79,7 @@ class _SelfRegistrationState extends State<SelfRegistration> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Self Registration"),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blueAccent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -92,7 +92,7 @@ class _SelfRegistrationState extends State<SelfRegistration> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundColor: Colors.green.shade100,
+              backgroundColor: Colors.blueGrey,
               child: const Icon(Icons.person, size: 50, color: Colors.white),
             ),
             const SizedBox(height: 16),
@@ -115,7 +115,7 @@ class _SelfRegistrationState extends State<SelfRegistration> {
                     child: ElevatedButton(
                       onPressed: _registerUser,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.blueAccent,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       child: const Text("Register", style: TextStyle(color: Colors.white, fontSize: 16)),

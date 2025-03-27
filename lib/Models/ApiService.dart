@@ -349,13 +349,13 @@ class ApiService {
   }
 
 
-  Future<String> fetchClientContract(String Email) async {
-    final url = Uri.parse("$kBaseUrl/clients/contract-id?email=$Email");
+  Future<String?> fetchClientContract(String email) async {
+    final url = Uri.parse("$kBaseUrl/clients/contract-id?email=$email");
     final accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
     if (accessToken.isEmpty) {
-      print("Error: Missing  accessToken!");
+      print("Error: Missing accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
 
@@ -370,8 +370,17 @@ class ApiService {
     );
 
     if (response.statusCode == 200) {
+      if (response.body.isEmpty || response.body == "null") {
+        return null; // No contract found for the given email
+      }
       print(response.body);
       return response.body;
+    } else if (response.statusCode == 404) {
+      print("\n--- ERROR (GET) ---");
+      print("Status Code: ${response.statusCode}");
+      print("Error: Client not found.");
+      print("---------------------\n");
+      return null;
     } else {
       print("\n--- ERROR (GET) ---");
       print("Status Code: ${response.statusCode}");
@@ -380,6 +389,7 @@ class ApiService {
       throw Exception('Failed to load client contract');
     }
   }
+
 
   Future<int?> getClientId() async {
     try {

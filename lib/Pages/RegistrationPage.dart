@@ -52,9 +52,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
           duration: Duration(seconds: 2),
         ),
       );
+
       try {
         final response = await apiService.fetchClientContract(email);
-        if (response.isNotEmpty) {
+        if (response != null) {
           int? clientId = int.tryParse(response);
           if (clientId == null) {
             throw Exception("Invalid client ID received from API.");
@@ -62,20 +63,23 @@ class _RegistrationPageState extends State<RegistrationPage> {
           String otp = generateOTP();
           await saveClientId(clientId);
           await saveCredentials(email, otp);
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Registration successful! OTP generated."),
               duration: Duration(seconds: 2),
             ),
           );
+
           Future.delayed(const Duration(seconds: 2), () {
             Navigator.pushReplacementNamed(context, '/login');
           });
         } else {
+          // Redirect to self-registration page
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Invalid email address or no client contract found."),
-              backgroundColor: Colors.red,
+              content: Text("Email not found. Redirecting to self-registration."),
+              backgroundColor: Colors.redAccent,
             ),
           );
           Future.delayed(const Duration(seconds: 2), () {
