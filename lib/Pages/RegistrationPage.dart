@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -16,8 +15,15 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _clientController = TextEditingController();
+  bool _isPasswordHidden = true;
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmpasswordController = TextEditingController();
   late ApiService apiService;
+
 
   @override
   void initState() {
@@ -45,7 +51,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   void _onRegisterPressed() async {
     if (_formKey.currentState!.validate()) {
-      String email = _clientController.text.trim();
+      String email = _emailController.text.trim();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Processing registration..."),
@@ -75,16 +81,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
             Navigator.pushReplacementNamed(context, '/login');
           });
         } else {
-          // Redirect to self-registration page
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text("Email not found. Redirecting to self-registration."),
+              content: Text("Email not found."),
               backgroundColor: Colors.redAccent,
             ),
           );
-          Future.delayed(const Duration(seconds: 2), () {
-            Navigator.pushReplacementNamed(context, '/self-register');
-          });
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -94,6 +96,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
         );
       }
+    }
+  }
+
+  IconData _getIconForLabel(String label) {
+    switch (label) {
+      case "First Name":
+      case "Last Name":
+        return Icons.person;
+      case "Email":
+        return Icons.email;
+      case "Phone":
+        return Icons.phone;
+      case "password":
+        return Icons.password;
+      case "confirmPassword":
+        return Icons.password;
+      default:
+        return Icons.password_outlined;
     }
   }
 
@@ -109,14 +129,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Create Your Secure Banking Account",
+              "Get Started with Your Secure Card Management",
               style: TextStyle(
                 fontSize: kTextSizeTitles,
                 fontWeight: FontWeight.bold,
@@ -124,42 +144,71 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 10),
-            Text(
-              "Enter your registered email to verify your identity and set up mobile banking.",
-              style: TextStyle(
-                fontSize: kTextSize,
-                color: kTextColorLightTheme,
-              ),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 30),
             Form(
               key: _formKey,
-              child: TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                style: TextStyle(color: kTextColorLightTheme),
-                controller: _clientController,
-                decoration: InputDecoration(
-                  labelText: "Registered Email",
-                  labelStyle: TextStyle(color: kTextColorLightTheme),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your email";
-                  }
-                  if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
-                    return "Please enter a valid email address";
-                  }
-                  return null;
-                },
+              child: Column(
+                children: [
+                  for (var field in ["First Name", "Last Name", "Email", "Phone", "Password", "Confirm Password"])
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0),
+                      child: TextFormField(
+                        keyboardType: field == "Email" ? TextInputType.emailAddress : TextInputType.text,
+                        obscureText: field.contains("Password") ? _isPasswordHidden : false,
+                        style: TextStyle(color: kTextColorLightTheme),
+                        controller: field == "First Name" ? _firstNameController :
+                        field == "Last Name" ? _lastNameController :
+                        field == "Email" ? _emailController :
+                        field == "Phone" ? _phoneController :
+                        field == "Password" ? _passwordController : _confirmpasswordController,
+                        decoration: InputDecoration(
+                          labelText: field,
+                          labelStyle: TextStyle(color: kTextColorLightTheme),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          prefixIcon: Icon(_getIconForLabel(field), color: kTextColorLightTheme),
+                          suffixIcon: field.contains("Password")
+                              ? IconButton(
+                            icon: Icon(
+                              _isPasswordHidden ? Icons.visibility_off : Icons.visibility,
+                              color: kTextColorLightTheme,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordHidden = !_isPasswordHidden;
+                              });
+                            },
+                          )
+                              : null,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter your $field";
+                          }
+                          if (field == "Email" && !RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
+                            return "Please enter a valid email address";
+                          }
+                          if (field == "Phone" && !RegExp(r'^\d+$').hasMatch(value)) {
+                            return "Please enter a valid phone number";
+                          }
+                          if (field == "Password" &&
+                              !RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$').hasMatch(value)) {
+                            return "Password must be at least 8 characters long and include:\n• One uppercase letter\n• One lowercase letter\n• One number\n• One special character";
+                          }
+                          if (field == "Confirm Password" && value != _passwordController.text) {
+                            return "Passwords do not match";
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                ],
               ),
             ),
+
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
