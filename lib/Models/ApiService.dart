@@ -14,10 +14,10 @@ class ApiService {
 
   Future<CardContract> fetchCardContract(String contractId) async {
     final url = Uri.parse("$kBaseUrl/cards/$contractId");
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -46,10 +46,10 @@ class ApiService {
 
   Future<List<AccountContract>> fetchAccountContracts(String contractId) async {
     final url = Uri.parse("$kBaseUrl/api/account-contracts/$contractId");
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -80,10 +80,10 @@ class ApiService {
   Future<TransactionContract> fetchTransactionContract(
       String contractId) async {
     final url = Uri.parse("$kBaseUrl/transaction/$contractId");
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -123,9 +123,9 @@ class ApiService {
     ];
 
     final urlBase = "$kBaseUrl/api/$clientId/";
-    final accessToken = await getAuthToken(); // Retrieve auth token
+    String? accessToken = await getAuthToken(); // Retrieve auth token
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       throw Exception("Authorization token not found. Please log in again.");
     }
 
@@ -183,10 +183,10 @@ class ApiService {
 
     for (var endpoint in endpoints) {
       final url = Uri.parse("$kBaseUrl/api/cards/$cardContractId/$endpoint");
-      final accessToken = await getAuthToken(); // Retrieve token
+      String? accessToken = await getAuthToken(); // Retrieve token
       print("Retrieved Token: $accessToken");
 
-      if (accessToken.isEmpty) {
+      if (accessToken!.isEmpty) {
         print("Error: Missing  accessToken!");
         throw Exception("Authorization token not found. Please log in again.");
       }
@@ -351,10 +351,10 @@ class ApiService {
 
   Future<String?> fetchClientContract(String email) async {
     final url = Uri.parse("$kBaseUrl/clients/contract-id?email=$email");
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -365,7 +365,7 @@ class ApiService {
       url,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "AppToken $accessToken", // Add Authorization header
+        "Authorization": "PortalToken byzShdgJQIhprMnHgUPd-SOvGJwxmZzSKeiI7TNTsLE", // Add Authorization header
       },
     );
 
@@ -533,10 +533,10 @@ class ApiService {
 
   Future<Map<String, dynamic>> fetchClientData(String clientId) async {
     final url = Uri.parse("$kBaseUrl/clients/$clientId");
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -577,10 +577,10 @@ class ApiService {
       Map<String, dynamic> updatedDetails) async {
     final prefs = await SharedPreferences.getInstance();
     final clientId = prefs.getString('client_id') ?? '';
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -620,10 +620,10 @@ class ApiService {
   Future<void> getCardContract() async {
     final prefs = await SharedPreferences.getInstance();
     final clientId = prefs.getString('client_id') ?? '';
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -649,10 +649,10 @@ class ApiService {
   }
 
   Future<void> getTransactions(String contractId) async {
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -673,10 +673,10 @@ class ApiService {
   }
 
   Future<void> getCardUsageLimit(String contractId) async {
-    final accessToken = await getAuthToken(); // Retrieve token
+    String? accessToken = await getAuthToken(); // Retrieve token
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -698,10 +698,10 @@ class ApiService {
 
   Future<http.Response> registerUser(Map<String, String> userData) async {
     final url = Uri.parse("$kBaseUrl/api/v1/users/register");
-    final accessToken = await getAuthToken();
+    String? accessToken = await getAuthToken();
     print("Retrieved Token: $accessToken");
 
-    if (accessToken.isEmpty) {
+    if (accessToken!.isEmpty) {
       print("Error: Missing  accessToken!");
       throw Exception("Authorization token not found. Please log in again.");
     }
@@ -714,8 +714,8 @@ class ApiService {
       url,
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "AppToken $accessToken", // Add             header
       },
+      body: jsonEncode(userData),
     );
 
     print("\n--- POST Response ---");
@@ -727,18 +727,15 @@ class ApiService {
   }
 
 
-  Future<Map<String, String?>> getAuthToken() async {
+  Future<String?> getAuthToken() async {
     final prefs = await SharedPreferences.getInstance();
 
     String? accessToken = prefs.getString('access_token');
     String? refreshToken = prefs.getString('refresh_token');
 
-    if (accessToken == null || accessToken.isEmpty || refreshToken == null || refreshToken.isEmpty) {
+    if (accessToken == null || accessToken!.isEmpty || refreshToken == null || refreshToken.isEmpty) {
       print("❌ Error: Auth tokens not found in SharedPreferences.");
-      return {
-        'access_token': accessToken,
-        'refresh_token': refreshToken,
-      };
+      return refreshToken;
     }
 
     print("✅ Retrieved Access Token: $accessToken");
@@ -752,10 +749,7 @@ class ApiService {
       accessToken = newAccessToken; // Update local variable
     }
 
-    return {
-      'access_token': accessToken,
-      'refresh_token': refreshToken,
-    };
+    return refreshToken;
   }
 
 
@@ -826,6 +820,7 @@ class ApiService {
 
 
   static Future<http.Response> verifyOTP(String email, String otpCode) async {
+
     final url = Uri.parse("$kBaseUrl/auth/login/otp");
     final response = await http.post(
       url,

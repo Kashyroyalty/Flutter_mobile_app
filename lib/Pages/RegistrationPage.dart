@@ -70,6 +70,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
           await saveClientId(clientId);
           await saveCredentials(email, otp);
 
+          Map<String, String> userdata = {
+            "firstname": _firstNameController.text,
+            "lastname": _lastNameController.text,
+            "accountName": "${_firstNameController.text} ${_lastNameController.text}",
+            "email": _emailController.text,
+            "password": _passwordController.text,
+            "role": "USER",
+          };
+
+          try{
+            final response = await apiService.registerUser(userdata);
+            if (response != null) {
+              print("User registered successfully");
+            }
+          } catch (e){
+            print(e);
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text("Registration successful! OTP generated."),
