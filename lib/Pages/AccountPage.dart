@@ -49,7 +49,7 @@ class _AccountPageState extends State<AccountPage> {
 
       for (var account in fetchedAccounts) {
         if (!uniqueAccountNumbers.contains(account.accountContractNumber)) {
-          uniqueAccountNumbers.add(account.accountContractNumber);
+          uniqueAccountNumbers.add(account.accountContractNumber as String);
           uniqueAccounts.add(account);
         }
       }
@@ -176,8 +176,8 @@ class _AccountPageState extends State<AccountPage> {
               padding:
               const EdgeInsets.symmetric(horizontal: 16.0),
               child: Accounts(
-                accountName: _accounts[0].accountContractName,
-                accountNumber: _accounts[0].accountContractNumber,
+                accountName: _accounts[0].accountContractName as String,
+                accountNumber: _accounts[0].accountContractNumber as String,
                 balance: _accounts[0].balance,
                 color: kCardColor,
                 isBalanceHidden: _isBalanceHidden,
@@ -190,8 +190,8 @@ class _AccountPageState extends State<AccountPage> {
               itemBuilder: (context, index) {
                 final account = _accounts[index];
                 return Accounts(
-                  accountName: account.accountContractName,
-                  accountNumber: account.accountContractNumber,
+                  accountName: account.accountContractName as String,
+                  accountNumber: account.accountContractNumber as String,
                   balance: account.balance,
                   color: kCardColor,
                   isBalanceHidden: _isBalanceHidden,

@@ -1,45 +1,45 @@
 class AccountContract {
   final AccountContractBalances accountContractBalances;
-  final int accountContractId;
-  final String accountContractLevel;
-  final String accountContractName;
-  final String accountContractNumber;
+  final int? accountContractId;
+  final String? accountContractLevel;
+  final String? accountContractName;
+  final String? accountContractNumber;
   final AccountContractOwner accountContractOwner;
   final AccountContractStatusData accountContractStatusData;
-  final String accountContractSubtype;
-  final String additionalParameters;
-  final String amendmentDate;
-  final int amendmentOfficerId;
-  final String amendmentOfficerName;
-  final int billingAccountContractId;
-  final String billingAccountContractNumber;
-  final String branchCode;
-  final String branchName;
-  final String cbsNumber;
+  final String? accountContractSubtype;
+  final String? additionalParameters;
+  final String? amendmentDate;
+  final int? amendmentOfficerId;
+  final String? amendmentOfficerName;
+  final int? billingAccountContractId;
+  final String? billingAccountContractNumber;
+  final String? branchCode;
+  final String? branchName;
+  final String? cbsNumber;
   late final double balance;
-  final String currency;
-  final String currencyNumericCode;
-  final String dateClose;
-  final String dateOpen;
-  final String dueDate;
-  final String lastBillingDate;
-  final String leaf;
-  final int liabilityAccountContractId;
-  final String liabilityAccountContractNumber;
-  final String liabilityCategory;
-  final String mainProductCode;
-  final String nextBillingDate;
-  final int parentAccountContractId;
-  final String parentAccountContractNumber;
-  final String parentProductCode;
-  final String pastDueDate;
-  final int pastDueDays;
-  final String productCode;
-  final String productName;
-  final String serviceGroupCode;
-  final String serviceGroupName;
-  final int topAccountContractId;
-  final String topAccountContractNumber;
+  final String? currency;
+  final String? currencyNumericCode;
+  final String? dateClose;
+  final String? dateOpen;
+  final String? dueDate;
+  final String? lastBillingDate;
+  final String? leaf;
+  final int? liabilityAccountContractId;
+  final String? liabilityAccountContractNumber;
+  final String? liabilityCategory;
+  final String? mainProductCode;
+  final String? nextBillingDate;
+  final int? parentAccountContractId;
+  final String? parentAccountContractNumber;
+  final String? parentProductCode;
+  final String? pastDueDate;
+  final int? pastDueDays;
+  final String? productCode;
+  final String? productName;
+  final String? serviceGroupCode;
+  final String? serviceGroupName;
+  final int? topAccountContractId;
+  final String? topAccountContractNumber;
 
   AccountContract({
     required this.accountContractBalances,
@@ -85,7 +85,7 @@ class AccountContract {
     required this.topAccountContractNumber,
   });
 
-  factory AccountContract.fromJson(Map<String, dynamic> json) {
+  factory AccountContract.fromJson(Map<String?, dynamic> json) {
     return AccountContract(
       accountContractBalances: AccountContractBalances.fromJson(json['accountContractBalances']),
       accountContractId: json['accountContractId'],
@@ -133,10 +133,10 @@ class AccountContract {
 }
 
 class AccountContractStatusData {
-  final String statusCode;
-  final String statusName;
-  final String externalStatusCode;
-  final String externalStatusName;
+  final String? statusCode;
+  final String? statusName;
+  final String? externalStatusCode;
+  final String? externalStatusName;
 
   AccountContractStatusData({
     required this.statusCode,
@@ -145,7 +145,7 @@ class AccountContractStatusData {
     required this.externalStatusName,
   });
 
-  factory AccountContractStatusData.fromJson(Map<String, dynamic> json) {
+  factory AccountContractStatusData.fromJson(Map<String?, dynamic> json) {
     return AccountContractStatusData(
       statusCode: json['statusCode'],
       statusName: json['statusName'],
@@ -175,23 +175,24 @@ class AccountContractBalances {
     required this.totalDue,
   });
 
-  factory AccountContractBalances.fromJson(Map<String, dynamic> json) {
+  factory AccountContractBalances.fromJson(Map<String?, dynamic> json) {
     return AccountContractBalances(
-      additionalLimit: json['additionalLimit'],
-      available: json['available'],
-      balance: json['balance'],
-      blockedAmount: json['blockedAmount'],
-      creditLimit: json['creditLimit'],
-      pastDue: json['pastDue'],
-      totalDue: json['totalDue'],
+      additionalLimit: (json['additionalLimit'] ?? 0).toDouble(),
+      available: (json['available'] ?? 0).toDouble(),
+      balance: (json['balance'] ?? 0).toDouble(),
+      blockedAmount: (json['blockedAmount'] ?? 0).toDouble(),
+      creditLimit: (json['creditLimit'] ?? 0).toDouble(),
+      pastDue: (json['pastDue'] ?? 0).toDouble(),
+      totalDue: (json['totalDue'] ?? 0).toDouble(),
     );
   }
+
 }
 
 class AccountContractOwner {
-  final int accountContractOwnerId;
-  final String accountContractOwnerNumber;
-  final String accountContractOwnerName;
+  final int? accountContractOwnerId;
+  final String? accountContractOwnerNumber;
+  final String? accountContractOwnerName;
 
   AccountContractOwner({
     required this.accountContractOwnerId,
@@ -199,7 +200,7 @@ class AccountContractOwner {
     required this.accountContractOwnerName,
   });
 
-  factory AccountContractOwner.fromJson(Map<String, dynamic> json) {
+  factory AccountContractOwner.fromJson(Map<String?, dynamic> json) {
     return AccountContractOwner(
       accountContractOwnerId: json['accountContractOwnerId'],
       accountContractOwnerNumber: json['accountContractOwnerNumber'],

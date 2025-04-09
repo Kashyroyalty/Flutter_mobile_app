@@ -219,6 +219,8 @@ class ApiService {
 
   Future<http.Response> updateCardStatus(String contractId,
       {required String clientId, required String statusCode, required String reason}) async {
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
     final url = Uri.parse("$kBaseUrl/cards/$contractId/status");
     final requestData = {
       "reason": reason,
@@ -233,7 +235,10 @@ class ApiService {
 
     final response = await http.put(
       url,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "AppToken $accessToken", // Add Authorization header
+      },
       body: jsonEncode(requestData),
     );
 
@@ -247,6 +252,8 @@ class ApiService {
     final url = Uri.parse(
         "$kBaseUrl/cards/$contractId/online-pin-attempts-counter");
     final requestData = {"cleared": "true"};
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
 
 
     print("\n--- Clearing PIN Attempts ---");
@@ -255,7 +262,10 @@ class ApiService {
 
     final response = await http.put(
       url,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "AppToken $accessToken", // Add Authorization header
+      },
       body: jsonEncode(requestData),
     );
 
@@ -269,6 +279,9 @@ class ApiService {
     final url = Uri.parse("$kBaseUrl/cards/$contractId/reset-pin");
     final requestData = {"reset": "true"};
 
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
+
 
     print("\n--- Resetting Card PIN ---");
     print("Request: PUT $url");
@@ -276,7 +289,10 @@ class ApiService {
 
     final response = await http.put(
       url,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "AppToken $accessToken", // Add Authorization header
+      },
       body: jsonEncode(requestData),
     );
 
@@ -289,13 +305,19 @@ class ApiService {
   Future<http.Response> createCardContract(Map<String, String> cardData) async {
     final url = Uri.parse("$kBaseUrl/cards/createCardContract");
 
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
+
     print("\n--- Creating Card Contract ---");
     print("Request: POST $url");
     print("Request Body: ${jsonEncode(cardData)}");
 
     final response = await http.post(
       url,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "AppToken $accessToken", // Add Authorization header
+      },
       body: jsonEncode(cardData),
     );
 
@@ -313,13 +335,19 @@ class ApiService {
     final url = Uri.parse(
         "$kBaseUrl/account_contracts_id/createAccountContract");
 
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
+
     print("\n--- Creating Account Contract ---");
     print("Request: POST $url");
     print("Request Body: ${jsonEncode(accountData)}");
 
     final response = await http.post(
       url,
-      headers: {"Content-Type": "application/json"},
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "AppToken $accessToken", // Add Authorization header
+      },
 
       body: jsonEncode(accountData),
     );
@@ -336,10 +364,16 @@ class ApiService {
   Future<http.Response> activateCard(String contractId) async {
     final url = Uri.parse("$kBaseUrl/api/cards/$contractId/active");
     final requestData = {"activated": "true"};
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
+
 
 
     final response = await http.put(
-      url, headers: {"Content-Type": "application/json"},
+      url, headers: {
+        "Content-Type": "application/json",
+        "Authorization": "AppToken $accessToken", // Add Authorization header
+    },
       body: jsonEncode(requestData),);
 
     print("Response: ${response.statusCode} - ${response.body}");
@@ -413,6 +447,9 @@ class ApiService {
     final response = await http.get(
         Uri.parse("$kBaseUrl/clients/client_id/$clientId"));
 
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
+
 
     if (response.statusCode == 200) {
       print("API Response: ${response.body}");
@@ -425,10 +462,13 @@ class ApiService {
   }
 
 
-  static Future<String> updateUserProfile(Int ClientId,
+   Future<String> updateUserProfile(Int ClientId,
       Map<String, dynamic> updatedData) async {
+
     final url = Uri.parse("$kBaseUrl/clients/client_id/$ClientId");
 
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
 
     print("Updating data: PUT $url");
     print("Request Body: ${jsonEncode(updatedData)}");
@@ -437,6 +477,7 @@ class ApiService {
       url,
       headers: {
         "Content-Type": "application/json",
+        "Authorization": "AppToken $accessToken", // Add Authorization header
       },
       body: jsonEncode(updatedData),
     );
@@ -457,10 +498,21 @@ class ApiService {
 
 
   Future<List<CardContract>> fetchClientCards(int clientId) async {
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
+
+    if (accessToken!.isEmpty) {
+      print("Error: Missing  accessToken!");
+      throw Exception("Authorization token not found. Please log in again.");
+    }
+
     try {
       final response = await http.get(
         Uri.parse('$kBaseUrl/clients/$clientId/card-contracts'),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "AppToken $accessToken", // Add Authorization header
+        },
 
       );
 
@@ -495,10 +547,20 @@ class ApiService {
   }
 
   Future<List<AccountContract>> fetchClientAccounts(int clientId) async {
+    String? accessToken = await getAuthToken(); // Retrieve token
+    print("Retrieved Token: $accessToken");
+
+    if (accessToken!.isEmpty) {
+      print("Error: Missing  accessToken!");
+      throw Exception("Authorization token not found. Please log in again.");
+    }
     try {
       final response = await http.get(
         Uri.parse('$kBaseUrl/clients/$clientId/account-contracts'),
-        headers: {"Content-Type": "application/json"},
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "AppToken $accessToken", // Add Authorization header
+        },
       );
 
       print("API Response Status Code: ${response.statusCode}");
